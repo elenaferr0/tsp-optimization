@@ -13,7 +13,8 @@ include_directories(
 file(GLOB_RECURSE SOURCES "${CMAKE_SOURCE_DIR}/src/*.cpp")
 
 # Add executable
-add_executable(main ${SOURCES})
+add_executable(main ${SOURCES}
+        include/time_logger.h)
 
 # Link libraries
 target_link_libraries(main cplex m pthread dl)

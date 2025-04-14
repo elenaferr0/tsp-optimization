@@ -54,4 +54,4 @@ clean:
 
 # Run target
 run: all
-	./$(TARGET)
+	./$(TARGET) $(ARGS)

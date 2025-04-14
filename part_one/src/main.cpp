@@ -1,7 +1,9 @@
 #include <iostream>
 #include <vector>
+#include <chrono>
 
 #include "cpxmacro.h"
+#include "time_logger.h"
 
 using namespace std;
 
@@ -102,7 +104,8 @@ void setup_lp(const CEnv env, const Prob lp)
             auto sense = 'E';
             auto rhs = 1.0;
             auto matbeg = 0;
-            CHECKED_CPX_CALL(CPXaddrows, env, lp, 0, 1, idx.size(), &rhs, &sense, &matbeg, &idx[0], &coef[0], nullptr, nullptr);
+            CHECKED_CPX_CALL(CPXaddrows, env, lp, 0, 1, idx.size(), &rhs, &sense, &matbeg, &idx[0], &coef[0], nullptr,
+                             nullptr);
         }
     }
 
@@ -172,15 +175,47 @@ void setup_lp(const CEnv env, const Prob lp)
     }
 }
 
+void parse_args(int argc, char const* argv[], int& timeout, int& size)
+{
+    if (argc < 2)
+    {
+        cout << "Usage: " << argv[0] << "<timeout> <size>" << endl;
+        exit(1);
+    }
+
+    timeout = atoi(argv[1]);
+    if (timeout <= 0)
+    {
+        cout << "Invalid timeout value: " << timeout << endl;
+        exit(1);
+    }
+
+    size = atoi(argv[2]);
+    if (size <= 0)
+    {
+        cout << "Invalid size value: " << size << endl;
+        exit(1);
+    }
+}
+
 int main(int argc, char const* argv[])
 {
+    int timeout = 0;
+    int size = 0;
+
+    parse_args(argc, argv, timeout, size);
+
     try
     {
         DECL_ENV(env);
         DECL_PROB(env, lp);
+        // CHECKED_CPX_CALL(CPXsetintparam, env, CPX_PARAM_TILIM, timeout);
 
+        time_logger tl;
         setup_lp(env, lp);
+        tl.tick("Model setup");
         CHECKED_CPX_CALL(CPXmipopt, env, lp);
+        tl.tick("MIP optimization");
 
         // print
         double objval;
@@ -208,6 +243,8 @@ int main(int argc, char const* argv[])
         }
 
         CHECKED_CPX_CALL(CPXsolwrite, env, lp, "tsp.sol");
+        tl.tick("Solution write");
+        tl.log_total_time("Total time");
 
         CPXfreeprob(env, &lp);
         CPXcloseCPLEX(&env);
