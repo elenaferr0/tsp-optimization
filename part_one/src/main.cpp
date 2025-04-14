@@ -179,7 +179,7 @@ void parse_args(int argc, char const* argv[], double& timeout, int& size)
 {
     if (argc < 2)
     {
-        cout << "Usage: " << argv[0] << "<timeout> <size>" << endl;
+        cout << "Usage: " << argv[0] << " <timeout> <size>" << endl;
         exit(1);
     }
 
@@ -198,27 +198,32 @@ void parse_args(int argc, char const* argv[], double& timeout, int& size)
     }
 }
 
-void print_vars(const Env& env, const Prob& lp)
+void print_sln(const Env& env, const Prob& lp)
 {
+    double objval;
+    CHECKED_CPX_CALL(CPXgetobjval, env, lp, &objval);
+    cout << "Objective fun value: " << objval << endl;
+
     const auto n = CPXgetnumcols(env, lp);
     vector<double> variables(n);
     CHECKED_CPX_CALL(CPXgetx, env, lp, &variables[0], 0, n - 1);
 
+    ostringstream buffer_x;
+    ostringstream buffer_y;
     for (int i = 0; i < N; ++i)
     {
         for (int j = 0; j < N; ++j)
         {
-            if (i == j) continue;
             if (map_x[i][j] >= 0)
-            {
-                cout << "x_" << i << j << ": " << variables[map_x[i][j]] << endl;
-            }
+                buffer_x << "x_" << i << j << ": " << variables[map_x[i][j]] << endl;
+
             if (map_y[i][j] >= 0)
-            {
-                cout << "y_" << i << j << ": " << variables[map_y[i][j]] << endl;
-            }
+                buffer_y << "y_" << i << j << ": " << variables[map_y[i][j]] << endl;
         }
     }
+
+    cout << "x variables:\n" << buffer_x.str() << endl;
+    cout << "y variables:\n" << buffer_y.str() << endl;
 }
 
 int main(const int argc, char const* argv[])
@@ -240,12 +245,7 @@ int main(const int argc, char const* argv[])
         CHECKED_CPX_CALL(CPXmipopt, env, lp);
         tl.tick("MIP optimization");
 
-        // print
-        double objval;
-        CHECKED_CPX_CALL(CPXgetobjval, env, lp, &objval);
-        cout << "Objective fun value: " << objval << endl;
-
-        print_vars(env, lp);
+        print_sln(env, lp);
 
         CHECKED_CPX_CALL(CPXsolwrite, env, lp, "tsp.sol");
         tl.tick("Solution write");
