@@ -8,7 +8,7 @@ using namespace std;
 int status;
 char errmsg[BUF_SIZE];
 
-constexpr int N = 5; // Graph nodes - now 20 for the circuit board
+constexpr int N = 5; // Graph nodes
 
 // Arcs
 const int A[N][N] = {
