@@ -8,21 +8,24 @@ using namespace std;
 int status;
 char errmsg[BUF_SIZE];
 
-constexpr int N = 3; // Graph nodes
-constexpr char node_names[N] = {'A', 'B', 'C'};
+constexpr int N = 5; // Graph nodes - now 20 for the circuit board
 
 // Arcs
-constexpr int A[N][N] = {
-    {0, 1, 2},
-    {0, 2, 3},
-    {1, 2, 3}
+const int A[N][N] = {
+    {0, 1, 1, 1, 1},
+    {1, 0, 1, 1, 1},
+    {1, 1, 0, 1, 1},
+    {1, 1, 1, 0, 1},
+    {1, 1, 1, 1, 0}
 };
 
 // Time taken by the drill to move from i to j
 constexpr double C[N][N] = {
-    {0.0, 1.0, 2.0},
-    {1.0, 0.0, 3.0},
-    {2.0, 3.0, 0.0}
+    {0.0, 4.0, 2.0, 5.0, 3.0},
+    {4.0, 0.0, 6.0, 3.0, 2.0},
+    {2.0, 6.0, 0.0, 4.0, 5.0},
+    {5.0, 3.0, 4.0, 0.0, 1.0},
+    {3.0, 2.0, 5.0, 1.0, 0.0}
 };
 
 constexpr int starting_node = 0;
@@ -42,27 +45,29 @@ void setup_lp(const CEnv env, const Prob lp)
     map_y = vector<vector<int>>(N, vector<int>(N, -1));
 
     //// Objective function
-    // Add y_ij: min sum_{(i,j) in A} c_ij y_ij
-    for (int i = 0; i < N; i++)
+    // (9) y_ij: min sum_{(i,j) in A} c_ij y_ij
+    for (int i = 0; i < N; ++i)
     {
-        for (int j = 0; j < N; j++)
+        for (int j = 0; j < N; ++j)
         {
+            if (i == j) continue;
             constexpr auto ytype = CPX_BINARY;
-            snprintf(name, NAME_SIZE, "y_%c%c", node_names[i], node_names[j]);
+            snprintf(name, NAME_SIZE, "y_%d%d", i, j);
             auto yname = &name[0];
 
-            CHECKED_CPX_CALL(CPXnewcols, env, lp, 1, &(C[i][j]), nullptr, nullptr, &ytype, &yname);
+            CHECKED_CPX_CALL(CPXnewcols, env, lp, 1, &C[i][j], nullptr, nullptr, &ytype, &yname);
             map_y[i][j] = var_pos++;
         }
     }
 
-    // Add x_ij (TODO: check if this is needed)
-    for (int i = 0; i < N; i++)
+    // (9) x_ij (does not appear in the objective function)
+    for (int i = 0; i < N; ++i)
     {
-        for (int j = 0; j < N; j++)
+        for (int j = 1; j < N; ++j) // No need to send flow towards node 0
         {
-            constexpr auto xtype = CPX_BINARY;
-            snprintf(name, NAME_SIZE, "x_%c%c", node_names[i], node_names[j]);
+            if (i == j) continue;
+            constexpr auto xtype = CPX_CONTINUOUS;
+            snprintf(name, NAME_SIZE, "x_%d%d", i, j);
             auto xname = &name[0];
             constexpr auto zero = 0.0;
             constexpr double lb = 0, ub = CPX_INFBOUND;
@@ -73,28 +78,97 @@ void setup_lp(const CEnv env, const Prob lp)
     }
 
     //// Constraints
+    // (10) forall k in N\{0} sum_{i: (i, k) in A} x_ik - sum_{j: (k, j) in A} x_kj = 1
+    {
+        for (int k = 1; k < N; ++k)
+        {
+            vector<int> idx;
+            vector<double> coef;
+
+            for (int i = 0; i < N; ++i)
+            {
+                if (i == k || map_x[i][k] < 0) continue;
+                idx.push_back(map_x[i][k]);
+                coef.push_back(1.0);
+            }
+
+            for (int j = 0; j < N; ++j)
+            {
+                if (j == k || map_x[k][j] < 0) continue;
+                idx.push_back(map_x[k][j]);
+                coef.push_back(-1.0);
+            }
+
+            auto sense = 'E';
+            auto rhs = 1.0;
+            auto matbeg = 0;
+            CHECKED_CPX_CALL(CPXaddrows, env, lp, 0, 1, idx.size(), &rhs, &sense, &matbeg, &idx[0], &coef[0], nullptr, nullptr);
+        }
+    }
+
+    // (11) forall i in N: sum_{j: (i, j) in A} y_ij = 1
+    for (int i = 0; i < N; ++i)
     {
         vector<int> idx;
         vector<double> coef;
-        vector<char*> names;
 
-        for (int j = 0; j < N; j++)
+        for (int j = 0; j < N; ++j)
         {
-            auto x_0j = map_x[starting_node][j];
-            if (x_0j < 0) continue;
+            if (i == j || map_y[i][j] < 0) continue;
 
-            idx.push_back(map_x[starting_node][j]);
+            idx.push_back(map_y[i][j]);
             coef.push_back(1.0);
-            snprintf(name, NAME_SIZE, "x_0%c", node_names[j]);
-            names.push_back(&name[0]);
         }
 
-        constexpr auto sense = 'E';
-        constexpr auto rhs = N - 1.0;
-        constexpr auto matbeg = 0;
-
+        auto sense = 'E';
+        auto rhs = 1.0;
+        auto matbeg = 0;
         CHECKED_CPX_CALL(CPXaddrows, env, lp, 0, 1, idx.size(), &rhs, &sense, &matbeg, &idx[0], &coef[0], nullptr,
-                         &names[0]);
+                         nullptr);
+    }
+
+    // (12) forall j in N: sum_{i: (i, j) in A} y_ij = 1
+    for (int j = 0; j < N; ++j)
+    {
+        vector<int> idx;
+        vector<double> coef;
+
+        for (int i = 0; i < N; ++i)
+        {
+            if (j == i || map_y[i][j] < 0) continue;
+
+            idx.push_back(map_y[i][j]);
+            coef.push_back(1.0);
+        }
+
+        auto sense = 'E';
+        auto rhs = 1.0;
+        auto matbeg = 0;
+        CHECKED_CPX_CALL(CPXaddrows, env, lp, 0, 1, idx.size(), &rhs, &sense, &matbeg, &idx[0], &coef[0], nullptr,
+                         nullptr);
+    }
+
+    // (13) forall (i, j) in A: x_ij - (|N| - 1) y_ij <= 0
+    for (int i = 0; i < N; ++i)
+    {
+        for (int j = 1; j < N; ++j) // x_i0 = 0 for all i
+        {
+            if (i == j || map_x[i][j] < 0 || map_y[i][j] < 0) continue;
+            vector<int> idx(2);
+            vector<double> coef(2);
+            auto sense = 'L';
+
+            idx[0] = map_x[i][j]; // x_ij
+            idx[1] = map_y[i][j]; // y_ij
+            coef[0] = 1.0;
+            coef[1] = -(N - 1.0);
+
+            constexpr auto zero = 0.0;
+            constexpr auto matbeg = 0;
+
+            CHECKED_CPX_CALL(CPXaddrows, env, lp, 0, 1, idx.size(), &zero, &sense, &matbeg, &idx[0], &coef[0], nullptr,
+                             nullptr);
+        }
     }
 }
 
@@ -106,6 +180,35 @@ int main(int argc, char const* argv[])
         DECL_PROB(env, lp);
 
         setup_lp(env, lp);
+        CHECKED_CPX_CALL(CPXmipopt, env, lp);
+
+        // print
+        double objval;
+        CHECKED_CPX_CALL(CPXgetobjval, env, lp, &objval);
+        cout << "Objval: " << objval << endl;
+
+        const auto n = CPXgetnumcols(env, lp);
+        vector<double> variables(n);
+        CHECKED_CPX_CALL(CPXgetx, env, lp, &variables[0], 0, n - 1);
+        // Print all variables for debugging
+        for (int i = 0; i < N; ++i)
+        {
+            for (int j = 0; j < N; ++j)
+            {
+                if (i == j) continue;
+                if (map_x[i][j] >= 0)
+                {
+                    cout << "x_" << i << j << ": " << variables[map_x[i][j]] << endl;
+                }
+                if (map_y[i][j] >= 0)
+                {
+                    cout << "y_" << i << j << ": " << variables[map_y[i][j]] << endl;
+                }
+            }
+        }
+
+        CHECKED_CPX_CALL(CPXsolwrite, env, lp, "tsp.sol");
+
         CPXfreeprob(env, &lp);
         CPXcloseCPLEX(&env);
     }
