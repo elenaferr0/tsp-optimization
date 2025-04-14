@@ -175,7 +175,7 @@ void setup_lp(const CEnv env, const Prob lp)
     }
 }
 
-void parse_args(int argc, char const* argv[], int& timeout, int& size)
+void parse_args(int argc, char const* argv[], double& timeout, int& size)
 {
     if (argc < 2)
     {
@@ -183,7 +183,7 @@ void parse_args(int argc, char const* argv[], int& timeout, int& size)
         exit(1);
     }
 
-    timeout = atoi(argv[1]);
+    timeout = atof(argv[1]);
     if (timeout <= 0)
     {
         cout << "Invalid timeout value: " << timeout << endl;
@@ -198,9 +198,32 @@ void parse_args(int argc, char const* argv[], int& timeout, int& size)
     }
 }
 
-int main(int argc, char const* argv[])
+void print_vars(const Env& env, const Prob& lp)
 {
-    int timeout = 0;
+    const auto n = CPXgetnumcols(env, lp);
+    vector<double> variables(n);
+    CHECKED_CPX_CALL(CPXgetx, env, lp, &variables[0], 0, n - 1);
+
+    for (int i = 0; i < N; ++i)
+    {
+        for (int j = 0; j < N; ++j)
+        {
+            if (i == j) continue;
+            if (map_x[i][j] >= 0)
+            {
+                cout << "x_" << i << j << ": " << variables[map_x[i][j]] << endl;
+            }
+            if (map_y[i][j] >= 0)
+            {
+                cout << "y_" << i << j << ": " << variables[map_y[i][j]] << endl;
+            }
+        }
+    }
+}
+
+int main(const int argc, char const* argv[])
+{
+    double timeout = 1;
     int size = 0;
 
     parse_args(argc, argv, timeout, size);
@@ -209,7 +232,7 @@ int main(int argc, char const* argv[])
     {
         DECL_ENV(env);
         DECL_PROB(env, lp);
-        // CHECKED_CPX_CALL(CPXsetintparam, env, CPX_PARAM_TILIM, timeout);
+        CHECKED_CPX_CALL(CPXsetdblparam, env, CPX_PARAM_TILIM, timeout);
 
         time_logger tl;
         setup_lp(env, lp);
@@ -220,27 +243,9 @@ int main(int argc, char const* argv[])
         // print
         double objval;
         CHECKED_CPX_CALL(CPXgetobjval, env, lp, &objval);
-        cout << "Objval: " << objval << endl;
+        cout << "Objective fun value: " << objval << endl;
 
-        const auto n = CPXgetnumcols(env, lp);
-        vector<double> variables(n);
-        CHECKED_CPX_CALL(CPXgetx, env, lp, &variables[0], 0, n - 1);
-        // Print all variables for debugging
-        for (int i = 0; i < N; ++i)
-        {
-            for (int j = 0; j < N; ++j)
-            {
-                if (i == j) continue;
-                if (map_x[i][j] >= 0)
-                {
-                    cout << "x_" << i << j << ": " << variables[map_x[i][j]] << endl;
-                }
-                if (map_y[i][j] >= 0)
-                {
-                    cout << "y_" << i << j << ": " << variables[map_y[i][j]] << endl;
-                }
-            }
-        }
+        print_vars(env, lp);
 
         CHECKED_CPX_CALL(CPXsolwrite, env, lp, "tsp.sol");
         tl.tick("Solution write");
