@@ -4,8 +4,6 @@
 #include <cmath>
 #include <utility>
 
-#include "constants.h"
-
 using namespace std;
 
 inline double euclidean_dist(const pair<double, double>& p1, const pair<double, double>& p2)

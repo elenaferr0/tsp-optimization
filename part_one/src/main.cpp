@@ -6,7 +6,6 @@
 #include "cpxmacro.h"
 #include "utils/time_logger.h"
 #include "graph/graph.h"
-#include "constants.h"
 
 using namespace std;
 
