@@ -17,25 +17,22 @@ const int NAME_SIZE = 512;
 char name[NAME_SIZE];
 
 // maps
-vector<vector<int>> map_x; // x_ij ---> map_x[i][j]
-vector<vector<int>> map_y; // y_ij ---> map_y[i][j]
+vector<vector<int> > map_x; // x_ij ---> map_x[i][j]
+vector<vector<int> > map_y; // y_ij ---> map_y[i][j]
 
 
-void setup_lp(const CEnv env, const Prob lp, const Graph& graph)
-{
+void setup_lp(const CEnv env, const Prob lp, const Graph &graph) {
     int N = graph.n_nodes;
 
     int var_pos = 0;
     // Initialize map_x and map_y with -1
-    map_x = vector<vector<int>>(N, vector<int>(N, -1));
-    map_y = vector<vector<int>>(N, vector<int>(N, -1));
+    map_x = vector<vector<int> >(N, vector<int>(N, -1));
+    map_y = vector<vector<int> >(N, vector<int>(N, -1));
 
     //// Objective function
     // (9) y_ij: min sum_{(i,j) in A} c_ij y_ij
-    for (int i = 0; i < N; ++i)
-    {
-        for (int j = 0; j < N; ++j)
-        {
+    for (int i = 0; i < N; ++i) {
+        for (int j = 0; j < N; ++j) {
             if (i == j)
                 continue;
             constexpr auto ytype = CPX_BINARY;
@@ -48,8 +45,7 @@ void setup_lp(const CEnv env, const Prob lp, const Graph& graph)
     }
 
     // (9) x_ij (does not appear in the objective function)
-    for (int i = 0; i < N; ++i)
-    {
+    for (int i = 0; i < N; ++i) {
         for (int j = 1; j < N; ++j) // No need to send flow towards node 0
         {
             if (i == j)
@@ -68,21 +64,18 @@ void setup_lp(const CEnv env, const Prob lp, const Graph& graph)
     //// Constraints
     // (10) forall k in N\{0} sum_{i: (i, k) in A} x_ik - sum_{j: (k, j) in A} x_kj = 1
     {
-        for (int k = 1; k < N; ++k)
-        {
+        for (int k = 1; k < N; ++k) {
             vector<int> idx;
             vector<double> coef;
 
-            for (int i = 0; i < N; ++i)
-            {
+            for (int i = 0; i < N; ++i) {
                 if (i == k || map_x[i][k] < 0)
                     continue;
                 idx.push_back(map_x[i][k]);
                 coef.push_back(1.0);
             }
 
-            for (int j = 0; j < N; ++j)
-            {
+            for (int j = 0; j < N; ++j) {
                 if (j == k || map_x[k][j] < 0)
                     continue;
                 idx.push_back(map_x[k][j]);
@@ -98,13 +91,11 @@ void setup_lp(const CEnv env, const Prob lp, const Graph& graph)
     }
 
     // (11) forall i in N: sum_{j: (i, j) in A} y_ij = 1
-    for (int i = 0; i < N; ++i)
-    {
+    for (int i = 0; i < N; ++i) {
         vector<int> idx;
         vector<double> coef;
 
-        for (int j = 0; j < N; ++j)
-        {
+        for (int j = 0; j < N; ++j) {
             if (i == j || map_y[i][j] < 0)
                 continue;
 
@@ -120,13 +111,11 @@ void setup_lp(const CEnv env, const Prob lp, const Graph& graph)
     }
 
     // (12) forall j in N: sum_{i: (i, j) in A} y_ij = 1
-    for (int j = 0; j < N; ++j)
-    {
+    for (int j = 0; j < N; ++j) {
         vector<int> idx;
         vector<double> coef;
 
-        for (int i = 0; i < N; ++i)
-        {
+        for (int i = 0; i < N; ++i) {
             if (j == i || map_y[i][j] < 0)
                 continue;
 
@@ -142,8 +131,7 @@ void setup_lp(const CEnv env, const Prob lp, const Graph& graph)
     }
 
     // (13) forall (i, j) in A: x_ij - (|N| - 1) y_ij <= 0
-    for (int i = 0; i < N; ++i)
-    {
+    for (int i = 0; i < N; ++i) {
         for (int j = 1; j < N; ++j) // x_i0 = 0 for all i
         {
             if (i == j || map_x[i][j] < 0 || map_y[i][j] < 0)
@@ -166,31 +154,26 @@ void setup_lp(const CEnv env, const Prob lp, const Graph& graph)
     }
 }
 
-void parse_args(int argc, char const* argv[], double& timeout, int& size)
-{
-    if (argc < 2)
-    {
-        cout << "Usage: " << argv[0] << " <timeout> <size>" << endl;
+void parse_args(int argc, char const *argv[], double &timeout, string &graph_file) {
+    if (argc < 2) {
+        cout << "Usage: " << argv[0] << " <timeout> <graph_path>" << endl;
         exit(1);
     }
 
-    timeout = atof(argv[1]);
-    if (timeout <= 0)
-    {
-        cout << "Invalid timeout value: " << timeout << endl;
-        exit(1);
-    }
+    // timeout = atof(argv[1]);
+    // if (timeout <= 0) {
+    //     cout << "Invalid timeout value: " << timeout << endl;
+    //     exit(1);
+    // }
 
-    size = atoi(argv[2]);
-    if (size <= 0)
-    {
-        cout << "Invalid size value: " << size << endl;
+    graph_file = argv[2];
+    if (graph_file.empty()) {
+        cout << "Invalid graph file path: " << graph_file << endl;
         exit(1);
     }
 }
 
-void print_sln(const Env& env, const Prob& lp, const Graph& graph)
-{
+void print_sln(const Env &env, const Prob &lp, const Graph &graph) {
     int N = graph.n_nodes;
     // Print solution status
     status = CPXgetstat(env, lp);
@@ -208,41 +191,39 @@ void print_sln(const Env& env, const Prob& lp, const Graph& graph)
     CHECKED_CPX_CALL(CPXgetobjval, env, lp, &objval);
     cout << "Objective fun value: " << objval << endl;
 
-    const auto n = CPXgetnumcols(env, lp);
-    vector<double> variables(n);
-    CHECKED_CPX_CALL(CPXgetx, env, lp, &variables[0], 0, n - 1);
-
-    ostringstream buffer_x;
-    ostringstream buffer_y;
-    for (int i = 0; i < N; ++i)
-    {
-        for (int j = 0; j < N; ++j)
-        {
-            if (map_x[i][j] >= 0)
-                buffer_x << "x_" << i << j << ": " << variables[map_x[i][j]] << endl;
-
-            if (map_y[i][j] >= 0)
-                buffer_y << "y_" << i << j << ": " << variables[map_y[i][j]] << endl;
-        }
-    }
-
-    cout << "x variables:\n"
-        << buffer_x.str() << endl;
-    cout << "y variables:\n"
-        << buffer_y.str() << endl;
+    // const auto n = CPXgetnumcols(env, lp);
+    // vector<double> variables(n);
+    // CHECKED_CPX_CALL(CPXgetx, env, lp, &variables[0], 0, n - 1);
+    //
+    // ostringstream buffer_x;
+    // ostringstream buffer_y;
+    // for (int i = 0; i < N; ++i)
+    // {
+    //     for (int j = 0; j < N; ++j)
+    //     {
+    //         if (map_x[i][j] >= 0)
+    //             buffer_x << "x_" << i << j << ": " << variables[map_x[i][j]] << endl;
+    //
+    //         if (map_y[i][j] >= 0)
+    //             buffer_y << "y_" << i << j << ": " << variables[map_y[i][j]] << endl;
+    //     }
+    // }
+    //
+    // cout << "x variables:\n"
+    //     << buffer_x.str() << endl;
+    // cout << "y variables:\n"
+    //     << buffer_y.str() << endl;
 }
 
-int main(const int argc, char const* argv[])
-{
-    Graph graph("samples/graph.txt");
+int main(const int argc, char const *argv[]) {
+    double timeout = 10;
+    string graph_file = "samples/random10.txt";
 
-    // double timeout = 1;
-    // int size = 0;
-    //
-    // parse_args(argc, argv, timeout, size);
+    parse_args(argc, argv, timeout, graph_file);
 
-    try
-    {
+    Graph graph(graph_file);
+
+    try {
         DECL_ENV(env);
         DECL_PROB(env, lp);
         CHECKED_CPX_CALL(CPXsetdblparam, env, CPX_PARAM_TILIM, 10);
@@ -262,9 +243,7 @@ int main(const int argc, char const* argv[])
 
         CPXfreeprob(env, &lp);
         CPXcloseCPLEX(&env);
-    }
-    catch (std::exception& e)
-    {
+    } catch (std::exception &e) {
         std::cout << ">>>EXCEPTION: " << e.what() << std::endl;
     }
     return 0;

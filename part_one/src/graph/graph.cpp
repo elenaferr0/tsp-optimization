@@ -23,13 +23,17 @@ Graph::Graph(const string &file_path) {
         adjacency_matrix.resize(n_nodes, vector<bool>(n_nodes, false));
     } {
         // Read edges
-        int n_edges;
-        file >> n_edges;
-        for (int i = 0; i < n_edges; ++i) {
-            int from, to;
-            file >> from >> to;
-            adjacency_matrix[from][to] = true;
-            adjacency_matrix[to][from] = true; // Assuming undirected graph
+        // int n_edges;
+        // file >> n_edges;
+        // for (int i = 0; i < n_edges; ++i) {
+        //     int from, to;
+        //     file >> from >> to;
+        //     adjacency_matrix[from][to] = true;
+        //     adjacency_matrix[to][from] = true; // Assuming undirected graph
+        // }
+
+        for (int i = 0; i < n_nodes; ++i) {
+            adjacency_matrix[i][i] = true;
         }
     }
 

@@ -17,6 +17,7 @@ add_executable(main ${SOURCES}
         include/utils/time_logger.h
         include/graph/graph.h
         include/utils/measurements.h
+        include/model/variable.h
 )
 
 # Link libraries
