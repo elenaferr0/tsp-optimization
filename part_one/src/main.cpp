@@ -193,6 +193,17 @@ void parse_args(int argc, char const* argv[], double& timeout, int& size)
 void print_sln(const Env& env, const Prob& lp, const Graph& graph)
 {
     int N = graph.n_nodes;
+    // Print solution status
+    status = CPXgetstat(env, lp);
+    if (status == CPXMIP_OPTIMAL)
+        cout << "Solution status: Optimal" << endl;
+    else if (status == CPXMIP_INFEASIBLE)
+        cout << "Solution status: Infeasible" << endl;
+    else if (status == CPXMIP_UNBOUNDED)
+        cout << "Solution status: Unbounded" << endl;
+    else
+        cout << "Solution status: Unknown" << endl;
+
 
     double objval;
     CHECKED_CPX_CALL(CPXgetobjval, env, lp, &objval);
