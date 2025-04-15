@@ -51,7 +51,3 @@ $(BUILD_DIR)/%.o: $(SRC_DIR)/%.cpp
 # Clean build artifacts
 clean:
 	rm -rf $(BUILD_DIR) $(BIN_DIR)
-
-# Run target
-run: all
-	./$(TARGET) $(ARGS)
