@@ -40,7 +40,7 @@ void setup_lp(const CEnv env, const Prob lp, const Graph& graph)
             if (i == j)
                 continue;
             constexpr auto ytype = CPX_BINARY;
-            snprintf(name, NAME_SIZE, "y_%d%d", i, j);
+            snprintf(name, NAME_SIZE, "y_%d_%d", i, j);
             auto yname = &name[0];
 
             CHECKED_CPX_CALL(CPXnewcols, env, lp, 1, &graph.costs[i][j], nullptr, nullptr, &ytype, &yname);
@@ -56,7 +56,7 @@ void setup_lp(const CEnv env, const Prob lp, const Graph& graph)
             if (i == j)
                 continue;
             constexpr auto xtype = CPX_CONTINUOUS;
-            snprintf(name, NAME_SIZE, "x_%d%d", i, j);
+            snprintf(name, NAME_SIZE, "x_%d_%d", i, j);
             auto xname = &name[0];
             constexpr auto zero = 0.0;
             constexpr double lb = 0, ub = CPX_INFBOUND;
@@ -224,9 +224,8 @@ void print_sln(const Env& env, const Prob& lp, const Graph& graph)
 
 int main(const int argc, char const* argv[])
 {
-    Graph graph("input/graph.txt");
-    exit(0);
-    //
+    Graph graph("samples/graph.txt");
+
     // double timeout = 1;
     // int size = 0;
     //
@@ -237,6 +236,7 @@ int main(const int argc, char const* argv[])
         DECL_ENV(env);
         DECL_PROB(env, lp);
         CHECKED_CPX_CALL(CPXsetdblparam, env, CPX_PARAM_TILIM, 10);
+        CHECKED_CPX_CALL(CPXsetintparam, env, CPX_PARAM_WRITELEVEL, CPX_WRITELEVEL_NONZEROVARS);
 
         TimeLogger tl;
         setup_lp(env, lp, graph);
