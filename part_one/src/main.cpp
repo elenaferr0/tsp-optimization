@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <chrono>
+#include <cmath>
 
 #include "cpxmacro.h"
 #include "time_logger.h"
@@ -12,35 +13,86 @@ char errmsg[BUF_SIZE];
 
 constexpr int N = 5; // Graph nodes
 
+// Nodes is a list of N pairs
+const pair<double, double> nodes[N] = {
+    make_pair(1.0, 1.0),
+    make_pair(2.0, 1.0),
+    make_pair(3.0, 2.0),
+    make_pair(1.0, 4.0),
+    make_pair(5.0, 3.0),
+};
+
 // Arcs
 const int A[N][N] = {
     {0, 1, 1, 1, 1},
     {1, 0, 1, 1, 1},
     {1, 1, 0, 1, 1},
     {1, 1, 1, 0, 1},
-    {1, 1, 1, 1, 0}
+    {1, 1, 1, 1, 0},
 };
 
-// Time taken by the drill to move from i to j
-constexpr double C[N][N] = {
-    {0.0, 4.0, 2.0, 5.0, 3.0},
-    {4.0, 0.0, 6.0, 3.0, 2.0},
-    {2.0, 6.0, 0.0, 4.0, 5.0},
-    {5.0, 3.0, 4.0, 0.0, 1.0},
-    {3.0, 2.0, 5.0, 1.0, 0.0}
-};
+double C[N][N]; // Time taken by the drill to move from i to j
 
 constexpr int starting_node = 0;
 
 const int NAME_SIZE = 512;
 char name[NAME_SIZE];
 
+const double ACCELERATION_SI = 15; // m/s^2
+
 // maps
 vector<vector<int>> map_x; // x_ij ---> map_x[i][j]
 vector<vector<int>> map_y; // y_ij ---> map_y[i][j]
 
+double euclidean_dist(const pair<double, double> &p1, const pair<double, double> &p2)
+{
+    return sqrt(abs(pow(p1.first - p1.second, 2) - pow(p2.first - p2.second, 2)));
+}
+
+double cm_to_m(const double &cm)
+{
+    return cm / 100;
+}
+
+double cost(const pair<double, double> &p1, const pair<double, double> &p2)
+{
+    // t = sqrt(s/(0.5 * a))
+    auto s = euclidean_dist(p1, p2);
+    return sqrt(cm_to_m(s) / (0.5 * ACCELERATION_SI));
+}
+
+void compute_costs()
+{
+    vector<vector<double>> mem(N, vector<double>(N, -1)); // memoize distance computation
+
+    for (int i = 0; i < N; ++i)
+    {
+        for (int j = 0; j < N; ++j)
+        {
+            if (A[i][j] == 0)
+            {
+                C[i][j] = 0;
+                mem[i][j] = 0;
+                continue;
+            }
+
+            if (mem[j][i] != -1) // Assumption: cost is always positive and i->j has the same cost as j->i
+            {
+                C[i][j] = C[j][i];
+                continue;
+            }
+
+            C[i][j] = cost(nodes[i], nodes[j]);
+            mem[i][j] = C[i][j];
+        }
+    }
+}
+
 void setup_lp(const CEnv env, const Prob lp)
 {
+
+    compute_costs();
+
     int var_pos = 0;
     // Initialize map_x and map_y with -1
     map_x = vector<vector<int>>(N, vector<int>(N, -1));
@@ -52,7 +104,8 @@ void setup_lp(const CEnv env, const Prob lp)
     {
         for (int j = 0; j < N; ++j)
         {
-            if (i == j) continue;
+            if (i == j)
+                continue;
             constexpr auto ytype = CPX_BINARY;
             snprintf(name, NAME_SIZE, "y_%d%d", i, j);
             auto yname = &name[0];
@@ -67,7 +120,8 @@ void setup_lp(const CEnv env, const Prob lp)
     {
         for (int j = 1; j < N; ++j) // No need to send flow towards node 0
         {
-            if (i == j) continue;
+            if (i == j)
+                continue;
             constexpr auto xtype = CPX_CONTINUOUS;
             snprintf(name, NAME_SIZE, "x_%d%d", i, j);
             auto xname = &name[0];
@@ -89,14 +143,16 @@ void setup_lp(const CEnv env, const Prob lp)
 
             for (int i = 0; i < N; ++i)
             {
-                if (i == k || map_x[i][k] < 0) continue;
+                if (i == k || map_x[i][k] < 0)
+                    continue;
                 idx.push_back(map_x[i][k]);
                 coef.push_back(1.0);
             }
 
             for (int j = 0; j < N; ++j)
             {
-                if (j == k || map_x[k][j] < 0) continue;
+                if (j == k || map_x[k][j] < 0)
+                    continue;
                 idx.push_back(map_x[k][j]);
                 coef.push_back(-1.0);
             }
@@ -117,7 +173,8 @@ void setup_lp(const CEnv env, const Prob lp)
 
         for (int j = 0; j < N; ++j)
         {
-            if (i == j || map_y[i][j] < 0) continue;
+            if (i == j || map_y[i][j] < 0)
+                continue;
 
             idx.push_back(map_y[i][j]);
             coef.push_back(1.0);
@@ -138,7 +195,8 @@ void setup_lp(const CEnv env, const Prob lp)
 
         for (int i = 0; i < N; ++i)
         {
-            if (j == i || map_y[i][j] < 0) continue;
+            if (j == i || map_y[i][j] < 0)
+                continue;
 
             idx.push_back(map_y[i][j]);
             coef.push_back(1.0);
@@ -156,7 +214,8 @@ void setup_lp(const CEnv env, const Prob lp)
     {
         for (int j = 1; j < N; ++j) // x_i0 = 0 for all i
         {
-            if (i == j || map_x[i][j] < 0 || map_y[i][j] < 0) continue;
+            if (i == j || map_x[i][j] < 0 || map_y[i][j] < 0)
+                continue;
             vector<int> idx(2);
             vector<double> coef(2);
             auto sense = 'L';
@@ -175,7 +234,7 @@ void setup_lp(const CEnv env, const Prob lp)
     }
 }
 
-void parse_args(int argc, char const* argv[], double& timeout, int& size)
+void parse_args(int argc, char const *argv[], double &timeout, int &size)
 {
     if (argc < 2)
     {
@@ -198,7 +257,7 @@ void parse_args(int argc, char const* argv[], double& timeout, int& size)
     }
 }
 
-void print_sln(const Env& env, const Prob& lp)
+void print_sln(const Env &env, const Prob &lp)
 {
     double objval;
     CHECKED_CPX_CALL(CPXgetobjval, env, lp, &objval);
@@ -222,11 +281,13 @@ void print_sln(const Env& env, const Prob& lp)
         }
     }
 
-    cout << "x variables:\n" << buffer_x.str() << endl;
-    cout << "y variables:\n" << buffer_y.str() << endl;
+    cout << "x variables:\n"
+         << buffer_x.str() << endl;
+    cout << "y variables:\n"
+         << buffer_y.str() << endl;
 }
 
-int main(const int argc, char const* argv[])
+int main(const int argc, char const *argv[])
 {
     double timeout = 1;
     int size = 0;
@@ -239,7 +300,7 @@ int main(const int argc, char const* argv[])
         DECL_PROB(env, lp);
         CHECKED_CPX_CALL(CPXsetdblparam, env, CPX_PARAM_TILIM, timeout);
 
-        time_logger tl;
+        TimeLogger tl;
         setup_lp(env, lp);
         tl.tick("Model setup");
         CHECKED_CPX_CALL(CPXmipopt, env, lp);
@@ -254,7 +315,7 @@ int main(const int argc, char const* argv[])
         CPXfreeprob(env, &lp);
         CPXcloseCPLEX(&env);
     }
-    catch (std::exception& e)
+    catch (std::exception &e)
     {
         std::cout << ">>>EXCEPTION: " << e.what() << std::endl;
     }

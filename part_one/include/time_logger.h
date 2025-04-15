@@ -14,13 +14,13 @@ using std::chrono::high_resolution_clock;
 
 typedef high_resolution_clock::time_point time_pt;
 
-class time_logger
+class TimeLogger
 {
     time_pt start_time;
     time_pt last_tick_time;
 
 public:
-    time_logger() : start_time(high_resolution_clock::now()), last_tick_time(start_time)
+    TimeLogger() : start_time(high_resolution_clock::now()), last_tick_time(start_time)
     {
     }
 
