@@ -4,94 +4,27 @@
 #include <cmath>
 
 #include "cpxmacro.h"
-#include "time_logger.h"
+#include "utils/time_logger.h"
+#include "graph/graph.h"
+#include "constants.h"
 
 using namespace std;
 
 int status;
 char errmsg[BUF_SIZE];
-
-constexpr int N = 5; // Graph nodes
-
-// Nodes is a list of N pairs
-const pair<double, double> nodes[N] = {
-    make_pair(1.0, 1.0),
-    make_pair(2.0, 1.0),
-    make_pair(3.0, 2.0),
-    make_pair(1.0, 4.0),
-    make_pair(5.0, 3.0),
-};
-
-// Arcs
-const int A[N][N] = {
-    {0, 1, 1, 1, 1},
-    {1, 0, 1, 1, 1},
-    {1, 1, 0, 1, 1},
-    {1, 1, 1, 0, 1},
-    {1, 1, 1, 1, 0},
-};
-
-double C[N][N]; // Time taken by the drill to move from i to j
-
 constexpr int starting_node = 0;
 
 const int NAME_SIZE = 512;
 char name[NAME_SIZE];
 
-const double ACCELERATION_SI = 15; // m/s^2
-
 // maps
 vector<vector<int>> map_x; // x_ij ---> map_x[i][j]
 vector<vector<int>> map_y; // y_ij ---> map_y[i][j]
 
-double euclidean_dist(const pair<double, double> &p1, const pair<double, double> &p2)
+
+void setup_lp(const CEnv env, const Prob lp, const Graph& graph)
 {
-    return sqrt(abs(pow(p1.first - p1.second, 2) - pow(p2.first - p2.second, 2)));
-}
-
-double cm_to_m(const double &cm)
-{
-    return cm / 100;
-}
-
-double cost(const pair<double, double> &p1, const pair<double, double> &p2)
-{
-    // t = sqrt(s/(0.5 * a))
-    auto s = euclidean_dist(p1, p2);
-    return sqrt(cm_to_m(s) / (0.5 * ACCELERATION_SI));
-}
-
-void compute_costs()
-{
-    vector<vector<double>> mem(N, vector<double>(N, -1)); // memoize distance computation
-
-    for (int i = 0; i < N; ++i)
-    {
-        for (int j = 0; j < N; ++j)
-        {
-            if (A[i][j] == 0)
-            {
-                C[i][j] = 0;
-                mem[i][j] = 0;
-                continue;
-            }
-
-            if (mem[j][i] != -1) // Assumption: cost is always positive and i->j has the same cost as j->i
-            {
-                C[i][j] = C[j][i];
-                continue;
-            }
-
-            C[i][j] = cost(nodes[i], nodes[j]);
-            mem[i][j] = C[i][j];
-        }
-    }
-}
-
-void setup_lp(const CEnv env, const Prob lp)
-{
-
-    compute_costs();
+    int N = graph.n_nodes;
 
     int var_pos = 0;
     // Initialize map_x and map_y with -1
@@ -110,7 +43,7 @@ void setup_lp(const CEnv env, const Prob lp)
             snprintf(name, NAME_SIZE, "y_%d%d", i, j);
             auto yname = &name[0];
 
-            CHECKED_CPX_CALL(CPXnewcols, env, lp, 1, &C[i][j], nullptr, nullptr, &ytype, &yname);
+            CHECKED_CPX_CALL(CPXnewcols, env, lp, 1, &graph.costs[i][j], nullptr, nullptr, &ytype, &yname);
             map_y[i][j] = var_pos++;
         }
     }
@@ -234,7 +167,7 @@ void setup_lp(const CEnv env, const Prob lp)
     }
 }
 
-void parse_args(int argc, char const *argv[], double &timeout, int &size)
+void parse_args(int argc, char const* argv[], double& timeout, int& size)
 {
     if (argc < 2)
     {
@@ -257,8 +190,10 @@ void parse_args(int argc, char const *argv[], double &timeout, int &size)
     }
 }
 
-void print_sln(const Env &env, const Prob &lp)
+void print_sln(const Env& env, const Prob& lp, const Graph& graph)
 {
+    int N = graph.n_nodes;
+
     double objval;
     CHECKED_CPX_CALL(CPXgetobjval, env, lp, &objval);
     cout << "Objective fun value: " << objval << endl;
@@ -282,31 +217,34 @@ void print_sln(const Env &env, const Prob &lp)
     }
 
     cout << "x variables:\n"
-         << buffer_x.str() << endl;
+        << buffer_x.str() << endl;
     cout << "y variables:\n"
-         << buffer_y.str() << endl;
+        << buffer_y.str() << endl;
 }
 
-int main(const int argc, char const *argv[])
+int main(const int argc, char const* argv[])
 {
-    double timeout = 1;
-    int size = 0;
-
-    parse_args(argc, argv, timeout, size);
+    Graph graph("input/graph.txt");
+    exit(0);
+    //
+    // double timeout = 1;
+    // int size = 0;
+    //
+    // parse_args(argc, argv, timeout, size);
 
     try
     {
         DECL_ENV(env);
         DECL_PROB(env, lp);
-        CHECKED_CPX_CALL(CPXsetdblparam, env, CPX_PARAM_TILIM, timeout);
+        CHECKED_CPX_CALL(CPXsetdblparam, env, CPX_PARAM_TILIM, 10);
 
         TimeLogger tl;
-        setup_lp(env, lp);
+        setup_lp(env, lp, graph);
         tl.tick("Model setup");
         CHECKED_CPX_CALL(CPXmipopt, env, lp);
         tl.tick("MIP optimization");
 
-        print_sln(env, lp);
+        print_sln(env, lp, graph);
 
         CHECKED_CPX_CALL(CPXsolwrite, env, lp, "tsp.sol");
         tl.tick("Solution write");
@@ -315,7 +253,7 @@ int main(const int argc, char const *argv[])
         CPXfreeprob(env, &lp);
         CPXcloseCPLEX(&env);
     }
-    catch (std::exception &e)
+    catch (std::exception& e)
     {
         std::cout << ">>>EXCEPTION: " << e.what() << std::endl;
     }

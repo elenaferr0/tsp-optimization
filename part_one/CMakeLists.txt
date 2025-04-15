@@ -14,7 +14,11 @@ file(GLOB_RECURSE SOURCES "${CMAKE_SOURCE_DIR}/src/*.cpp")
 
 # Add executable
 add_executable(main ${SOURCES}
-        include/time_logger.h)
+        include/utils/time_logger.h
+        include/graph/graph.h
+        include/constants.h
+        include/utils/measurements.h
+)
 
 # Link libraries
 target_link_libraries(main cplex m pthread dl)
