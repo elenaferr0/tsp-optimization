@@ -5,11 +5,10 @@
 #include <fstream>
 #include <sstream>
 #include <vector>
+#include <typedefs.h>
 
 using namespace std;
 
-typedef vector<vector<bool>> bit_matrix;
-typedef vector<vector<double>> matrix;
 
 struct Node
 {
@@ -20,12 +19,12 @@ struct Node
 class Graph
 {
     vector<Node> nodes;
-    bit_matrix adjacency_matrix;
+    BitMat adjacency_matrix;
     void compute_costs();
 public:
     explicit Graph(const string& file_path);
     int n_nodes;
-    matrix costs;
+    DblMat costs;
 };
 
 #endif //GRAPH_H
