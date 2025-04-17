@@ -11,14 +11,10 @@ include_directories(
 
 # Find source files recursively
 file(GLOB_RECURSE SOURCES "${CMAKE_SOURCE_DIR}/src/*.cpp")
+file(GLOB_RECURSE HEADERS "${CMAKE_SOURCE_DIR}/include/*.h")
 
 # Add executable
-add_executable(main ${SOURCES}
-        include/utils/time_logger.h
-        include/graph/graph.h
-        include/utils/measurements.h
-        include/model/variable.h
-)
+add_executable(main ${SOURCES} ${HEADERS})
 
 # Link libraries
 target_link_libraries(main cplex m pthread dl)

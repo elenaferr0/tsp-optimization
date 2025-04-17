@@ -1,9 +1,3 @@
-/**
- * @file cpx_macro.h
- * Cplex Helper Macros
- *
- */
-
 #ifndef CPX_MACRO_H
 #define CPX_MACRO_H
 

@@ -1,7 +1,3 @@
-//
-// Created by elena on 4/14/25.
-//
-
 #ifndef TIME_LOGGER_H
 #define TIME_LOGGER_H
 #include <iostream>

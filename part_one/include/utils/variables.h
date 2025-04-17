@@ -1,3 +1,5 @@
+#ifndef VARIABLES_H
+#define VARIABLES_H
 #include <vector>
 
 using namespace std;
@@ -29,3 +31,5 @@ public:
     double *get_lower_bounds() { return &lower_bounds[0]; }
     double *get_upper_bounds() { return &upper_bounds[0]; }
 };
+
+#endif
