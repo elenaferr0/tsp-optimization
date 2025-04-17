@@ -1,1 +1,12 @@
 - considering acceleration wouldn't change the results as it would be like multiplying by a constant factor.
+
+- creating variables approaches benchmark
+    - calling newcols every time
+        1000: var creation 0.518265s, model setup 1.273007s
+        2000: var creation 2.150343s, model setup 5.632562s
+        5000: var creation 13.532437s, model setup 38.872930s
+
+    - creating variables all at once
+        1000: var creation 0.267697s, model setup 1.031937s
+        2000: var creation 1.121400s, model setup 4.647281s
+        5000: var creation 7.123396s, model setup 32.911837s

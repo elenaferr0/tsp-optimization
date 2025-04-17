@@ -6,6 +6,7 @@
 #include "cpxmacro.h"
 #include "utils/time_logger.h"
 #include "graph/graph.h"
+#include "utils/variables.h"
 
 using namespace std;
 
@@ -29,17 +30,19 @@ void setup_lp(const CEnv env, const Prob lp, const Graph &graph) {
     map_x = vector<vector<int> >(N, vector<int>(N, -1));
     map_y = vector<vector<int> >(N, vector<int>(N, -1));
 
+    Variables vars;
+
+    TimeLogger tl;
     //// Objective function
     // (9) y_ij: min sum_{(i,j) in A} c_ij y_ij
     for (int i = 0; i < N; ++i) {
         for (int j = 0; j < N; ++j) {
             if (i == j)
                 continue;
-            constexpr auto ytype = CPX_BINARY;
             snprintf(name, NAME_SIZE, "y_%d_%d", i, j);
             auto yname = &name[0];
 
-            CHECKED_CPX_CALL(CPXnewcols, env, lp, 1, &graph.costs[i][j], nullptr, nullptr, &ytype, &yname);
+            vars.add_binary_var(graph.costs[i][j], yname);
             map_y[i][j] = var_pos++;
         }
     }
@@ -50,16 +53,16 @@ void setup_lp(const CEnv env, const Prob lp, const Graph &graph) {
         {
             if (i == j)
                 continue;
-            constexpr auto xtype = CPX_CONTINUOUS;
             snprintf(name, NAME_SIZE, "x_%d_%d", i, j);
             auto xname = &name[0];
-            constexpr auto zero = 0.0;
-            constexpr double lb = 0, ub = CPX_INFBOUND;
 
-            CHECKED_CPX_CALL(CPXnewcols, env, lp, 1, &zero, &lb, &ub, &xtype, &xname);
+            vars.add_continuous_positive_var(0, xname);
             map_x[i][j] = var_pos++;
         }
     }
+
+    CHECKED_CPX_CALL(CPXnewcols, env, lp, vars.get_n_vars(), vars.get_costs(), vars.get_lower_bounds(), vars.get_upper_bounds(), vars.get_types(), vars.get_names());
+    tl.tick("Variable creation");
 
     //// Constraints
     // (10) forall k in N\{0} sum_{i: (i, k) in A} x_ik - sum_{j: (k, j) in A} x_kj = 1
@@ -217,8 +220,7 @@ void print_sln(const Env &env, const Prob &lp, const Graph &graph) {
 
 int main(const int argc, char const *argv[]) {
     double timeout = 10;
-    string graph_file = "samples/random10.txt";
-
+    string graph_file;
     parse_args(argc, argv, timeout, graph_file);
 
     Graph graph(graph_file);

@@ -23,17 +23,13 @@ Graph::Graph(const string &file_path) {
         adjacency_matrix.resize(n_nodes, vector<bool>(n_nodes, false));
     } {
         // Read edges
-        // int n_edges;
-        // file >> n_edges;
-        // for (int i = 0; i < n_edges; ++i) {
-        //     int from, to;
-        //     file >> from >> to;
-        //     adjacency_matrix[from][to] = true;
-        //     adjacency_matrix[to][from] = true; // Assuming undirected graph
-        // }
-
-        for (int i = 0; i < n_nodes; ++i) {
-            adjacency_matrix[i][i] = true;
+        int n_edges;
+        file >> n_edges;
+        for (int i = 0; i < n_edges; ++i) {
+            int from, to;
+            file >> from >> to;
+            adjacency_matrix[from][to] = true;
+            adjacency_matrix[to][from] = true; // Assuming undirected graph
         }
     }
 
@@ -44,7 +40,7 @@ Graph::Graph(const string &file_path) {
 void Graph::compute_costs() {
     costs = vector<vector<double> >(n_nodes, vector<double>(n_nodes, -1));
 
-    matrix mem(n_nodes, vector<double>(n_nodes, -1)); // memoize distance computation
+    DblMat mem(n_nodes, vector<double>(n_nodes, -1)); // memoize distance computation
     for (int i = 0; i < n_nodes; ++i) {
         for (int j = 0; j < n_nodes; ++j) {
             if (!adjacency_matrix[i][j]) {

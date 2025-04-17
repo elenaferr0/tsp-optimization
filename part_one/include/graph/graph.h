@@ -3,9 +3,8 @@
 
 #include <string>
 #include <fstream>
-#include <sstream>
 #include <vector>
-#include <typedefs.h>
+#include "../utils/typedefs.h"
 
 using namespace std;
 
