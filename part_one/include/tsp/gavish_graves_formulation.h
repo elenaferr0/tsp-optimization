@@ -5,8 +5,7 @@
 class GavishGravesFormulation final : Formulation {
     IntMat map_x;
     IntMat map_y;
-
-    void create_variables() const;
+    void create_variables() ;
 
     void create_constraints();
 
@@ -15,7 +14,7 @@ public:
 
     void solve() override;
 
-    explicit GavishGravesFormulation(const string &graph_file);
+    explicit GavishGravesFormulation(const char* instance_name, const string &graph_file);
 };
 
 #endif //GAVISH_GRAVES_FORMULATION_H

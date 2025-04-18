@@ -21,8 +21,6 @@ typedef CPXCLPptr CProb;
 
 /* Cplex Error Status and Message Buffer */
 
-extern int status;
-
 const unsigned int BUF_SIZE = 4096;
 
 extern char errmsg[BUF_SIZE];
@@ -38,8 +36,8 @@ if (status){\
 }
 
 /* Shortcut for declaring a Cplex Problem */
-#define DECL_PROB(env, name) \
-Prob name = CPXcreateprob(env, &status, "");\
+#define DECL_PROB(env, lp, name) \
+Prob lp = CPXcreateprob(env, &status, name);\
 if (status){\
 	CPXgeterrorstring(NULL, status, errmsg);\
 	int trailer = std::strlen(errmsg) - 1;\

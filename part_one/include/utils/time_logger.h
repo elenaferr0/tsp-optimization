@@ -14,9 +14,10 @@ typedef high_resolution_clock::time_point time_pt;
 class TimeLogger {
     time_pt *start_time;
     time_pt *last_tick_time;
+    string label;
 
 public:
-    TimeLogger();
+    explicit TimeLogger(const string& label);
 
     ~TimeLogger();
 

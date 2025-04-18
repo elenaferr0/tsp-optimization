@@ -1,6 +1,6 @@
 #include "utils/time_logger.h"
 
-TimeLogger::TimeLogger() : start_time(nullptr), last_tick_time(nullptr) {
+TimeLogger::TimeLogger(const string &label) : start_time(nullptr), last_tick_time(nullptr), label(label) {
 }
 
 TimeLogger::~TimeLogger() {
@@ -22,8 +22,9 @@ void TimeLogger::tick(const std::string &msg) const {
 
     const duration<double> elapsed = now - *last_tick_time;
     std::cout << std::fixed << std::setprecision(6)
-            << "[" << msg << "] "
-            << "Elapsed time: " << elapsed.count() << "s"
+            << "[" << label << "] "
+            << msg
+            << ": elapsed time " << elapsed.count() << "s"
             << std::endl;
 
     *last_tick_time = now;
@@ -33,7 +34,8 @@ void TimeLogger::log_total_time(const string &msg) const {
     const auto end_time = high_resolution_clock::now();
     const duration<double> total_elapsed = end_time - *start_time;
     std::cout << std::fixed << std::setprecision(6)
-            << "[" << msg << "] "
-            << "Total elapsed time: " << total_elapsed.count() << "s"
+            << "[" << label << "] "
+            << msg
+            << " total elapsed time " << total_elapsed.count() << "s"
             << std::endl;
 }

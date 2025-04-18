@@ -14,12 +14,14 @@ protected:
     TimeLogger tl;
     Env env;
     Prob lp;
+    string instance_name;
+    int status;
+    char *errmsg;
 
     virtual void print_solution() const;
 
 public:
-    explicit Formulation(const string &graph_file) : graph(graph_file) {
-    }
+    explicit Formulation(const char *instance_name, const string &graph_file);
 
     virtual ~Formulation();
 

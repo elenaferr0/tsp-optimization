@@ -4,7 +4,8 @@
 #include "cpxmacro.h"
 #include "utils/constraints.h"
 
-GavishGravesFormulation::GavishGravesFormulation(const string &graph_file) : Formulation(graph_file) {
+GavishGravesFormulation::GavishGravesFormulation(const char *instance_name, const string &graph_file) : Formulation(
+    instance_name, graph_file) {
     const int N = graph.n_nodes;
     map_x = vector<vector<int> >(N, vector<int>(N, -1));
     map_y = vector<vector<int> >(N, vector<int>(N, -1));
@@ -55,11 +56,13 @@ void GavishGravesFormulation::create_constraints() {
             map_x[i][j] = var_pos++;
         }
     }
+
+    // Add all variables at once
     CHECKED_CPX_CALL(CPXnewcols, env, lp, vars.get_n_vars(), vars.get_costs(), vars.get_lower_bounds(),
                      vars.get_upper_bounds(), vars.get_types(), vars.get_names());
 }
 
-void GavishGravesFormulation::create_variables() const {
+void GavishGravesFormulation::create_variables() {
     const int N = graph.n_nodes;
     Constraints ct;
     //// Constraints
