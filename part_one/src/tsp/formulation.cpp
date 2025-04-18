@@ -18,8 +18,13 @@ void Formulation::print_solution() const {
     delete [] status_str;
 }
 
-Formulation::Formulation(const char *instance_name, const string &graph_file)
-    : graph(Graph(graph_file)),
+void Formulation::export_solution() {
+    const auto path = "./samples/" + string(instance_name) + ".sol";
+    CHECKED_CPX_CALL(CPXsolwrite, env, lp, path.c_str());
+}
+
+Formulation::Formulation(const char *instance_name)
+    : graph(Graph::of_instance(instance_name)),
       tl(instance_name),
       instance_name(instance_name),
       status(0),

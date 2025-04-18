@@ -9,19 +9,25 @@
 using namespace std;
 
 
-struct Node
-{
+struct Node {
     string id;
     pair<double, double> position;
 };
 
-class Graph
-{
+class Graph {
     vector<Node> nodes;
     BitMat adjacency_matrix;
+
     void compute_costs();
+
+    explicit Graph(const string &file_path);
+
 public:
-    explicit Graph(const string& file_path);
+    static Graph of_instance(const char *instance_name) {
+        const auto path = "./samples/" + string(instance_name) + ".txt";
+        return Graph(path);
+    }
+
     int n_nodes;
     DblMat costs;
 };

@@ -14,7 +14,7 @@ public:
 
     void solve() override;
 
-    explicit GavishGravesFormulation(const char* instance_name, const string &graph_file);
+    explicit GavishGravesFormulation(const char* instance_name);
 };
 
 #endif //GAVISH_GRAVES_FORMULATION_H

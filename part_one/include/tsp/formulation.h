@@ -19,9 +19,10 @@ protected:
     char *errmsg;
 
     virtual void print_solution() const;
+    virtual void export_solution();
 
 public:
-    explicit Formulation(const char *instance_name, const string &graph_file);
+    explicit Formulation(const char *instance_name);
 
     virtual ~Formulation();
 

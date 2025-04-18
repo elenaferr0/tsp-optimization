@@ -4,8 +4,8 @@
 #include "cpxmacro.h"
 #include "utils/constraints.h"
 
-GavishGravesFormulation::GavishGravesFormulation(const char *instance_name, const string &graph_file) : Formulation(
-    instance_name, graph_file) {
+GavishGravesFormulation::GavishGravesFormulation(const char *instance_name) : Formulation(
+    instance_name) {
     const int N = graph.n_nodes;
     map_x = vector<vector<int> >(N, vector<int>(N, -1));
     map_y = vector<vector<int> >(N, vector<int>(N, -1));
@@ -26,7 +26,7 @@ void GavishGravesFormulation::solve() {
     CHECKED_CPX_CALL(CPXmipopt, env, lp);
     tl.tick("MIP optimization");
     print_solution();
-    CHECKED_CPX_CALL(CPXsolwrite, env, lp, "tsp.sol");
+    export_solution();
 }
 
 void GavishGravesFormulation::create_constraints() {
