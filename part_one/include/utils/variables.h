@@ -17,6 +17,7 @@ class Variables
 
 public:
     Variables();
+    ~Variables();
 
     // Utility methods
     void add_binary_var(double cost, char *name);

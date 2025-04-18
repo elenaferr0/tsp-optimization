@@ -1,16 +1,19 @@
 #include "utils/variables.h"
+
+#include <iostream>
+
 #include "cpxmacro.h"
 
 void Variables::
-    add_var(double cost, double lower_bound, double upper_bound, char type, char *name)
-{
+add_var(double cost, double lower_bound, double upper_bound, char type, char *name) {
     n_vars++;
 
     costs.push_back(cost);
     types.push_back(type);
     lower_bounds.push_back(lower_bound);
     upper_bounds.push_back(upper_bound);
-    names.push_back(name);
+    // Create a copy of name to avoid changes from outside to reflect in the names array
+    names.push_back(strdup(name));
 }
 
 Variables::Variables() : n_vars(0),
@@ -18,15 +21,21 @@ Variables::Variables() : n_vars(0),
                          types(vector<char>()),
                          names(vector<char *>()),
                          lower_bounds(vector<double>()),
-                         upper_bounds(vector<double>())
-{
+                         upper_bounds(vector<double>()) {
+}
+
+Variables::~Variables() {
+    for (const auto n: names) {
+        delete n;
+    }
+    names.clear();
 }
 
 void Variables::add_binary_var(double cost, char *name) {
     add_var(cost, 0, 1, CPX_BINARY, name);
 }
 
-void Variables::add_continuous_var(double cost, double lower_bound, double upper_bound, char* name) {
+void Variables::add_continuous_var(double cost, double lower_bound, double upper_bound, char *name) {
     add_var(cost, lower_bound, upper_bound, CPX_CONTINUOUS, name);
 }
 
