@@ -1,5 +1,4 @@
-import argparse
-import math, random
+import argparse, math, random, os
 
 
 def write_graph(coordinates, output: str):
@@ -32,11 +31,11 @@ def generate_instances(size: int):
 def main():
     parser = argparse.ArgumentParser(description='Random instance generator for TSP')
     parser.add_argument('-s', '--size', required=True, help='Number of nodes in the TSP instance')
-    parser.add_argument('-o', '--output', required=True, help='Path to output file')
     args = parser.parse_args()
 
     size = int(args.size)
-    output = args.output
+    working_dir = os.path.dirname(os.path.abspath(__file__))
+    output = f"{working_dir}/../samples/random{size}.txt"
     coordinates = generate_instances(size)
     write_graph(coordinates, output)
 

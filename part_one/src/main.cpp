@@ -165,7 +165,6 @@ int main(const int argc, char const *argv[]) {
         TimeLogger tl;
         setup_lp(env, lp, graph);
         tl.tick("Model setup");
-        exit(0);
         CHECKED_CPX_CALL(CPXmipopt, env, lp);
         tl.tick("MIP optimization");
 

@@ -1,6 +1,6 @@
 import matplotlib.pyplot as plt
 import xml.etree.ElementTree as ET
-import re
+import re, os
 import argparse
 
 def parse_sol_file(file_path):
@@ -50,17 +50,19 @@ def parse_graph_file(file_path):
 def main():
     # Set up argument parser
     parser = argparse.ArgumentParser(description='TSP Solution Visualizer')
-    parser.add_argument('-s', '--sol', required=True, help='Path to solution file')
-    parser.add_argument('-g', '--graph', required=True, help='Path to graph file')
-    parser.add_argument('-o', '--output', required=True, help='Path to output file')
+    parser.add_argument('-i', '--instance', required=True, help='TSP instance to be solved')
 
     args = parser.parse_args()
 
-    sol_file = args.sol
-    points_file = args.graph
+    instance = args.instance
+
+    working_dir = os.path.dirname(os.path.abspath(__file__))
+    sol_file = f"{working_dir}/../samples/{instance}.sol"
+    graph_file = f"{working_dir}/../samples/{instance}.txt"
+    output_file = f"{working_dir}/../samples/{instance}.png"
 
     x_variables, y_variables = parse_sol_file(sol_file)
-    points = parse_graph_file(points_file)
+    points = parse_graph_file(graph_file)
 
     x_coords = [p[0] for p in points]
     y_coords = [p[1] for p in points]
@@ -87,7 +89,7 @@ def main():
     plt.grid(True, linestyle='--', alpha=0.7)
 
     plt.tight_layout()
-    plt.savefig(args.output, dpi=300, bbox_inches='tight')
+    plt.savefig(output_file, dpi=300, bbox_inches='tight')
 
 if __name__ == "__main__":
     main()
