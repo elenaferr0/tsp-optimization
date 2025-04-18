@@ -7,41 +7,23 @@
 
 using std::chrono::duration;
 using std::chrono::high_resolution_clock;
+using namespace std;
 
 typedef high_resolution_clock::time_point time_pt;
 
-class TimeLogger
-{
-    time_pt start_time;
-    time_pt last_tick_time;
+class TimeLogger {
+    time_pt *start_time;
+    time_pt *last_tick_time;
 
 public:
-    TimeLogger() : start_time(high_resolution_clock::now()), last_tick_time(start_time)
-    {
-    }
+    TimeLogger();
 
-    void tick(const std::string& msg)
-    {
-        const auto now = std::chrono::high_resolution_clock::now();
-        const duration<double> elapsed_from_start = now - start_time;
-        const duration<double> elapsed_from_last_tick = now - last_tick_time;
+    ~TimeLogger();
 
-        std::cout << std::fixed << std::setprecision(6)
-            << "[" << msg << "] "
-            << "Elapsed time: " << elapsed_from_last_tick.count() << "s"
-            << std::endl;
+    void start();
 
-        last_tick_time = now;
-    }
+    void tick(const string &msg) const;
 
-    void log_total_time(const std::string& msg) const
-    {
-        const auto end_time = std::chrono::high_resolution_clock::now();
-        const duration<double> total_elapsed = end_time - start_time;
-        std::cout << std::fixed << std::setprecision(6)
-            << "[" << msg << "] "
-            << "Total elapsed time: " << total_elapsed.count() << "s"
-            << std::endl;
-    }
+    void log_total_time(const string &msg) const;
 };
 #endif //TIME_LOGGER_H
