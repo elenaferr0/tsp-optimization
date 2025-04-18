@@ -1,5 +1,10 @@
+# Notes
 - considering acceleration wouldn't change the results as it would be like multiplying by a constant factor.
+- clear explanation of MTZ formulation: https://how-to.aimms.com/Articles/332/332-Miller-Tucker-Zemlin-formulation.html 
 
+# Benchmarking
+### Variables/constraints creation
+## Raw data
 - no opt for vars/constraints:
 100
 [Variable creation] 0.007256s
@@ -43,10 +48,7 @@ Running benchmark for size 5000
 [Constraint creation] Elapsed time: 10.546984s
 [Model setup] Elapsed time: 17.840437s
 
-
-# Benchmark Results Comparison
-
-## Before Optimization vs. After Optimization
+## Comparison
 
 | Graph Size | Metric                | Before Optimization | After Optimization | Improvement (%) |
 |------------|----------------------|---------------------|-------------------|-----------------|

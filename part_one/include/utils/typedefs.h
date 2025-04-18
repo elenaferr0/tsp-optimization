@@ -6,5 +6,6 @@ using namespace std;
 
 typedef vector<vector<bool>> BitMat;
 typedef vector<vector<double>> DblMat;
+typedef vector<vector<int>> IntMat;
 
 #endif
