@@ -61,8 +61,7 @@ void setup_lp(const CEnv env, const Prob lp, const Graph &graph) {
         }
     }
 
-    CHECKED_CPX_CALL(CPXnewcols, env, lp, vars.get_n_vars(), vars.get_costs(), vars.get_lower_bounds(),
-                     vars.get_upper_bounds(), vars.get_types(), vars.get_names());
+    CHECKED_CPX_CALL(CPXnewcols, env, lp, vars.get_n_vars(), vars.get_costs(), vars.get_lower_bounds(), vars.get_upper_bounds(), vars.get_types(), vars.get_names());
     tl.tick("Variable creation");
 
     //// Constraints
@@ -91,7 +90,6 @@ void setup_lp(const CEnv env, const Prob lp, const Graph &graph) {
             auto matbeg = 0;
             CHECKED_CPX_CALL(CPXaddrows, env, lp, 0, 1, idx.size(), &rhs, &sense, &matbeg, &idx[0], &coef[0], nullptr,
                              nullptr);
-            // CPXaddrows()
         }
     }
 
@@ -180,13 +178,17 @@ void parse_args(int argc, char const *argv[], double &timeout, string &graph_fil
 
 void print_sln(const Env &env, const Prob &lp, const Graph &graph) {
     int N = graph.n_nodes;
-    // Get status
+    // Print solution status
     status = CPXgetstat(env, lp);
-    // Print status string
-    auto status_string = new char[512];
-    CPXgetstatstring(env, status, &status_string[0]);
-    cout << "Status: " << status_string << endl;
-    delete [] status_string;
+    if (status == CPXMIP_OPTIMAL)
+        cout << "Solution status: Optimal" << endl;
+    else if (status == CPXMIP_INFEASIBLE)
+        cout << "Solution status: Infeasible" << endl;
+    else if (status == CPXMIP_UNBOUNDED)
+        cout << "Solution status: Unbounded" << endl;
+    else
+        cout << "Solution status: Unknown" << endl;
+
 
     double objval;
     CHECKED_CPX_CALL(CPXgetobjval, env, lp, &objval);
@@ -232,9 +234,6 @@ int main(const int argc, char const *argv[]) {
         TimeLogger tl;
         setup_lp(env, lp, graph);
         tl.tick("Model setup");
-        // Write the model to a file
-        CHECKED_CPX_CALL(CPXwriteprob, env, lp, "tsp.lp", nullptr);
-
         CHECKED_CPX_CALL(CPXmipopt, env, lp);
         tl.tick("MIP optimization");
 
