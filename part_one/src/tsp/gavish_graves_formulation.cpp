@@ -4,32 +4,14 @@
 #include "cpxmacro.h"
 #include "utils/constraints.h"
 
-GavishGravesFormulation::GavishGravesFormulation(const char *instance_name) : Formulation(
-    instance_name) {
+GavishGravesFormulation::GavishGravesFormulation(const char *instance_name)
+    : Formulation(instance_name) {
     const int N = graph.n_nodes;
     map_x = vector<vector<int> >(N, vector<int>(N, -1));
     map_y = vector<vector<int> >(N, vector<int>(N, -1));
 }
 
-
-void GavishGravesFormulation::setup() {
-    Formulation::setup();
-    tl.start();
-    create_constraints();
-    tl.tick("Constraint creation");
-    create_variables();
-    tl.tick("Variable creation");
-    tl.log_total_time("Model setup");
-}
-
-void GavishGravesFormulation::solve() {
-    CHECKED_CPX_CALL(CPXmipopt, env, lp);
-    tl.tick("MIP optimization");
-    print_solution();
-    export_solution();
-}
-
-void GavishGravesFormulation::create_constraints() {
+void GavishGravesFormulation::create_variables() {
     const int N = graph.n_nodes;
     int var_pos = 0;
 
@@ -60,9 +42,11 @@ void GavishGravesFormulation::create_constraints() {
     // Add all variables at once
     CHECKED_CPX_CALL(CPXnewcols, env, lp, vars.get_n_vars(), vars.get_costs(), vars.get_lower_bounds(),
                      vars.get_upper_bounds(), vars.get_types(), vars.get_names());
+
+    tl.tick("Variables creation");
 }
 
-void GavishGravesFormulation::create_variables() {
+void GavishGravesFormulation::create_constraints() {
     const int N = graph.n_nodes;
     Constraints ct;
     //// Constraints
@@ -123,5 +107,9 @@ void GavishGravesFormulation::create_variables() {
         nullptr,
         nullptr
     );
-    tl.tick("Constraint creation");
+    tl.tick("Constraints creation");
+}
+
+string GavishGravesFormulation::formulation_code() const {
+    return "gg"; // Gavish-Graves
 }

@@ -1,7 +1,7 @@
-#include "graph/graph.h"
+#include "../../include/tsp/graph.h"
 #include <iostream>
 
-#include "utils/measurements.h"
+#include "../../include/utils/measurements.h"
 
 using namespace std;
 

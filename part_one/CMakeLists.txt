@@ -14,7 +14,9 @@ file(GLOB_RECURSE SOURCES "${CMAKE_SOURCE_DIR}/src/*.cpp")
 file(GLOB_RECURSE HEADERS "${CMAKE_SOURCE_DIR}/include/*.h")
 
 # Add executable
-add_executable(main ${SOURCES} ${HEADERS})
+add_executable(main ${SOURCES} ${HEADERS}
+        include/tsp/miller_tucker_zemlin_formulation.h
+        src/tsp/miller_tucker_zemlin_formulation.cpp)
 
 # Link libraries
 target_link_libraries(main cplex m pthread dl)

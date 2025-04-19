@@ -21,6 +21,9 @@ public:
 
     // Utility methods
     void add_binary_var(double cost, char *name);
+
+    void add_positive_int_var(double cost, char *name);
+
     void add_continuous_var(double cost, double lower_bound, double upper_bound, char *name);
     void add_continuous_positive_var(double cost, char *name);
     void add_continuous_unbounded_var(double cost, char *name);

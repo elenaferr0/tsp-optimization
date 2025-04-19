@@ -3,6 +3,17 @@
 void Formulation::setup() {
     CHECKED_CPX_CALL(CPXsetdblparam, env, CPX_PARAM_TILIM, 10);
     CHECKED_CPX_CALL(CPXsetintparam, env, CPX_PARAM_WRITELEVEL, CPX_WRITELEVEL_NONZEROVARS);
+    tl.start();
+    create_variables();
+    create_constraints();
+    tl.log_total_time("Model setup");
+}
+
+void Formulation::solve() {
+    CHECKED_CPX_CALL(CPXmipopt, env, lp);
+    tl.tick("MIP optimization");
+    print_solution();
+    export_solution();
 }
 
 void Formulation::print_solution() const {
@@ -19,8 +30,12 @@ void Formulation::print_solution() const {
 }
 
 void Formulation::export_solution() {
-    const auto path = "./samples/" + string(instance_name) + ".sol";
+    const auto path = "./samples/" + instance_formulation_code() + ".sol";
     CHECKED_CPX_CALL(CPXsolwrite, env, lp, path.c_str());
+}
+
+string Formulation::instance_formulation_code() const {
+    return instance_name + "_" + formulation_code();
 }
 
 Formulation::Formulation(const char *instance_name)

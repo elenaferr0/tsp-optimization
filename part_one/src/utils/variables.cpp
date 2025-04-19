@@ -5,7 +5,7 @@
 #include "cpxmacro.h"
 
 void Variables::
-add_var(double cost, double lower_bound, double upper_bound, char type, char *name) {
+add_var(const double cost, const double lower_bound, const double upper_bound, char type, char *name) {
     n_vars++;
 
     costs.push_back(cost);
@@ -31,18 +31,22 @@ Variables::~Variables() {
     names.clear();
 }
 
-void Variables::add_binary_var(double cost, char *name) {
+void Variables::add_binary_var(const double cost, char *name) {
     add_var(cost, 0, 1, CPX_BINARY, name);
 }
 
-void Variables::add_continuous_var(double cost, double lower_bound, double upper_bound, char *name) {
+void Variables::add_positive_int_var(const double cost, char *name) {
+    add_var(cost, 0, CPX_INFBOUND, CPX_INTEGER, name);
+}
+
+void Variables::add_continuous_var(const double cost, const double lower_bound, const double upper_bound, char *name) {
     add_var(cost, lower_bound, upper_bound, CPX_CONTINUOUS, name);
 }
 
-void Variables::add_continuous_positive_var(double cost, char *name) {
+void Variables::add_continuous_positive_var(const double cost, char *name) {
     add_var(cost, 0, CPX_INFBOUND, CPX_CONTINUOUS, name);
 }
 
-void Variables::add_continuous_unbounded_var(double cost, char *name) {
+void Variables::add_continuous_unbounded_var(const double cost, char *name) {
     add_var(cost, CPX_INFBOUND, CPX_INFBOUND, CPX_CONTINUOUS, name);
 }
