@@ -106,7 +106,7 @@ def main():
     working_dir = os.path.dirname(os.path.abspath(__file__))
     samples_dir = os.path.join(working_dir, "../samples")
     sol_file = os.path.join(samples_dir, f"{instance}_{formulation}.sol")
-    graph_file = os.path.join(samples_dir, f"{instance}.txt")
+    graph_file = os.path.join(samples_dir, f"{instance}.dat")
     output_file = os.path.join(samples_dir, f"{instance}_{formulation}_tour.png")
 
     if not os.path.exists(sol_file):

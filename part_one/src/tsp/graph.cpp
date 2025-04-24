@@ -9,8 +9,10 @@ Graph::Graph(const string &file_path) {
     fstream file(file_path);
     if (!file.is_open()) {
         throw runtime_error("Could not open file: " + file_path);
-    } {
-        // Read nodes
+    }
+
+    // Read nodes
+    {
         file >> n_nodes;
 
         for (int i = 0; i < n_nodes; ++i) {
@@ -20,17 +22,12 @@ Graph::Graph(const string &file_path) {
             node.position = {x, y};
             nodes.push_back(node);
         }
-        adjacency_matrix.resize(n_nodes, vector<bool>(n_nodes, false));
-    } {
-        // Read edges
-        int n_edges;
-        file >> n_edges;
-        for (int i = 0; i < n_edges; ++i) {
-            int from, to;
-            file >> from >> to;
-            adjacency_matrix[from][to] = true;
-            adjacency_matrix[to][from] = true; // Assuming undirected graph
-        }
+    }
+
+    // Instantiate adjacency matrix assuming all nodes are connected (no self-loops)
+    adjacency_matrix.resize(n_nodes, vector<bool>(n_nodes, true));
+    for (int i = 0; i < n_nodes; ++i) {
+        adjacency_matrix[i][i] = false;
     }
 
     compute_costs();

@@ -10,12 +10,6 @@ def write_graph(coordinates, output: str):
             x, y = coordinates[i]
             f.write(f"{i} {x} {y}\n")
 
-        f.write(f"{int(n * (n - 1) / 2)}\n") # Number of edges
-        # Write edges (all possible permutations without repetition and self-loops)
-        for i in range(n):
-            for j in range(i + 1, n):
-                f.write(f"{i} {j}\n")
-
 def generate_instances(size: int):
     b = size / 2
 
@@ -35,7 +29,7 @@ def main():
 
     size = int(args.size)
     working_dir = os.path.dirname(os.path.abspath(__file__))
-    output = f"{working_dir}/../samples/random{size}.txt"
+    output = f"{working_dir}/../samples/random{size}.dat"
     coordinates = generate_instances(size)
     write_graph(coordinates, output)
 

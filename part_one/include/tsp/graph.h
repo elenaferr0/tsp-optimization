@@ -24,7 +24,7 @@ class Graph {
 
 public:
     static Graph of_instance(const char *instance_name) {
-        const auto path = "./samples/" + string(instance_name) + ".txt";
+        const auto path = "./samples/" + string(instance_name) + ".dat";
         return Graph(path);
     }
 
