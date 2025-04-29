@@ -8,8 +8,6 @@ TODO
 - implement check to see how long it takes... 
 - metrics/stats
 - tsp solution class?
-- copy constructor and stuff for classes
-
 
 # Benchmarking
 ### Variables/constraints creation

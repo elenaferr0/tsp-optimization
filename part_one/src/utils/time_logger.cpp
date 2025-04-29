@@ -1,6 +1,46 @@
 #include "utils/time_logger.h"
 
-TimeLogger::TimeLogger(const string &label) : start_time(nullptr), last_tick_time(nullptr), label(label) {
+#include <utility>
+
+TimeLogger::TimeLogger(string label) : start_time(nullptr), last_tick_time(nullptr), label(std::move(label)) {
+}
+
+TimeLogger::TimeLogger(const TimeLogger &other) : label(other.label) {
+    if (other.start_time) {
+        start_time = new time_pt(*other.start_time);
+    } else {
+        start_time = nullptr;
+    }
+
+    if (other.last_tick_time) {
+        last_tick_time = new time_pt(*other.last_tick_time);
+    } else {
+        last_tick_time = nullptr;
+    }
+}
+
+TimeLogger &TimeLogger::operator=(const TimeLogger &other) {
+    if (this == &other) {
+        return *this;
+    }
+
+    delete start_time;
+    delete last_tick_time;
+
+    label = other.label;
+    if (other.start_time) {
+        start_time = new time_pt(*other.start_time);
+    } else {
+        start_time = nullptr;
+    }
+
+    if (other.last_tick_time) {
+        last_tick_time = new time_pt(*other.last_tick_time);
+    } else {
+        last_tick_time = nullptr;
+    }
+
+    return *this;
 }
 
 TimeLogger::~TimeLogger() {

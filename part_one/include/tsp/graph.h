@@ -22,13 +22,13 @@ class Graph {
     explicit Graph(const string &file_path);
 
 public:
+    int n_nodes;
+    DblMat costs;
+
     static Graph of_instance(const char *instance_name) {
         const auto path = "./samples/" + string(instance_name) + ".dat";
         return Graph(path);
     }
-
-    int n_nodes;
-    DblMat costs;
 };
 
 #endif //GRAPH_H

@@ -52,6 +52,35 @@ Formulation::Formulation(const char *instance_name)
     CHECKED_CPX_CALL(CPXsetintparam, env, CPX_PARAM_WRITELEVEL, CPX_WRITELEVEL_NONZEROVARS);
 }
 
+Formulation::Formulation(const Formulation &other) : graph(other.graph), tl(TimeLogger(other.tl)),
+                                                     env(other.env), // shallow copy
+                                                     lp(other.lp), // shallow copy
+                                                     instance_name(other.instance_name),
+                                                     status(other.status),
+                                                     errmsg(new char[NAME_SIZE]) {
+    std::strcpy(errmsg, other.errmsg);
+}
+
+Formulation &Formulation::operator=(const Formulation &other) {
+    if (this == &other) {
+        return *this;
+    }
+    // free the current resources
+    CPXfreeprob(env, &lp);
+    CPXcloseCPLEX(&env);
+    delete[] errmsg;
+
+    graph = other.graph;
+    tl = other.tl;
+    env = other.env; // shallow copy
+    lp = other.lp; // shallow copy
+    instance_name = other.instance_name;
+    status = other.status;
+    errmsg = new char[NAME_SIZE];
+    std::strcpy(errmsg, other.errmsg);
+    return *this;
+}
+
 Formulation::~Formulation() {
     CPXfreeprob(env, &lp);
     CPXcloseCPLEX(&env);

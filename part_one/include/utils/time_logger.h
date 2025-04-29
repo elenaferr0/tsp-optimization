@@ -17,7 +17,9 @@ class TimeLogger {
     string label;
 
 public:
-    explicit TimeLogger(const string& label);
+    explicit TimeLogger(string  label);
+    TimeLogger(const TimeLogger&);
+    TimeLogger& operator=(const TimeLogger&);
 
     ~TimeLogger();
 

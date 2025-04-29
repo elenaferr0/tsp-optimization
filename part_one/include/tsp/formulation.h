@@ -39,6 +39,10 @@ protected:
 public:
     explicit Formulation(const char *instance_name);
 
+    Formulation(const Formulation &);
+
+    Formulation &operator=(const Formulation &);
+
     virtual ~Formulation();
 
     virtual void setup();

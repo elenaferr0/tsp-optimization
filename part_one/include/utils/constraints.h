@@ -40,8 +40,6 @@ public:
     int get_n_rows() const;
     const int *get_indexes() const;
     const double *get_coefficients() const;
-    const vector<int> get_indexes_vec() const;
-    const vector<double> get_coefficients_vec() const;
     const char *get_senses() const;
     const double *get_rhs() const;
     const int *get_matbeg() const;
