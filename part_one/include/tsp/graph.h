@@ -16,7 +16,6 @@ struct Node {
 
 class Graph {
     vector<Node> nodes;
-    BitMat adjacency_matrix;
 
     void compute_costs();
 

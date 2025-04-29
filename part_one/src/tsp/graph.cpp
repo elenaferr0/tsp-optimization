@@ -24,12 +24,6 @@ Graph::Graph(const string &file_path) {
         }
     }
 
-    // Instantiate adjacency matrix assuming all nodes are connected (no self-loops)
-    adjacency_matrix.resize(n_nodes, vector<bool>(n_nodes, true));
-    for (int i = 0; i < n_nodes; ++i) {
-        adjacency_matrix[i][i] = false;
-    }
-
     compute_costs();
     file.close();
 }
@@ -37,23 +31,20 @@ Graph::Graph(const string &file_path) {
 void Graph::compute_costs() {
     costs = vector<vector<double> >(n_nodes, vector<double>(n_nodes, -1));
 
-    DblMat mem(n_nodes, vector<double>(n_nodes, -1)); // memoize distance computation
     for (int i = 0; i < n_nodes; ++i) {
         for (int j = 0; j < n_nodes; ++j) {
-            if (!adjacency_matrix[i][j]) {
+            if (i == j) {
                 costs[i][j] = 0;
-                mem[i][j] = 0;
                 continue;
             }
 
-            if (mem[j][i] != -1) // Assumption: cost is always positive and i->j has the same cost as j->i
+            if (costs[j][i] != -1) // Assumption: cost is always positive and i->j has the same cost as j->i
             {
                 costs[i][j] = costs[j][i];
                 continue;
             }
 
             costs[i][j] = euclidean_dist(nodes[i].position, nodes[j].position);
-            mem[i][j] = costs[i][j];
         }
     }
 }
