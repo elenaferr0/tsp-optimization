@@ -26,7 +26,7 @@ Variables::Variables() : n_vars(0),
 
 Variables::~Variables() {
     for (const auto n: names) {
-        delete n;
+        free(n); // strings were allocated with strdup
     }
     names.clear();
 }
