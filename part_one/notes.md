@@ -3,6 +3,14 @@
 - clear explanation of MTZ formulation: https://how-to.aimms.com/Articles/332/332-Miller-Tucker-Zemlin-formulation.html 
 - implementation of MTZ: https://co-enzyme.fr/blog/traveling-salesman-problem-tsp-in-cplex-opl-with-miller-tucker-zemlin-mtz-formulation/
 
+TODO
+- other formulations which are not tsp?
+- implement check to see how long it takes... 
+- metrics/stats
+- tsp solution class?
+- copy constructor and stuff for classes
+
+
 # Benchmarking
 ### Variables/constraints creation
 ## Raw data
