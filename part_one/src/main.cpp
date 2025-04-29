@@ -6,7 +6,7 @@
 
 using namespace std;
 
-int main(const int argc, char const *argv[]) {
+int main() {
     try {
         GavishGravesFormulation gg("cities");
         gg.setup();
