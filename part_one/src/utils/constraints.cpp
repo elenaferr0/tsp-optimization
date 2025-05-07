@@ -12,7 +12,7 @@ matbeg(vector<int>())
 {
 }
 
-void Constraints::new_row(char sense, double rhs) {
+void Constraints::new_row(const char sense, const double rhs) {
     n_rows++;
     this->matbeg.push_back(indexes.size());
     senses.push_back(sense);

@@ -4,8 +4,8 @@
 #include "cpxmacro.h"
 #include "utils/constraints.h"
 
-GavishGravesFormulation::GavishGravesFormulation(const char *instance_name)
-    : Formulation(instance_name) {
+GavishGravesFormulation::GavishGravesFormulation(const char *instance_name, int timeout)
+    : Formulation(instance_name, timeout) {
     const int N = graph.n_nodes;
     map_x = vector<vector<int> >(N, vector<int>(N, -1));
     map_y = vector<vector<int> >(N, vector<int>(N, -1));

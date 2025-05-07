@@ -7,6 +7,7 @@
 TODO 1st
 - add cmd line params
 - other formulations which are not tsp?
+- does it make sense to have gg and mtz?
 - implement check to see how long it takes... 
 - metrics/stats
 

@@ -13,7 +13,7 @@ class MillerTuckerZemlinFormulation final : public Formulation {
     string formulation_code() const override;
 
 public:
-    explicit MillerTuckerZemlinFormulation(const char *instance_name);
+    explicit MillerTuckerZemlinFormulation(const char *instance_name, int timeout);
 };
 
 #endif //MILLER_TUCKER_ZEMLIN_FORMULATION_H

@@ -13,7 +13,7 @@ class GavishGravesFormulation final : public Formulation {
     string formulation_code() const override;
 
 public:
-    explicit GavishGravesFormulation(const char *instance_name);
+    explicit GavishGravesFormulation(const char *instance_name, int timeout);
 };
 
 #endif //GAVISH_GRAVES_FORMULATION_H

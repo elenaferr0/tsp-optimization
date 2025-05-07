@@ -38,7 +38,7 @@ string Formulation::instance_formulation_code() const {
     return instance_name + "_" + formulation_code();
 }
 
-Formulation::Formulation(const char *instance_name)
+Formulation::Formulation(const char *instance_name, int timeout)
     : graph(Graph::of_instance(instance_name)),
       tl(instance_name),
       instance_name(instance_name),
@@ -50,6 +50,9 @@ Formulation::Formulation(const char *instance_name)
     this->lp = lp;
     CHECKED_CPX_CALL(CPXsetdblparam, env, CPX_PARAM_TILIM, 10);
     CHECKED_CPX_CALL(CPXsetintparam, env, CPX_PARAM_WRITELEVEL, CPX_WRITELEVEL_NONZEROVARS);
+    if (timeout > 0) {
+        CHECKED_CPX_CALL(CPXsetdblparam, env, CPX_PARAM_TILIM, timeout);
+    }
 }
 
 Formulation::Formulation(const Formulation &other) : graph(other.graph), tl(TimeLogger(other.tl)),

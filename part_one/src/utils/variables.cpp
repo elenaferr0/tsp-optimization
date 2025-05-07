@@ -5,7 +5,7 @@
 #include "cpxmacro.h"
 
 void Variables::
-add_var(const double cost, const double lower_bound, const double upper_bound, char type, char *name) {
+add_var(const double cost, const double lower_bound, const double upper_bound, const char type, char *name) {
     n_vars++;
 
     costs.push_back(cost);

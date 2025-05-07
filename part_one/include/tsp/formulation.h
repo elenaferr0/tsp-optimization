@@ -37,7 +37,7 @@ protected:
     string instance_formulation_code() const;
 
 public:
-    explicit Formulation(const char *instance_name);
+    explicit Formulation(const char *instance_name, int timeout);
 
     Formulation(const Formulation &);
 

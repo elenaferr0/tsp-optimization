@@ -3,8 +3,8 @@
 #include "utils/constraints.h"
 #include "utils/variables.h"
 
-MillerTuckerZemlinFormulation::MillerTuckerZemlinFormulation(const char *instance_name)
-    : Formulation(instance_name) {
+MillerTuckerZemlinFormulation::MillerTuckerZemlinFormulation(const char *instance_name, int timeout)
+    : Formulation(instance_name, timeout) {
     const int N = graph.n_nodes;
     map_x = vector<vector<int> >(N, vector<int>(N, -1));
     map_u = vector<int>(N, -1);
