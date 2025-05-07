@@ -2,12 +2,25 @@
 - considering acceleration wouldn't change the results as it would be like multiplying by a constant factor.
 - clear explanation of MTZ formulation: https://how-to.aimms.com/Articles/332/332-Miller-Tucker-Zemlin-formulation.html 
 - implementation of MTZ: https://co-enzyme.fr/blog/traveling-salesman-problem-tsp-in-cplex-opl-with-miller-tucker-zemlin-mtz-formulation/
+- checked with valgrind
 
-TODO
+TODO 1st
+- add cmd line params
 - other formulations which are not tsp?
 - implement check to see how long it takes... 
 - metrics/stats
+
+TODO 2nd
+- provide the average running times (compare several instances and the same instance multiple times if random components are present)
+- Montecarlo simulation for heuristic
 - tsp solution class?
+- no need to do train/test/validation. mention if stoch component consider multiple runs
+    - say that with different rules this this that is obtained therefore this rule is selected.
+    - say that you're aware that this is not the most representative but for time constraints
+    - be aware that validation has to be performed explain why and how
+- i-race package
+- deviation from best solution chart (by size) in percentage, how far away
+- compare different methods (e.g. LS vs Tabu Search... ) averages, and obtained solutoin
 
 # Benchmarking
 ### Variables/constraints creation

@@ -8,13 +8,9 @@ using namespace std;
 
 int main() {
     try {
-        GavishGravesFormulation gg("cities");
+        GavishGravesFormulation gg("pcb_20");
         gg.setup();
         gg.solve();
-
-        MillerTuckerZemlinFormulation mtz("cities");
-        mtz.setup();
-        mtz.solve();
     } catch (std::exception &e) {
         std::cout << "Exception: " << e.what() << std::endl;
     }
