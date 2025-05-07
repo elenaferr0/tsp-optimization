@@ -5,7 +5,6 @@
 - checked with valgrind
 
 TODO 1st
-- add cmd line params
 - other formulations which are not tsp?
 - does it make sense to have gg and mtz?
 - implement check to see how long it takes... 
@@ -88,3 +87,136 @@ Running benchmark for size 5000
 | 5000       | Variable creation    | 7.048614s          | 7.078701s        | -0.43%          |
 |            | Constraint creation  | N/A                | 10.546984s       | N/A             |
 |            | Model setup          | 35.029964s         | 17.840437s       | 49.07%          |
+
+
+## Max instance size solvable in time limit
+Testing ./bin/main with various instance sizes and time constraints...
+--------------------------------------------------
+Testing time threshold: 0.1 seconds
+Testing size 5... ✓
+Testing size 10... ✓
+Testing size 20... (timeout) ✗
+Maximum size for 0.1s: 10
+
+Testing time threshold: 0.5 seconds
+Skipping size 5 (smaller than successful instance at lower threshold)
+Skipping size 10 (smaller than successful instance at lower threshold)
+Testing size 20... ✓
+Testing size 50... (timeout) ✗
+Maximum size for 0.5s: 20
+
+Testing time threshold: 1 seconds
+Skipping size 5 (smaller than successful instance at lower threshold)
+Skipping size 10 (smaller than successful instance at lower threshold)
+Skipping size 20 (smaller than successful instance at lower threshold)
+Testing size 50... (timeout) ✗
+Maximum size for 1s: 0
+
+Testing time threshold: 5 seconds
+Skipping size 5 (smaller than successful instance at lower threshold)
+Skipping size 10 (smaller than successful instance at lower threshold)
+Skipping size 20 (smaller than successful instance at lower threshold)
+Testing size 50... (timeout) ✗
+Maximum size for 5s: 0
+
+Testing time threshold: 15 seconds
+Skipping size 5 (smaller than successful instance at lower threshold)
+Skipping size 10 (smaller than successful instance at lower threshold)
+Skipping size 20 (smaller than successful instance at lower threshold)
+Testing size 50... ✓
+Testing size 100... ✓
+Testing size 200... ✓
+Testing size 500... ✓
+Testing size 1000... ✓
+Testing size 2000... (timeout) ✗
+Maximum size for 15s: 1000
+
+Testing time threshold: 30 seconds
+Skipping size 5 (smaller than successful instance at lower threshold)
+Skipping size 10 (smaller than successful instance at lower threshold)
+Skipping size 20 (smaller than successful instance at lower threshold)
+Skipping size 50 (smaller than successful instance at lower threshold)
+Skipping size 100 (smaller than successful instance at lower threshold)
+Skipping size 200 (smaller than successful instance at lower threshold)
+Skipping size 500 (smaller than successful instance at lower threshold)
+Skipping size 1000 (smaller than successful instance at lower threshold)
+Testing size 2000... (timeout) ✗
+Maximum size for 30s: 0
+
+Testing time threshold: 60 seconds
+Skipping size 5 (smaller than successful instance at lower threshold)
+Skipping size 10 (smaller than successful instance at lower threshold)
+Skipping size 20 (smaller than successful instance at lower threshold)
+Skipping size 50 (smaller than successful instance at lower threshold)
+Skipping size 100 (smaller than successful instance at lower threshold)
+Skipping size 200 (smaller than successful instance at lower threshold)
+Skipping size 500 (smaller than successful instance at lower threshold)
+Skipping size 1000 (smaller than successful instance at lower threshold)
+Testing size 2000... (timeout) ✗
+Maximum size for 60s: 0
+
+Testing time threshold: 120 seconds
+Skipping size 5 (smaller than successful instance at lower threshold)
+Skipping size 10 (smaller than successful instance at lower threshold)
+Skipping size 20 (smaller than successful instance at lower threshold)
+Skipping size 50 (smaller than successful instance at lower threshold)
+Skipping size 100 (smaller than successful instance at lower threshold)
+Skipping size 200 (smaller than successful instance at lower threshold)
+Skipping size 500 (smaller than successful instance at lower threshold)
+Skipping size 1000 (smaller than successful instance at lower threshold)
+Testing size 2000... ✗
+Maximum size for 120s: 0
+
+Testing time threshold: 180 seconds
+Skipping size 5 (smaller than successful instance at lower threshold)
+Skipping size 10 (smaller than successful instance at lower threshold)
+Skipping size 20 (smaller than successful instance at lower threshold)
+Skipping size 50 (smaller than successful instance at lower threshold)
+Skipping size 100 (smaller than successful instance at lower threshold)
+Skipping size 200 (smaller than successful instance at lower threshold)
+Skipping size 500 (smaller than successful instance at lower threshold)
+Skipping size 1000 (smaller than successful instance at lower threshold)
+Testing size 2000... ✗
+Maximum size for 180s: 0
+
+Testing time threshold: 240 seconds
+Skipping size 5 (smaller than successful instance at lower threshold)
+Skipping size 10 (smaller than successful instance at lower threshold)
+Skipping size 20 (smaller than successful instance at lower threshold)
+Skipping size 50 (smaller than successful instance at lower threshold)
+Skipping size 100 (smaller than successful instance at lower threshold)
+Skipping size 200 (smaller than successful instance at lower threshold)
+Skipping size 500 (smaller than successful instance at lower threshold)
+Skipping size 1000 (smaller than successful instance at lower threshold)
+Testing size 2000... ✗
+Maximum size for 240s: 0
+
+Results saved to benchmark_20250507_223907.csv
+
+Summary:
+--------------------------------------------------
+Time Threshold | Maximum Instance Size
+--------------------------------------------------
+0.1s           | 10
+0.5s           | 20
+1s             | 0
+5s             | 0
+15s            | 1000
+30s            | 0
+1min           | 0
+2min           | 0
+3min           | 0
+4min           | 0
+
+
+Time Threshold (s),Max Instance Size
+0.1,10
+0.5,20
+1,0
+5,0
+15,1000
+30,0
+60,0
+120,0
+180,0
+240,0
