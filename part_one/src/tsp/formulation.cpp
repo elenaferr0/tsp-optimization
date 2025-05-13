@@ -1,8 +1,6 @@
 #include "tsp/formulation.h"
 
 void Formulation::setup() {
-    CHECKED_CPX_CALL(CPXsetdblparam, env, CPX_PARAM_TILIM, 10);
-    CHECKED_CPX_CALL(CPXsetintparam, env, CPX_PARAM_WRITELEVEL, CPX_WRITELEVEL_NONZEROVARS);
     tl.start();
     create_variables();
     create_constraints();
@@ -48,7 +46,6 @@ Formulation::Formulation(const char *instance_name, int timeout)
     this->env = env;
     DECL_PROB(env, const lp, instance_name);
     this->lp = lp;
-    CHECKED_CPX_CALL(CPXsetdblparam, env, CPX_PARAM_TILIM, 10);
     CHECKED_CPX_CALL(CPXsetintparam, env, CPX_PARAM_WRITELEVEL, CPX_WRITELEVEL_NONZEROVARS);
     if (timeout > 0) {
         CHECKED_CPX_CALL(CPXsetdblparam, env, CPX_PARAM_TILIM, timeout);
