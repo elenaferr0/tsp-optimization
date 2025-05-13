@@ -1,5 +1,6 @@
 #ifndef GENETIC_ALGORITHM_H
 #define GENETIC_ALGORITHM_H
+#include <memory>
 #include <vector>
 
 #include "chromosome/chromosome.h"
@@ -9,23 +10,25 @@
 #include "stopping/stopping_criteria.h"
 #include "selection/selection_op.h"
 
-class GeneticAlgorithm {
-    std::vector<Chromosome> population;
-    SelectionOp selection;
-    CrossoverOp crossover;
-    MutationOp mutation;
-    GenerationalReplacement replacement;
-    StoppingCriteria stopping;
+using namespace std;
 
-    void evaluate_fitness();
+class GeneticAlgorithm {
+    vector<ChromosomePtr> population;
+    unique_ptr<SelectionOp> selection;
+    unique_ptr<CrossoverOp> crossover;
+    unique_ptr<MutationOp> mutation;
+    unique_ptr<GenerationalReplacement> replacement;
+    unique_ptr<StoppingCriteria> stopping;
 
 public:
-    GeneticAlgorithm(const std::vector<Chromosome> &initial_population,
+    GeneticAlgorithm(const vector<ChromosomePtr> &initial_population,
                      const SelectionOp &selection,
                      const CrossoverOp &crossover,
                      const MutationOp &mutation,
                      const GenerationalReplacement &replacement,
                      const StoppingCriteria &stopping);
+
+    void start();
 };
 
 #endif //GENETIC_ALGORITHM_H

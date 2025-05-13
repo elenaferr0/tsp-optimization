@@ -11,8 +11,7 @@ file(GLOB_RECURSE SOURCES "${CMAKE_SOURCE_DIR}/src/*.cpp")
 file(GLOB_RECURSE HEADERS "${CMAKE_SOURCE_DIR}/include/*.h")
 
 # Add executable
-add_executable(main ${SOURCES} ${HEADERS}
-        include/genetic_algorithm/stopping/stopping_criteria.h)
+add_executable(main ${SOURCES} ${HEADERS})
 
 # Link libraries
 target_link_libraries(main m pthread dl)

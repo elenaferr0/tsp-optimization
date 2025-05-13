@@ -6,7 +6,9 @@
 
 class CrossoverOp {
 public:
-    void recombine(const std::vector<Chromosome>& parents);
+    virtual ~CrossoverOp() = default;
+
+    virtual void recombine(const std::vector<Chromosome>& parents) = 0;
 };
 
 #endif //CROSSOVER_OPERATOR_H

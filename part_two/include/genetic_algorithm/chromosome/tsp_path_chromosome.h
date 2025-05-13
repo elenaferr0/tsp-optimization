@@ -9,6 +9,7 @@ class TSPPathChromosome final : public Chromosome {
 
 public:
     TSPPathChromosome();
+    double evaluate_fitness() override;
 };
 
 #endif //TSP_SOLUTION_ENCODER_H
