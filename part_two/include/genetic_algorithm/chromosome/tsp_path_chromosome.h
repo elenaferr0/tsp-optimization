@@ -3,13 +3,17 @@
 #include <vector>
 
 #include "chromosome.h"
+#include "tsp/graph.h"
+
+using namespace std;
 
 class TSPPathChromosome final : public Chromosome {
-    std::vector<int> path;
+    Graph graph;
+    vector<Node> path;
 
 public:
-    TSPPathChromosome();
-    double evaluate_fitness() override;
+    explicit TSPPathChromosome(Graph graph);
+    double evaluate_fitness() const override;
 };
 
 #endif //TSP_SOLUTION_ENCODER_H

@@ -1,17 +1,18 @@
 #include "genetic_algorithm/genetic_algorithm.h"
 
-GeneticAlgorithm::GeneticAlgorithm(const vector<ChromosomePtr> &initial_population,
-                                   const SelectionOp &selection,
-                                   const CrossoverOp &crossover,
-                                   const MutationOp &mutation,
-                                   const GenerationalReplacement &replacement,
-                                   const StoppingCriteria &stopping
+GeneticAlgorithm::GeneticAlgorithm(
+    const vector<ChromosomePtr> &initial_population,
+    unique_ptr<SelectionOp> &selection,
+    unique_ptr<CrossoverOp> &crossover,
+    unique_ptr<MutationOp> &mutation,
+    unique_ptr<GenerationalReplacement> &replacement,
+    unique_ptr<StoppingCriteria> &stopping
 ) : population(initial_population),
-    selection(make_unique<SelectionOp>(selection)),
-    crossover(make_unique<CrossoverOp>(crossover)),
-    mutation(make_unique<MutationOp>(mutation)),
-    replacement(make_unique<GenerationalReplacement>(replacement)),
-    stopping(make_unique<StoppingCriteria>(stopping)) {
+    selection(move(selection)),
+    crossover(move(crossover)),
+    mutation(move(mutation)),
+    replacement(move(replacement)),
+    stopping(move(stopping)) {
 }
 
 void GeneticAlgorithm::start() {

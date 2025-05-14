@@ -4,11 +4,13 @@
 
 #include "genetic_algorithm/chromosome/chromosome.h"
 
+using namespace std;
+
 class CrossoverOp {
 public:
     virtual ~CrossoverOp() = default;
 
-    virtual void recombine(const std::vector<Chromosome>& parents) = 0;
+    virtual void recombine(const vector<Chromosome> &parents) const = 0;
 };
 
 #endif //CROSSOVER_OPERATOR_H

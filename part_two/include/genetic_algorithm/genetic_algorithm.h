@@ -22,11 +22,11 @@ class GeneticAlgorithm {
 
 public:
     GeneticAlgorithm(const vector<ChromosomePtr> &initial_population,
-                     const SelectionOp &selection,
-                     const CrossoverOp &crossover,
-                     const MutationOp &mutation,
-                     const GenerationalReplacement &replacement,
-                     const StoppingCriteria &stopping);
+                     unique_ptr<SelectionOp> &selection,
+                     unique_ptr<CrossoverOp> &crossover,
+                     unique_ptr<MutationOp> &mutation,
+                     unique_ptr<GenerationalReplacement> &replacement,
+                     unique_ptr<StoppingCriteria> &stopping);
 
     void start();
 };
