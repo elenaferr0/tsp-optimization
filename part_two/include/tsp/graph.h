@@ -28,6 +28,10 @@ public:
         return Graph(path);
     }
 
+    static Graph empty() {
+        return Graph(vector<Node>());
+    }
+
     double get_cost(int i, int j) const;
 
     Node operator[](int i) const;

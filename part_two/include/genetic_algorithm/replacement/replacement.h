@@ -3,7 +3,7 @@
 
 #include <vector>
 
-#include "utils/typedefs.h"
+#include "genetic_algorithm/chromosome/chromosome.h"
 
 using namespace std;
 

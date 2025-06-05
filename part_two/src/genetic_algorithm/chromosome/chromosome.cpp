@@ -1,10 +1,15 @@
 #include "genetic_algorithm/chromosome/chromosome.h"
+
+#include <memory>
 #include <stdexcept>
 
-Chromosome::Chromosome(Graph graph) : graph(graph) {
+Chromosome::Chromosome(const Graph& graph) : graph(graph) {
     if (graph.path.size() == 0) {
         throw std::invalid_argument("Path cannot be empty");
     }
+}
+
+Chromosome::Chromosome() : graph(Graph::empty()) {
 }
 
 size_t Chromosome::get_n_genes() const {

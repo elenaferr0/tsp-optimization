@@ -1,6 +1,7 @@
 #ifndef LINEAR_RANKING_SELECTION_H
 #define LINEAR_RANKING_SELECTION_H
 #include "selection_op.h"
+#include "genetic_algorithm/chromosome/chromosome.h"
 
 class LinearRankingSelection final : public SelectionOp {
   public:

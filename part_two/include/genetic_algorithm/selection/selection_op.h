@@ -1,7 +1,7 @@
 #ifndef SELECTION_OP_H
 #define SELECTION_OP_H
 
-#include "utils/typedefs.h"
+#include "genetic_algorithm/chromosome/chromosome.h"
 
 using namespace std;
 

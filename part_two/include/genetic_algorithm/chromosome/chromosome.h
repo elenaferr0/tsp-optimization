@@ -13,7 +13,9 @@ protected:
     Graph graph;
 
 public:
-    explicit Chromosome(Graph graph);
+    explicit Chromosome(const Graph& graph);
+
+    Chromosome();
 
     double evaluate_fitness() const;
 

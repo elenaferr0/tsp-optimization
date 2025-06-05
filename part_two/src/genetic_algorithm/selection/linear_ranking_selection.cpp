@@ -12,7 +12,7 @@ vector<Chromosome> LinearRankingSelection::select(const vector<Chromosome> &popu
     sort(
         sorted.begin(),
         sorted.end(),
-        [](const auto &a, const auto &b) { return a->evaluate_fitness() < b->evaluate_fitness(); }
+        [](const auto &a, const auto &b) { return a.evaluate_fitness() < b.evaluate_fitness(); }
     );
 
     // TODO: not very elegant and efficient, find a better way

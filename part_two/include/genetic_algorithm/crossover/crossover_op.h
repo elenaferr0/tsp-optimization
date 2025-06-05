@@ -4,7 +4,6 @@
 #include <vector>
 
 #include "genetic_algorithm/chromosome/chromosome.h"
-#include "utils/typedefs.h"
 
 using namespace std;
 

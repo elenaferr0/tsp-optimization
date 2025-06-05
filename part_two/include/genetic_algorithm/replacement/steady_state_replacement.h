@@ -2,6 +2,7 @@
 #define STEADY_STATE_REPLACEMENT_H
 
 #include "replacement.h"
+#include "genetic_algorithm/chromosome/chromosome.h"
 
 using namespace std;
 
