@@ -1,9 +1,11 @@
-#include <iostream>
-
 #include "tsp/graph.h"
-#include "utils/measurements.h"
+#include "utils/maths.h"
 
 using namespace std;
+
+Graph::Graph(const vector<Node>& nodes): path(nodes), n_nodes(nodes.size()) {
+    compute_costs();
+}
 
 Graph::Graph(const string &file_path) : n_nodes(0)
 {
@@ -23,7 +25,7 @@ Graph::Graph(const string &file_path) : n_nodes(0)
             double x, y;
             file >> node.id >> x >> y;
             node.position = {x, y};
-            nodes.push_back(node);
+            path.push_back(node);
         }
     }
 
@@ -31,27 +33,13 @@ Graph::Graph(const string &file_path) : n_nodes(0)
     file.close();
 }
 
-void Graph::compute_costs()
-{
-    costs = vector<vector<double>>(n_nodes, vector<double>(n_nodes, -1));
-
-    for (int i = 0; i < n_nodes; ++i)
-    {
-        for (int j = 0; j < n_nodes; ++j)
-        {
-            if (i == j)
-            {
-                costs[i][j] = 0;
-                continue;
-            }
-
-            if (costs[j][i] != -1) // Assumption: cost is always positive and i->j has the same cost as j->i
-            {
-                costs[i][j] = costs[j][i];
-                continue;
-            }
-
-            costs[i][j] = euclidean_dist(nodes[i].position, nodes[j].position);
+void Graph::compute_costs() {
+    costs = vector<vector<double> >(n_nodes, vector<double>(n_nodes, -1));
+    // Iterate only bottom triangular matrix
+    for (int i = 1; i < n_nodes; ++i) {
+        for (int j = 0; j < i; ++j) {
+            costs[i][j] = euclidean_dist(path[i].position, path[j].position);
+            costs[j][i] = costs[i][j]; // Symmetric
         }
     }
 }
@@ -63,4 +51,11 @@ double Graph::get_cost(const int i, const int j) const
         throw out_of_range("Node index out of range");
     }
     return costs[i][j];
+}
+
+Node Graph::operator[](const int i) const {
+    if (i < 0 || i >= n_nodes) {
+        throw out_of_range("Node index out of range");
+    }
+    return path[i];
 }

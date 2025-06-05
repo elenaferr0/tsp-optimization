@@ -1,7 +1,0 @@
-#ifndef GENERATIONAL_REPLACEMENT_H
-#define GENERATIONAL_REPLACEMENT_H
-
-class GenerationalReplacement {
-};
-
-#endif //GENERATIONAL_REPLACEMENT_H

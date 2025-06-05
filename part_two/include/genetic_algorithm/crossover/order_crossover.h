@@ -1,0 +1,21 @@
+#ifndef ORDER_CROSSOVER_OPERATOR_H
+#define ORDER_CROSSOVER_OPERATOR_H
+
+#include <vector>
+#include <queue>
+#include "genetic_algorithm/chromosome/chromosome.h"
+#include "genetic_algorithm/crossover/crossover_op.h"
+#include "utils/typedefs.h"
+
+using namespace std;
+
+class OrderCrossover final : public CrossoverOp {
+  priority_queue<int, vector<int>, greater<int>> generate_cuts(int n) const;
+
+public:
+    OrderCrossover() = default;
+
+    vector<Chromosome> recombine(const vector<Chromosome> &parents) const override;
+};
+
+#endif //ORDER_CROSSOVER_OPERATOR_H

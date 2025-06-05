@@ -6,26 +6,26 @@
 #include "chromosome/chromosome.h"
 #include "crossover/crossover_op.h"
 #include "mutation/mutation_op.h"
-#include "replacement/generational_replacement.h"
+#include "replacement/replacement.h"
 #include "stopping/stopping_criteria.h"
 #include "selection/selection_op.h"
 
 using namespace std;
 
 class GeneticAlgorithm {
-    vector<ChromosomePtr> population;
+    vector<Chromosome> population;
     unique_ptr<SelectionOp> selection;
     unique_ptr<CrossoverOp> crossover;
     unique_ptr<MutationOp> mutation;
-    unique_ptr<GenerationalReplacement> replacement;
+    unique_ptr<Replacement> replacement;
     unique_ptr<StoppingCriteria> stopping;
 
 public:
-    GeneticAlgorithm(const vector<ChromosomePtr> &initial_population,
+    GeneticAlgorithm(const vector<Chromosome> &initial_population,
                      unique_ptr<SelectionOp> &selection,
                      unique_ptr<CrossoverOp> &crossover,
                      unique_ptr<MutationOp> &mutation,
-                     unique_ptr<GenerationalReplacement> &replacement,
+                     unique_ptr<Replacement> &replacement,
                      unique_ptr<StoppingCriteria> &stopping);
 
     void start();

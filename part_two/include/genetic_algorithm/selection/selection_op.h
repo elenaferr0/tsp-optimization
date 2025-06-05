@@ -15,7 +15,7 @@ public:
 
     virtual ~SelectionOp() = default;
 
-    virtual vector<ChromosomePtr> select(const vector<ChromosomePtr> &population) = 0;
+    virtual vector<Chromosome> select(const vector<Chromosome> &population) = 0;
 };
 
 #endif //SELECTION_OP_H

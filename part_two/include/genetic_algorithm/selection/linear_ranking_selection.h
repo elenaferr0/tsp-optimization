@@ -5,7 +5,7 @@
 class LinearRankingSelection final : public SelectionOp {
   public:
     explicit LinearRankingSelection(int n_parents);
-    vector<ChromosomePtr> select(const vector<ChromosomePtr>& population) override;
+    vector<Chromosome> select(const vector<Chromosome>& population) override;
 };
 
 #endif //LINEAR_RANKING_SELECTION_H

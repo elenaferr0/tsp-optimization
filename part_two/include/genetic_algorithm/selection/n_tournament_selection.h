@@ -8,7 +8,7 @@ class NTournamentSelection final : public SelectionOp {
 public:
     explicit NTournamentSelection(int tournament_size);
 
-    vector<ChromosomePtr> select(const vector<ChromosomePtr> &population) override;
+    vector<Chromosome> select(const vector<Chromosome> &population) override;
 };
 
 #endif //N_TOURNAMENT_SELECTION_H
