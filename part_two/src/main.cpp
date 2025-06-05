@@ -1,5 +1,5 @@
 #include <iostream>
-#include "../include/tsp/graph.h"
+#include "tsp/graph.h"
 
 using namespace std;
 

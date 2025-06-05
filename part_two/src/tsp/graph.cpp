@@ -1,13 +1,15 @@
-#include "../../include/tsp/graph.h"
 #include <iostream>
 
-#include "../../include/utils/measurements.h"
+#include "tsp/graph.h"
+#include "utils/measurements.h"
 
 using namespace std;
 
-Graph::Graph(const string &file_path) : n_nodes(0) {
+Graph::Graph(const string &file_path) : n_nodes(0)
+{
     fstream file(file_path);
-    if (!file.is_open()) {
+    if (!file.is_open())
+    {
         throw runtime_error("Could not open file: " + file_path);
     }
 
@@ -15,7 +17,8 @@ Graph::Graph(const string &file_path) : n_nodes(0) {
     {
         file >> n_nodes;
 
-        for (int i = 0; i < n_nodes; ++i) {
+        for (int i = 0; i < n_nodes; ++i)
+        {
             Node node;
             double x, y;
             file >> node.id >> x >> y;
@@ -28,12 +31,16 @@ Graph::Graph(const string &file_path) : n_nodes(0) {
     file.close();
 }
 
-void Graph::compute_costs() {
-    costs = vector<vector<double> >(n_nodes, vector<double>(n_nodes, -1));
+void Graph::compute_costs()
+{
+    costs = vector<vector<double>>(n_nodes, vector<double>(n_nodes, -1));
 
-    for (int i = 0; i < n_nodes; ++i) {
-        for (int j = 0; j < n_nodes; ++j) {
-            if (i == j) {
+    for (int i = 0; i < n_nodes; ++i)
+    {
+        for (int j = 0; j < n_nodes; ++j)
+        {
+            if (i == j)
+            {
                 costs[i][j] = 0;
                 continue;
             }
@@ -49,8 +56,10 @@ void Graph::compute_costs() {
     }
 }
 
-double Graph::get_cost(const int i, const int j) const {
-    if (i < 0 || i >= n_nodes || j < 0 || j >= n_nodes) {
+double Graph::get_cost(const int i, const int j) const
+{
+    if (i < 0 || i >= n_nodes || j < 0 || j >= n_nodes)
+    {
         throw out_of_range("Node index out of range");
     }
     return costs[i][j];
