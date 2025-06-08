@@ -11,14 +11,13 @@ using namespace std;
 
 
 class Graph {
-    DblMat costs;
+    dbl_mat costs;
     size_t n_nodes;
 
     void compute_costs();
 
     explicit Graph(const string &file_path);
 
-    explicit Graph(const vector<Node> &nodes);
 
 public:
     vector<Node> path; // Public just to allow easy access
@@ -27,6 +26,8 @@ public:
         const auto path = "./samples/" + string(instance_name) + ".dat";
         return Graph(path);
     }
+
+    explicit Graph(const vector<Node> &nodes);
 
     static Graph empty() {
         return Graph(vector<Node>());

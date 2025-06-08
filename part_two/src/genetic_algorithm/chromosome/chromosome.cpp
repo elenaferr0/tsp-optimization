@@ -52,3 +52,12 @@ double Chromosome::evaluate_fitness() const {
     fitness += graph.get_cost(graph.path.back().id, graph.path.front().id); // Return to the starting point
     return fitness;
 }
+
+ostream& operator<<(ostream &os, const Chromosome &chromosome) {
+    os << "Chromosome with path: ";
+    for (const auto &node : chromosome.graph.path) {
+        os << node.id << "(" << node.position.first << ", " << node.position.second << ") ";
+    }
+    os << "with fitness: " << chromosome.evaluate_fitness();
+    return os;
+}

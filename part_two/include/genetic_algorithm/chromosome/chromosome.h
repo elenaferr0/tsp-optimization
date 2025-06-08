@@ -28,6 +28,8 @@ public:
     void set_subpath(int start, int end, vector<Node> path);
 
     Node get_node(int i) const;
+
+    friend ostream& operator<<(ostream &os, const Chromosome &chromosome);
 };
 
 #endif //CHROMOSOME_H

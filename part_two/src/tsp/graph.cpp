@@ -44,18 +44,18 @@ void Graph::compute_costs() {
     }
 }
 
-double Graph::get_cost(const int i, const int j) const
+double Graph::get_cost(const int x, const int y) const
 {
-    if (i < 0 || i >= n_nodes || j < 0 || j >= n_nodes)
+    if (x < 0 || x >= n_nodes || y < 0 || y >= n_nodes)
     {
-        throw out_of_range("Node index out of range");
+        throw out_of_range("(get_cost) Node index out of range");
     }
-    return costs[i][j];
+    return costs[x][y];
 }
 
 Node Graph::operator[](const int i) const {
     if (i < 0 || i >= n_nodes) {
-        throw out_of_range("Node index out of range");
+        throw out_of_range("(operator[]) Node index out of range");
     }
     return path[i];
 }

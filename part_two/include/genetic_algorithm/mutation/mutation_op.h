@@ -6,6 +6,7 @@
 using namespace std;
 
 class MutationOp {
+protected:
     double rate;
 public:
     explicit MutationOp(double rate);

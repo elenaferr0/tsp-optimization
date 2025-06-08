@@ -23,7 +23,7 @@ class Graph {
 
 public:
     int n_nodes;
-    DblMat costs;
+    dbl_mat costs;
 
     static Graph of_instance(const char *instance_name) {
         const auto path = "./samples/" + string(instance_name) + ".dat";

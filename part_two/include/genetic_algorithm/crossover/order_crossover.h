@@ -10,8 +10,6 @@
 using namespace std;
 
 class OrderCrossover final : public CrossoverOp {
-  priority_queue<int, vector<int>, greater<int>> generate_cuts(int n) const;
-
 public:
     OrderCrossover() = default;
 

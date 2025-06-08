@@ -1,22 +1,9 @@
 #include "genetic_algorithm/crossover/order_crossover.h"
 #include "tsp/graph.h"
 #include "utils/maths.h"
+#include "utils/path.h"
 #include <algorithm>
 #include <set>
-
-priority_queue<int, vector<int>, greater<int>> OrderCrossover::generate_cuts(int parents_len) const {
-  priority_queue<int, vector<int>, greater<int>> cuts;
-  int n_cuts = 2;
-
-  while (cuts.size() < n_cuts) {
-    int cut = unif(0, parents_len - 1);
-    if (cuts.empty() || cuts.top() - cut > 1) { // ensure cuts are not adjacent
-      cuts.push(cut);
-    }
-  }
-
-  return cuts;
-}
 
 vector<Chromosome> OrderCrossover::recombine(const vector<Chromosome> &parents) const {
   int n_parents = parents.size();
@@ -24,9 +11,16 @@ vector<Chromosome> OrderCrossover::recombine(const vector<Chromosome> &parents) 
     throw invalid_argument("OrderCrossover requires two parents");
   }
 
-  // Temporarily use vector<Node> instead of Chromosome to simplify handling
+  // Temporarily use vector<Node> instead of Chromosome for simpler handling
   vector<vector<Node>> offsprings(n_parents, vector<Node>(parents[0].get_n_genes()));
-  auto cuts = generate_cuts(parents.size());
+  auto cuts = random_cut_points(parents.size());
+  cout << "Cut points: ";
+  priority_queue_asc<int> cuts_copy = cuts; // Copy for output
+  while (!cuts_copy.empty()) {
+    cout << cuts_copy.top() << " ";
+    cuts_copy.pop();
+  }
+  cout << endl;
 
   for (int i = 0; i < n_parents; ++i) {
     int cut1 = cuts.top();
@@ -56,4 +50,10 @@ vector<Chromosome> OrderCrossover::recombine(const vector<Chromosome> &parents) 
       current_index = (current_index + 1) % parents[i].get_n_genes();
     }
   }
+
+  vector<Chromosome> result;
+  for (const auto &offspring : offsprings) {
+    result.push_back(Chromosome(Graph(offspring)));
+  }
+  return result;
 }
