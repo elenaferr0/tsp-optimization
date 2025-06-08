@@ -6,7 +6,7 @@ GeneticAlgorithm::GeneticAlgorithm(
     unique_ptr<CrossoverOp> &crossover,
     unique_ptr<MutationOp> &mutation,
     unique_ptr<Replacement> &replacement,
-    unique_ptr<StoppingCriteria> &stopping
+    unique_ptr<StoppingCriterion> &stopping
 ) : population(initial_population),
     selection(move(selection)),
     crossover(move(crossover)),

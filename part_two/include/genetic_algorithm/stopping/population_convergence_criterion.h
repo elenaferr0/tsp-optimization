@@ -1,9 +1,9 @@
 #ifndef POPULATION_CONVERGENCE_H
 #define POPULATION_CONVERGENCE_H
 
-#include "stopping_criteria.h"
+#include "stopping_criterion.h"
 
-class PopulationConvergence final : public StoppingCriteria {
+class PopulationConvergence final : public StoppingCriterion {
 };
 
 #endif //POPULATION_CONVERGENCE_H

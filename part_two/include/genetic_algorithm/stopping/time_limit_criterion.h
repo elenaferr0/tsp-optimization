@@ -1,0 +1,19 @@
+#ifndef TIME_LIMIT_CRITERIA_H
+#define TIME_LIMIT_CRITERIA_H
+
+#include "stopping_criterion.h"
+#include "utils/typedefs.h"
+
+class TimeLimitCriterion final : public StoppingCriterion {
+  private:
+    long time_limit_seconds;
+    time_pt* start_time;
+
+  public:
+    TimeLimitCriterion(long time_limit_seconds);
+    bool should_stop() const override;
+    void handle_start() override;
+    ~TimeLimitCriterion();
+};
+
+#endif //TIME_LIMIT_CRITERIA_H

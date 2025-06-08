@@ -1,8 +1,8 @@
 #ifndef NON_IMPROVING_ITERATIONS_CRITERIA_H
 #define NON_IMPROVING_ITERATIONS_CRITERIA_H
 
-#include "stopping_criteria.h"
+#include "stopping_criterion.h"
 
-class NonImprovingIterationsCriteria final : public StoppingCriteria {};
+class NonImprovingIterationsCriterion final : public StoppingCriterion {};
 
 #endif //NON_IMPROVING_ITERATIONS_CRITERIA_H
