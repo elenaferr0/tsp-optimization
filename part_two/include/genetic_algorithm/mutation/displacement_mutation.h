@@ -8,7 +8,7 @@ class DisplacementMutation final : public MutationOp {
 public:
   explicit DisplacementMutation(double rate);
 
-  virtual vector<Chromosome> mutate(const vector<Chromosome> &population) const override;
+  vector<Chromosome> mutate(const vector<Chromosome> &population) const override;
 
   };
 

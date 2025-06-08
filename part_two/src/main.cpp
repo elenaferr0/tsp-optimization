@@ -2,9 +2,11 @@
 #include "tsp/graph.h"
 #include <genetic_algorithm/crossover/order_crossover.h>
 
+#include "genetic_algorithm/mutation/displacement_mutation.h"
+
 using namespace std;
 
-Chromosome create_chromosome(int size, int min_id = 0)
+Chromosome create_chromosome(const int size, const int min_id = 0)
 {
     // Create a simple graph with 'size' nodes
     vector<Node> nodes;
@@ -19,16 +21,12 @@ int main(const int argc, char *argv[])
 {
     try
     {
-        auto chromo1 = create_chromosome(5);
+        auto chromo1 = create_chromosome(8);
         cout << "Created Chromosome1: " << chromo1 << endl;
-        auto chromo2 = create_chromosome(5, 5); // Create a second chromosome with different IDs
-        cout << "Created Chromosome2: " << chromo2 << endl;
 
-        OrderCrossover oc;
-        auto recombined = oc.recombine({chromo1, chromo2});
-        cout << "Recombined Chromosomes:" << endl;
-        cout << recombined[0] << endl;
-        cout << recombined[1] << endl;
+        DisplacementMutation dt(1);
+        auto out = dt.mutate({chromo1});
+        cout << "Mutated Chromosome1: " << out[0] << endl;
     }
     catch (std::exception &e)
     {
