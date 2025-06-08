@@ -25,7 +25,10 @@ int main(const int argc, char *argv[])
         cout << "Created Chromosome2: " << chromo2 << endl;
 
         OrderCrossover oc;
-        oc.recombine({chromo1, chromo2});
+        auto recombined = oc.recombine({chromo1, chromo2});
+        cout << "Recombined Chromosomes:" << endl;
+        cout << recombined[0] << endl;
+        cout << recombined[1] << endl;
     }
     catch (std::exception &e)
     {

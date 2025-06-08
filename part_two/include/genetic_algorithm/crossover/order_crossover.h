@@ -2,7 +2,6 @@
 #define ORDER_CROSSOVER_OPERATOR_H
 
 #include <vector>
-#include <queue>
 #include "genetic_algorithm/chromosome/chromosome.h"
 #include "genetic_algorithm/crossover/crossover_op.h"
 #include "utils/typedefs.h"
