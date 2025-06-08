@@ -1,6 +1,7 @@
 #include "genetic_algorithm/chromosome/chromosome.h"
 
 #include <memory>
+#include <sstream>
 #include <stdexcept>
 
 Chromosome::Chromosome(const Graph& graph) : graph(graph) {
@@ -21,6 +22,19 @@ Node Chromosome::get_node(int i) const {
         throw std::out_of_range("Index out of range");
     }
     return graph[i];
+}
+
+string Chromosome::to_str() const {
+    stringstream ss;
+    ss << "Path: ";
+    for (size_t i = 0; i < graph.path.size(); ++i) {
+        if (i > 0) ss << " → ";
+        ss << graph[static_cast<int>(i)].id;
+        ss << "(" << graph[static_cast<int>(i)].position.first << ", "
+           << graph[static_cast<int>(i)].position.second << ")";
+    }
+    ss << " | Fitness: " << evaluate_fitness();
+    return ss.str();
 }
 
 bool Chromosome::operator<(const Chromosome &other) const {

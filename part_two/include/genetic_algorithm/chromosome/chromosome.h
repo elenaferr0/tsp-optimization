@@ -30,6 +30,8 @@ public:
     Node get_node(int i) const;
 
     friend ostream& operator<<(ostream &os, const Chromosome &chromosome);
+
+    string to_str() const;
 };
 
 #endif //CHROMOSOME_H

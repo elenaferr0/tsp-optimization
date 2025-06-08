@@ -4,9 +4,10 @@
 #include "genetic_algorithm/chromosome/chromosome.h"
 
 class LinearRankingSelection final : public SelectionOp {
-  public:
-    explicit LinearRankingSelection(int n_parents);
-    vector<Chromosome> select(const vector<Chromosome>& population) override;
+public:
+    explicit LinearRankingSelection(Logger::Level log_level, int n_parents);
+
+    vector<Chromosome> select(const vector<Chromosome> &population) override;
 };
 
 #endif //LINEAR_RANKING_SELECTION_H

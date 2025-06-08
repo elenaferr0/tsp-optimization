@@ -6,7 +6,7 @@ class NTournamentSelection final : public SelectionOp {
     int tournament_size;
 
 public:
-    explicit NTournamentSelection(int tournament_size);
+    explicit NTournamentSelection(Logger::Level log_level, int tournament_size);
 
     vector<Chromosome> select(const vector<Chromosome> &population) override;
 };

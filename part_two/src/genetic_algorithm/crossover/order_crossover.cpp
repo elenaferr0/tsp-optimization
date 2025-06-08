@@ -5,7 +5,11 @@
 #include <iostream>
 #include <set>
 
-vector<Chromosome> OrderCrossover::recombine(const vector<Chromosome> &parents) const {
+OrderCrossover::OrderCrossover(const Logger::Level log_level) : CrossoverOp(log_level) {
+    log.set_label("OrderCrossover");
+}
+
+vector<Chromosome> OrderCrossover::recombine(const vector<Chromosome> &parents) {
     const auto n_parents = parents.size();
     if (n_parents != 2) {
         throw invalid_argument("OrderCrossover requires two parents");
@@ -19,7 +23,8 @@ vector<Chromosome> OrderCrossover::recombine(const vector<Chromosome> &parents) 
     cuts.pop();
     const int cut2 = cuts.top();
     cuts.pop();
-    cout << "Cut points: " << cut1 << ", " << cut2 << endl;
+    log.debug("Cut points selected: cut1 = " + to_string(cut1) + ", cut2 = " + to_string(cut2));
+
     if (cut2 < cut1) {
         throw invalid_argument(
             "Cut points must be in increasing order, got cut1: " + to_string(cut1) + ", cut2: " + to_string(cut2));
@@ -46,8 +51,12 @@ vector<Chromosome> OrderCrossover::recombine(const vector<Chromosome> &parents) 
     }
 
     vector<Chromosome> result;
+    log.debug("Selected " + to_string(n_parents) + " parents for crossover, cut points: " + to_string(cut1) + ", " + to_string(cut2));
     for (const auto &offspring: offsprings) {
-        result.emplace_back(Graph(offspring));
+        auto chromosome = Chromosome(Graph(offspring));
+        log.debug(chromosome.to_str());
+        result.emplace_back();
     }
+
     return result;
 }

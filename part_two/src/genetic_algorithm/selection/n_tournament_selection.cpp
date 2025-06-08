@@ -8,7 +8,10 @@
 
 using namespace std;
 
-NTournamentSelection::NTournamentSelection(const int tournament_size) : SelectionOp(), tournament_size(tournament_size) {
+NTournamentSelection::NTournamentSelection(const Logger::Level log_level,
+                                           const int tournament_size) : SelectionOp(log_level),
+                                                                        tournament_size(tournament_size) {
+    log.set_label("NTournamentSelection");
 }
 
 vector<Chromosome> NTournamentSelection::select(const vector<Chromosome> &population) {
@@ -30,6 +33,13 @@ vector<Chromosome> NTournamentSelection::select(const vector<Chromosome> &popula
         }
 
         selected.push_back(*tournament.begin()); // select the best
+    }
+
+    if (log.get_min_level() < Logger::Level::INFO) { // Avoid iterating if log level is too low
+        log.debug("Selected " + std::to_string(selected.size()) + " chromosomes using n-tournament selection:");
+        for (const auto &chromosome : selected) {
+            log.debug(chromosome.to_str());
+        }
     }
 
     return selected;

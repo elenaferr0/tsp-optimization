@@ -4,8 +4,13 @@ TimeLimitCriterion::~TimeLimitCriterion() {
     delete start_time;
 }
 
-TimeLimitCriterion::TimeLimitCriterion(long time_limit_seconds)
-    : time_limit_seconds(time_limit_seconds), start_time(nullptr) {}
+TimeLimitCriterion::TimeLimitCriterion(const Logger::Level log_level, long time_limit_seconds)
+    : StoppingCriterion(log_level), time_limit_seconds(time_limit_seconds), start_time(nullptr) {
+    if (time_limit_seconds <= 0) {
+        throw std::invalid_argument("time_limit_seconds must be greater than 0");
+    }
+    log.set_label("TimeLimitCriterion");
+}
 
 void TimeLimitCriterion::handle_start() {
   start_time = new time_pt(std::chrono::high_resolution_clock::now());

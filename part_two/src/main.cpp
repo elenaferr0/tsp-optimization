@@ -1,11 +1,17 @@
 #include <iostream>
+#include <memory>
+
 #include "tsp/graph.h"
 #include <genetic_algorithm/crossover/order_crossover.h>
 #include <utils/path.h>
 
+#include "genetic_algorithm/genetic_algorithm.h"
 #include "genetic_algorithm/mutation/displacement_mutation.h"
 #include "genetic_algorithm/replacement/steady_state_replacement.h"
+#include "genetic_algorithm/selection/linear_ranking_selection.h"
+#include "genetic_algorithm/stopping/time_limit_criterion.h"
 
+class SelectionOp;
 using namespace std;
 
 Chromosome create_chromosome(const int size, const int min_id = 0) {
@@ -24,34 +30,35 @@ int main(const int argc, char *argv[]) {
         Chromosome parent1(Graph({
             Node(0, 0.0, 0.0),
             Node(1, 1.0, 1.0),
+            Node(2, 6.0, 0.0),
+            Node(3, 8.0, 1.0),
         }));
 
         Chromosome parent2(Graph({
-            Node(0, 2, 0.0),
-            Node(1, 10, 1.0),
+            Node(0, 0.0, 0.0),
+            Node(1, 2.0, 2.0),
+            Node(2, 5.0, 1.0),
+            Node(3, 7.0, 3.0),
         }));
 
-        auto parents = vector<Chromosome>{parent1, parent2};
-        cout << "Parent 1 Fitness: " << parent1.evaluate_fitness() << endl;
-        cout << "Parent 2 Fitness: " << parent2.evaluate_fitness() << endl;
+        auto level = Logger::Level::DEBUG;
+        vector<Chromosome> chromosomes = {parent1, parent2};
+        unique_ptr<SelectionOp> selection = make_unique<LinearRankingSelection>(level, 2);
+        unique_ptr<CrossoverOp> crossover = make_unique<OrderCrossover>(level);
+        unique_ptr<MutationOp> mutation = make_unique<DisplacementMutation>(level, 0.01);
+        unique_ptr<Replacement> replacement = make_unique<SteadyStateReplacement>(level);
+        unique_ptr<StoppingCriterion> stopping = make_unique<TimeLimitCriterion>(level, 10);
 
-        Chromosome off1(Graph({
-            Node(0, 5, 0.0),
-            Node(1, 1.0, 1.0),
-        }));
+        GeneticAlgorithm ga(
+            chromosomes,
+            selection,
+            crossover,
+            mutation,
+            replacement,
+            stopping
+        );
 
-        Chromosome off2(Graph({
-            Node(0, 4, 0.0),
-            Node(1, 10, 1.0),
-        }));
-        cout << "Offspring 1 Fitness: " << off1.evaluate_fitness() << endl;
-        cout << "Offspring 2 Fitness: " << off2.evaluate_fitness() << endl;
-
-        SteadyStateReplacement replacement(1);
-        auto new_population = replacement.replace(parents, {off1, off2});
-        for (const auto &chromosome : new_population) {
-            cout << "New Chromosome Fitness: " << chromosome.evaluate_fitness() << endl;
-        }
+        ga.start();
     } catch (std::exception &e) {
         std::cout << "Exception: " << e.what() << std::endl;
     }

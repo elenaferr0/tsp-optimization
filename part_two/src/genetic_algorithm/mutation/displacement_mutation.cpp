@@ -2,8 +2,9 @@
 #include "utils/maths.h"
 #include "utils/path.h"
 
-DisplacementMutation::DisplacementMutation(const double rate) : MutationOp(rate)
+DisplacementMutation::DisplacementMutation(const Logger::Level log_level, const double rate) : MutationOp(log_level, rate)
 {
+    log.set_label("DisplacementMutation");
 }
 
 vector<Chromosome> DisplacementMutation::mutate(const vector<Chromosome> &population) const

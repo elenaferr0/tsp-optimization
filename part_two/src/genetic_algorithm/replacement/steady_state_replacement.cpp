@@ -2,13 +2,13 @@
 
 #include <utils/path.h>
 
-SteadyStateReplacement::SteadyStateReplacement(const size_t n_replaced_parents) : Replacement(),
-                                                                                  n_replaced_parents(n_replaced_parents) {
+SteadyStateReplacement::SteadyStateReplacement(
+    const Logger::Level log_level, const size_t n_replaced_parents)
+    : Replacement(log_level), n_replaced_parents(n_replaced_parents) {
 }
 
 vector<Chromosome> SteadyStateReplacement::replace(const vector<Chromosome> &parents,
                                                    const vector<Chromosome> &offsprings) const {
-
     auto parents_idx_by_fitness = sort_by_fitness_idx(parents, by_fitness_desc);
     auto offsprings_idx_by_fitness = sort_by_fitness_idx(offsprings, by_fitness_desc);
 

@@ -2,14 +2,17 @@
 #define REPLACEMENT_H
 
 #include <vector>
+#include <utils/logger.h>
 
 #include "genetic_algorithm/chromosome/chromosome.h"
 
 using namespace std;
 
 class Replacement {
+protected:
+    Logger log;
 public:
-    Replacement() = default;
+    explicit Replacement(Logger::Level log_level);
 
     virtual ~Replacement() = default;
 

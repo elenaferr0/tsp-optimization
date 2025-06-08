@@ -2,7 +2,11 @@
 
 #include <utils/path.h>
 
-LinearRankingSelection::LinearRankingSelection(const int n_parents) : SelectionOp(n_parents) {
+LinearRankingSelection::LinearRankingSelection(const Logger::Level log_level, const int n_parents) : SelectionOp(log_level, n_parents) {
+    if (n_parents <= 0) {
+        throw std::invalid_argument("n_parents must be greater than 0");
+    }
+    log.set_label("LinearRankingSelection");
 }
 
 vector<Chromosome> LinearRankingSelection::select(const vector<Chromosome> &population) {
@@ -33,6 +37,13 @@ vector<Chromosome> LinearRankingSelection::select(const vector<Chromosome> &popu
                 selected.push_back(sorted_population[j]);
                 break;
             }
+        }
+    }
+
+    if (log.get_min_level() < Logger::Level::INFO) { // Avoid iterating if log level is too low
+        log.debug("Selected " + std::to_string(selected.size()) + " chromosomes using linear ranking selection:");
+        for (const auto &chromosome : selected) {
+            log.debug(chromosome.to_str());
         }
     }
 
