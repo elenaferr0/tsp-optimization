@@ -4,7 +4,6 @@
 #include <vector>
 #include "genetic_algorithm/chromosome/chromosome.h"
 #include "genetic_algorithm/crossover/crossover_op.h"
-#include "utils/typedefs.h"
 
 using namespace std;
 

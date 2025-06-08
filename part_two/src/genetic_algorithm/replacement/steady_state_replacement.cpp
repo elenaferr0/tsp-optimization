@@ -1,10 +1,32 @@
 #include "genetic_algorithm/replacement/steady_state_replacement.h"
 
-SteadyStateReplacement::SteadyStateReplacement() : Replacement() {
-    // Constructor implementation (if needed)
+#include <utils/path.h>
+
+SteadyStateReplacement::SteadyStateReplacement(const size_t n_replaced_parents) : Replacement(),
+                                                                                  n_replaced_parents(n_replaced_parents) {
 }
 
 vector<Chromosome> SteadyStateReplacement::replace(const vector<Chromosome> &parents,
-    const vector<Chromosome> &offsprings) const {
-    return parents; // TODO
+                                                   const vector<Chromosome> &offsprings) const {
+
+    auto parents_idx_by_fitness = sort_by_fitness_desc(parents);
+    auto offsprings_idx_by_fitness = sort_by_fitness_desc(offsprings);
+
+    vector<Chromosome> new_population;
+    new_population.reserve(parents.size());
+    const auto to_be_replaced = min(n_replaced_parents, offsprings.size());
+
+    for (size_t i = 0; i < parents.size(); ++i) {
+        if (i < to_be_replaced) {
+            // Keep the remaining parents
+            new_population.push_back(parents[parents_idx_by_fitness.top().first]);
+            parents_idx_by_fitness.pop();
+        } else {
+            // Replace the worst parents with the best offsprings
+            new_population.push_back(offsprings[offsprings_idx_by_fitness.top().first]);
+            offsprings_idx_by_fitness.pop();
+        }
+    }
+
+    return new_population;
 }
