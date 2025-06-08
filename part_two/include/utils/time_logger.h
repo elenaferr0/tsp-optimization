@@ -5,11 +5,12 @@
 #include <string>
 #include <iomanip> // For std::setprecision
 
+#include "typedefs.h"
+
 using std::chrono::duration;
 using std::chrono::high_resolution_clock;
 using namespace std;
 
-typedef high_resolution_clock::time_point time_pt;
 
 class TimeLogger {
     time_pt *start_time;

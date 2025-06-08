@@ -9,8 +9,8 @@ SteadyStateReplacement::SteadyStateReplacement(const size_t n_replaced_parents) 
 vector<Chromosome> SteadyStateReplacement::replace(const vector<Chromosome> &parents,
                                                    const vector<Chromosome> &offsprings) const {
 
-    auto parents_idx_by_fitness = sort_by_fitness_desc(parents);
-    auto offsprings_idx_by_fitness = sort_by_fitness_desc(offsprings);
+    auto parents_idx_by_fitness = sort_by_fitness_idx(parents, by_fitness_desc);
+    auto offsprings_idx_by_fitness = sort_by_fitness_idx(offsprings, by_fitness_desc);
 
     vector<Chromosome> new_population;
     new_population.reserve(parents.size());
