@@ -8,8 +8,8 @@ protected:
 public:
     explicit StoppingCriterion(Logger::Level log_level);
     virtual ~StoppingCriterion() = default;
-    virtual void handle_start() {}; // Method that will be called when the algorithm starts
-    virtual bool should_stop() const = 0;
+    virtual void handle_start() = 0;
+    virtual bool should_stop() = 0;
 };
 
 #endif //STOPPING_CRITERIA_H
