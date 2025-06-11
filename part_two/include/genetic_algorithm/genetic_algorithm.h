@@ -7,30 +7,32 @@
 #include "crossover/crossover_op.h"
 #include "mutation/mutation_op.h"
 #include "replacement/replacement.h"
-#include "stopping/stopping_criterion.h"
 #include "selection/selection_op.h"
+#include "stopping/stopping_criterion.h"
 #include "utils/logger.h"
 
 using namespace std;
 
 class GeneticAlgorithm {
-    vector<Chromosome> population;
-    unique_ptr<SelectionOp> selection;
-    unique_ptr<CrossoverOp> crossover;
-    unique_ptr<MutationOp> mutation;
-    unique_ptr<Replacement> replacement;
-    unique_ptr<StoppingCriterion> stopping;
-    Logger log;
+  vector<Chromosome> population;
+  unique_ptr<SelectionOp> selection;
+  unique_ptr<CrossoverOp> crossover;
+  unique_ptr<MutationOp> mutation;
+  unique_ptr<Replacement> replacement;
+  unique_ptr<StoppingCriterion> stopping;
+  long generation;
+  Logger log;
 
 public:
-    GeneticAlgorithm(const vector<Chromosome> &initial_population,
-                     unique_ptr<SelectionOp> &selection,
-                     unique_ptr<CrossoverOp> &crossover,
-                     unique_ptr<MutationOp> &mutation,
-                     unique_ptr<Replacement> &replacement,
-                     unique_ptr<StoppingCriterion> &stopping);
+  GeneticAlgorithm(const vector<Chromosome> &initial_population,
+                   unique_ptr<SelectionOp> &selection,
+                   unique_ptr<CrossoverOp> &crossover,
+                   unique_ptr<MutationOp> &mutation,
+                   unique_ptr<Replacement> &replacement,
+                   unique_ptr<StoppingCriterion> &stopping,
+                   Logger::Level log_level = Logger::Level::INFO);
 
-    void start();
+  void start();
 };
 
-#endif //GENETIC_ALGORITHM_H
+#endif // GENETIC_ALGORITHM_H

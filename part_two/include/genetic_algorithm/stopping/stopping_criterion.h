@@ -4,12 +4,13 @@
 
 class StoppingCriterion {
 protected:
-    Logger log;
+  Logger log;
+
 public:
-    explicit StoppingCriterion(Logger::Level log_level);
-    virtual ~StoppingCriterion() = default;
-    virtual void handle_start() = 0;
-    virtual bool should_stop() = 0;
+  explicit StoppingCriterion(Logger::Level log_level);
+  virtual ~StoppingCriterion() = default;
+  virtual void handle_start() = 0;
+  virtual bool should_stop() = 0;
 };
 
-#endif //STOPPING_CRITERIA_H
+#endif // STOPPING_CRITERIA_H
