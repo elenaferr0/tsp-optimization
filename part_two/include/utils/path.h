@@ -18,7 +18,7 @@ inline priority_queue_asc<int> random_cut_points(const size_t parents_len) {
   constexpr int n_cuts = 2;
 
   while (cuts.size() < n_cuts) {
-    int cut = unif(0, parents_len - 1);
+    int cut = unif_int(0, parents_len - 1);
     if (cuts.empty() || cuts.top() != cut) {
       cuts.push(cut);
     }

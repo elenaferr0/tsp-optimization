@@ -13,7 +13,7 @@ protected:
   int n_parents;
 
 public:
-  explicit SelectionOp(Logger::Level log_level, int n_parents = 2);
+  explicit SelectionOp(Logger::Level log_level, int n_parents);
   virtual ~SelectionOp() = default;
 
   virtual vector<Chromosome> select(const vector<Chromosome> &population) = 0;

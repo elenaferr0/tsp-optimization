@@ -7,7 +7,7 @@
 
 class ConvexHullInitialization final : public PopulationInitialization {
     Chromosome generate_chromosome(const vector<Node> &convex_hull,
-                                   const vector<Node> &interior_points) override;
+                                   const vector<Node> &interior_points);
 
     static vector<Node> compute_convex_hull(const vector<Node> &nodes);
 

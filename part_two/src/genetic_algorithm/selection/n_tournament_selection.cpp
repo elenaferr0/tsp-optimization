@@ -6,22 +6,16 @@
 #include <iostream>
 #include <random>
 
+#include "utils/maths.h"
+
 using namespace std;
 
-NTournamentSelection::NTournamentSelection(const Logger::Level log_level,
-                                           const int tournament_size)
-    : SelectionOp(log_level), tournament_size(tournament_size) {
+NTournamentSelection::NTournamentSelection(const Logger::Level log_level, const int tournament_size, const int n_parents)
+    : SelectionOp(log_level, n_parents), tournament_size(tournament_size) {
     log.set_label("NTournamentSelection");
 }
 
-vector<Chromosome>
-NTournamentSelection::select(const vector<Chromosome> &population) {
-    const int size = min(tournament_size, static_cast<int>(population.size()));
-
-    random_device rd;
-    mt19937 gen(rd());
-    std::uniform_int_distribution<size_t> dist(0, size - 1);
-
+vector<Chromosome> NTournamentSelection::select(const vector<Chromosome> &population) {
     vector<Chromosome> selected;
     selected.reserve(n_parents);
 
@@ -29,7 +23,7 @@ NTournamentSelection::select(const vector<Chromosome> &population) {
         multiset<Chromosome> tournament; // sorted by operator< (fitness)
 
         while (tournament.size() < tournament_size) {
-            const size_t random_index = dist(gen);
+            const size_t random_index = unif_int(0, population.size() - 1);
             tournament.insert(population[random_index]);
         }
 

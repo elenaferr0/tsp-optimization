@@ -32,7 +32,7 @@ LinearRankingSelection::select(const vector<Chromosome> &population) {
 
     // Select individuals using roulette wheel
     for (int i = 0; i < n_parents; ++i) {
-        const double r = unif(0.0, 1.0);
+        const double r = unif_real(0.0, 1.0);
 
         // Find the first individual whose cumulative probability exceeds r
         for (int j = 0; j < N; ++j) {

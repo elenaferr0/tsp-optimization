@@ -13,12 +13,12 @@ vector<Chromosome> ElitismReplacement::replace(const vector<Chromosome> &parents
     throw std::invalid_argument("ElitismReplacement: parents and offsprings cannot be empty");
   }
 
-  size_t num_elites = static_cast<size_t>(ratio * parents.size());
+  auto num_elites = static_cast<size_t>(ratio * parents.size());
   if (num_elites == 0) {
     num_elites = 1; // Ensure at least one elite is selected
   }
 
-  log.debug("Selecting " + to_string(num_elites) + " elites from parents");
+  log.trace("Selecting " + to_string(num_elites) + " elites from parents");
 
   vector<Chromosome> sorted_parents = sort_by_fitness(parents);
   vector<Chromosome> sorted_offsprings = sort_by_fitness(offsprings);
@@ -28,9 +28,9 @@ vector<Chromosome> ElitismReplacement::replace(const vector<Chromosome> &parents
 
   for (size_t i = 0; i < parents.size(); ++i) {
     if (i < num_elites) {
-      new_population.push_back(sorted_parents[i]);
+      new_population.emplace_back(sorted_parents[i]);
     } else {
-      new_population.push_back(sorted_offsprings[i - num_elites]);
+      new_population.emplace_back(sorted_offsprings[i - num_elites]);
     }
   }
 
@@ -38,6 +38,6 @@ vector<Chromosome> ElitismReplacement::replace(const vector<Chromosome> &parents
   if (new_population.size() != parents.size()) {
     throw std::runtime_error("ElitismReplacement: new population size does not match parents size");
   }
-  log.debug("Replaced " + to_string(num_elites) + " elites from parents with offsprings");
+  log.trace("Replaced " + to_string(num_elites) + " elites from parents with offsprings");
   return new_population;
 }

@@ -14,7 +14,7 @@ DisplacementMutation::mutate(const vector<Chromosome> &population) const {
   mutated_population.reserve(population.size());
 
   for (const auto &chromosome : population) {
-    if (unif(0.0, 1.0) > rate) {
+    if (unif_real(0.0, 1.0) > rate) {
       mutated_population.push_back(chromosome);
       continue; // Skip mutation
     }
@@ -25,8 +25,7 @@ DisplacementMutation::mutate(const vector<Chromosome> &population) const {
     const auto subpath_end = cuts.top();
     cuts.pop();
 
-    const int new_length =
-        chromosome.get_n_genes() - (subpath_end - subpath_start + 1);
+    const int new_length = chromosome.get_n_genes() - (subpath_end - subpath_start + 1);
     if (new_length - 2 <= 0) {
       // If the subpath is the entire chromosome, skip mutation
       mutated_population.push_back(chromosome);
@@ -35,7 +34,7 @@ DisplacementMutation::mutate(const vector<Chromosome> &population) const {
 
     int new_subpath_start = subpath_start; // Where to move the subpath
     while (new_subpath_start == subpath_start) {
-      new_subpath_start = unif(0, new_length - 1);
+      new_subpath_start = unif_int(0, new_length - 1);
     }
 
     // Move the subpath to the new position and copy others in order
