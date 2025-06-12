@@ -25,7 +25,7 @@ OrderCrossover::recombine(const vector<Chromosome> &parents) {
   cuts.pop();
   const int cut2 = cuts.top();
   cuts.pop();
-  log.debug("Cut points selected: cut1 = " + to_string(cut1) +
+  log.trace("Cut points selected: cut1 = " + to_string(cut1) +
             ", cut2 = " + to_string(cut2));
 
   if (cut2 < cut1) {
@@ -59,14 +59,17 @@ OrderCrossover::recombine(const vector<Chromosome> &parents) {
   }
 
   vector<Chromosome> result;
-  log.debug("Selected " + to_string(n_parents) +
+  log.trace("Selected " + to_string(n_parents) +
             " parents for crossover, cut points: " + to_string(cut1) + ", " +
             to_string(cut2));
+
+  string fitnesses;
   for (const auto &offspring : offsprings) {
     auto chromosome = Chromosome(Graph(offspring));
-    log.debug(chromosome.to_str());
+    fitnesses += to_string(chromosome.evaluate_fitness()) + " ";
     result.emplace_back(chromosome);
   }
+  log.trace("Fitnesses: " + fitnesses);
 
   return result;
 }

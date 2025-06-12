@@ -12,7 +12,7 @@ using namespace std;
 
 class Logger {
 public:
-  enum class Level { DEBUG = 0, INFO = 1, WARN = 2, ERROR = 3, FATAL = 4 };
+  enum class Level { TRACE = 0, DEBUG = 1, INFO = 2, WARN = 3, ERROR = 4 };
 
 private:
   Level min_level;
@@ -33,11 +33,11 @@ public:
   void set_label(const string &label);
   string get_label() const;
 
+  void trace(const string &message);
   void debug(const string &message);
   void info(const string &message);
   void warn(const string &message);
   void error(const string &message);
-  void fatal(const string &message);
 
   void log(Level level, const string &message);
 };

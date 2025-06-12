@@ -17,9 +17,7 @@ public:
 
   virtual ~Replacement() = default;
 
-  virtual vector<Chromosome>
-  replace(const vector<Chromosome> &parents,
-          const vector<Chromosome> &offsprings) const = 0;
+  virtual vector<Chromosome> replace(const vector<Chromosome> &parents, const vector<Chromosome> &offsprings) = 0;
 };
 
 #endif // REPLACEMENT_H

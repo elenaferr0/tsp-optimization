@@ -9,7 +9,8 @@ protected:
   int population_size;
   Logger log;
   Graph graph;
-  virtual Chromosome generate_chromosome() = 0;
+  virtual Chromosome generate_chromosome(const vector<Node>& convex_hull,
+                                      const vector<Node>& interior_points) = 0;
 
 public:
   PopulationInitialization(Logger::Level log_level, Graph graph, int population_size);

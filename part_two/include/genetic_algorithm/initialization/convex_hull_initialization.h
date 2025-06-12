@@ -2,23 +2,25 @@
 #define CONVEX_HULL_INITIALIZATION_H
 
 #include <random>
-
+#include <vector>
 #include "population_initialization.h"
 
 class ConvexHullInitialization final : public PopulationInitialization {
-  Chromosome generate_chromosome() override;
+    Chromosome generate_chromosome(const vector<Node> &convex_hull,
+                                   const vector<Node> &interior_points) override;
 
-  vector<Node> convex_hull() const;
+    static vector<Node> compute_convex_hull(const vector<Node> &nodes);
 
-  static bool in_hull(const Node &node, const vector<Node> &hull);
-  pair<int, double> best_insertion(const vector<Node> &tour, const Node &node) const;
-  double insertion_cost(const vector<Node> &tour, int pos, const Node &node) const;
+    int find_best_insertion_position(const vector<Node> &current_tour, int node_to_insert) const;
 
-  mutable mt19937 gen;
+    double calculate_insertion_cost(const vector<Node> &tour, int node_to_insert, int position) const;
+
+    mutable mt19937 gen;
+
 public:
-  ConvexHullInitialization(Logger::Level log_level, Graph graph, int population_size);
+    ConvexHullInitialization(Logger::Level log_level, Graph graph, int population_size);
 
-  vector<Chromosome> generate_population() override;
+    vector<Chromosome> generate_population() override;
 };
 
 #endif // CONVEX_HULL_INITIALIZATION_H

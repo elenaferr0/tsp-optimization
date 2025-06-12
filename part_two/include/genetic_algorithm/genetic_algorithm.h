@@ -5,6 +5,7 @@
 
 #include "chromosome/chromosome.h"
 #include "crossover/crossover_op.h"
+#include "initialization/population_initialization.h"
 #include "mutation/mutation_op.h"
 #include "replacement/replacement.h"
 #include "selection/selection_op.h"
@@ -14,25 +15,32 @@
 using namespace std;
 
 class GeneticAlgorithm {
-  vector<Chromosome> population;
-  unique_ptr<SelectionOp> selection;
-  unique_ptr<CrossoverOp> crossover;
-  unique_ptr<MutationOp> mutation;
-  unique_ptr<Replacement> replacement;
-  unique_ptr<StoppingCriterion> stopping;
-  long generation;
-  Logger log;
+    vector<Chromosome> population;
+    unique_ptr<PopulationInitialization> population_initialization;
+    unique_ptr<SelectionOp> selection;
+    unique_ptr<CrossoverOp> crossover;
+    unique_ptr<MutationOp> mutation;
+    unique_ptr<Replacement> replacement;
+    vector<unique_ptr<StoppingCriterion>> stopping;
+    long generation;
+    Logger log;
+
+    Chromosome get_best() const;
+
+    bool should_stop();
+
+    void handle_start();
 
 public:
-  GeneticAlgorithm(const vector<Chromosome> &initial_population,
-                   unique_ptr<SelectionOp> &selection,
-                   unique_ptr<CrossoverOp> &crossover,
-                   unique_ptr<MutationOp> &mutation,
-                   unique_ptr<Replacement> &replacement,
-                   unique_ptr<StoppingCriterion> &stopping,
-                   Logger::Level log_level = Logger::Level::INFO);
+    GeneticAlgorithm(unique_ptr<PopulationInitialization> &population_initialization,
+                     unique_ptr<SelectionOp> &selection,
+                     unique_ptr<CrossoverOp> &crossover,
+                     unique_ptr<MutationOp> &mutation,
+                     unique_ptr<Replacement> &replacement,
+                        vector<unique_ptr<StoppingCriterion>> &stopping,
+                     Logger::Level log_level = Logger::Level::INFO);
 
-  void start();
+    void start(long logging_frequency = 100);
 };
 
 #endif // GENETIC_ALGORITHM_H

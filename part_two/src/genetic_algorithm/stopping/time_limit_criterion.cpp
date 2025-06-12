@@ -16,7 +16,7 @@ void TimeLimitCriterion::handle_start() {
   start_time = new time_pt(chrono::high_resolution_clock::now());
 }
 
-bool TimeLimitCriterion::should_stop() {
+bool TimeLimitCriterion::should_stop(double best_fitness) {
   if (start_time == nullptr) {
     return false; // If the start time is not set, we cannot determine if we
                   // should stop

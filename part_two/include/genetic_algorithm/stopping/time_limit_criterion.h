@@ -10,7 +10,7 @@ class TimeLimitCriterion final : public StoppingCriterion {
 
 public:
   TimeLimitCriterion(Logger::Level log_level, long time_limit_seconds);
-  bool should_stop() override;
+  bool should_stop(double best_fitness) override;
   void handle_start() override;
   ~TimeLimitCriterion() override;
 };

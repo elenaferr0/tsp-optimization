@@ -14,7 +14,7 @@ public:
 
   vector<Chromosome>
   replace(const vector<Chromosome> &parents,
-          const vector<Chromosome> &offsprings) const override;
+          const vector<Chromosome> &offsprings) override;
 };
 
 #endif // STEADY_STATE_REPLACEMENT_H
