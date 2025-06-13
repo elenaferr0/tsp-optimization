@@ -9,13 +9,16 @@
 
 ConvexHullInitialization::ConvexHullInitialization(
     const Logger::Level log_level, Graph graph, const int population_size)
-    : PopulationInitialization(log_level, std::move(graph), population_size) {
-    if (population_size <= 0) {
+    : PopulationInitialization(log_level, std::move(graph), population_size)
+{
+    if (population_size <= 0)
+    {
         throw std::invalid_argument("Population size must be positive");
     }
 }
 
-vector<Chromosome> ConvexHullInitialization::generate_population() {
+vector<Chromosome> ConvexHullInitialization::generate_population()
+{
     vector<Chromosome> population;
 
     // Get the convex hull once
@@ -23,19 +26,23 @@ vector<Chromosome> ConvexHullInitialization::generate_population() {
 
     // Get interior points (nodes not on convex hull)
     set<int> hull_ids;
-    for (const auto &node: convex_hull) {
+    for (const auto &node : convex_hull)
+    {
         hull_ids.insert(node.id);
     }
 
     vector<Node> interior_points;
-    for (const auto &node: graph.path) {
-        if (hull_ids.find(node.id) == hull_ids.end()) {
+    for (const auto &node : graph.path)
+    {
+        if (hull_ids.find(node.id) == hull_ids.end())
+        {
             interior_points.push_back(node);
         }
     }
 
     // Generate multiple chromosomes with different random shuffles
-    for (int i = 0; i < population_size; ++i) {
+    for (int i = 0; i < population_size; ++i)
+    {
         population.push_back(generate_chromosome(convex_hull, interior_points));
     }
 
@@ -44,17 +51,26 @@ vector<Chromosome> ConvexHullInitialization::generate_population() {
 
 Chromosome ConvexHullInitialization::generate_chromosome(
     const vector<Node> &convex_hull,
-    const vector<Node> &interior_points) {
+    const vector<Node> &interior_points)
+{
     vector<Node> tour;
-    for (const auto &node: convex_hull) {
+    for (const auto &node : convex_hull)
+    {
         tour.push_back(node);
     }
 
-    for (const auto &interior_node: interior_points) {
-        // const int best_position = find_best_insertion_position(tour, interior_node.id);
-        // random best position instead
-        const int random_pos = rand() % (tour.size() + 1);
-        tour.insert(tour.begin() + random_pos, interior_node);
+    for (const auto &interior_node : interior_points)
+    {
+        if (unif_real(0.0, 1.0) > 0.5) // With 50% insert randomly
+        {
+            const int random_pos = rand() % (tour.size() + 1);
+            tour.insert(tour.begin() + random_pos, interior_node);
+        }
+        else
+        {
+            const int best_position = find_best_insertion_position(tour, interior_node.id);
+            tour.insert(tour.begin() + best_position, interior_node);
+        }
     }
 
     const Graph graph_tour(tour);
@@ -63,15 +79,18 @@ Chromosome ConvexHullInitialization::generate_chromosome(
 
 int ConvexHullInitialization::find_best_insertion_position(
     const vector<Node> &current_tour,
-    const int node_to_insert) const {
+    const int node_to_insert) const
+{
     double min_cost_increase = numeric_limits<double>::max();
     int best_position = 0;
 
     // Try inserting between each pair of consecutive cities
-    for (int i = 0; i <= current_tour.size(); ++i) {
+    for (int i = 0; i <= current_tour.size(); ++i)
+    {
         const double cost_increase = calculate_insertion_cost(current_tour, node_to_insert, i);
 
-        if (cost_increase < min_cost_increase) {
+        if (cost_increase < min_cost_increase)
+        {
             min_cost_increase = cost_increase;
             best_position = i;
         }
@@ -81,11 +100,14 @@ int ConvexHullInitialization::find_best_insertion_position(
 }
 
 double ConvexHullInitialization::calculate_insertion_cost(const vector<Node> &tour, const int node_to_insert,
-                                                          const int position) const {
+                                                          const int position) const
+{
     const int tour_size = tour.size();
 
-    if (tour_size == 0) return 0.0;
-    if (tour_size == 1) {
+    if (tour_size == 0)
+        return 0.0;
+    if (tour_size == 1)
+    {
         // Cost of going from tour[0] to node_to_insert and back
         return 2.0 * graph.get_cost(tour[0].id, node_to_insert);
     }
@@ -103,18 +125,22 @@ double ConvexHullInitialization::calculate_insertion_cost(const vector<Node> &to
 }
 
 vector<Node> ConvexHullInitialization::compute_convex_hull(
-    const vector<Node> &nodes) {
-    if (nodes.size() < 3) return nodes;
+    const vector<Node> &nodes)
+{
+    if (nodes.size() < 3)
+        return nodes;
 
     // Graham scan algorithm
     vector<Node> points = nodes;
 
     // Find the bottom-most point (or left most in case of tie)
     int min_idx = 0;
-    for (int i = 1; i < points.size(); ++i) {
+    for (int i = 1; i < points.size(); ++i)
+    {
         if (points[i].y() < points[min_idx].y() ||
             (points[i].y() == points[min_idx].y() &&
-             points[i].x() < points[min_idx].x())) {
+             points[i].x() < points[min_idx].x()))
+        {
             min_idx = i;
         }
     }
@@ -123,7 +149,8 @@ vector<Node> ConvexHullInitialization::compute_convex_hull(
     // Sort points by polar angle with respect to points[0]
     Node pivot = points[0];
     sort(points.begin() + 1, points.end(),
-         [&pivot](const Node &a, const Node &b) {
+         [&pivot](const Node &a, const Node &b)
+         {
              const double angle_a = atan2(a.y() - pivot.y(), a.x() - pivot.x());
              const double angle_b = atan2(b.y() - pivot.y(), b.x() - pivot.x());
              return angle_a < angle_b;
@@ -131,10 +158,12 @@ vector<Node> ConvexHullInitialization::compute_convex_hull(
 
     // Build convex hull
     vector<Node> hull;
-    for (const auto &point: points) {
+    for (const auto &point : points)
+    {
         // Remove points that make clockwise turn
         while (hull.size() >= 2 &&
-               cross_product(hull[hull.size() - 2], hull[hull.size() - 1], point) <= 0) {
+               cross_product(hull[hull.size() - 2], hull[hull.size() - 1], point) <= 0)
+        {
             hull.pop_back();
         }
         hull.push_back(point);

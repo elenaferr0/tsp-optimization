@@ -29,7 +29,9 @@ public:
 
   friend ostream &operator<<(ostream &os, const Chromosome &chromosome);
 
-  string to_str() const;
+  string to_str(bool log_positions = false) const;
+
+  friend class GeneticAlgorithm;
 };
 
 #endif // CHROMOSOME_H

@@ -22,14 +22,19 @@ class GeneticAlgorithm {
     unique_ptr<MutationOp> mutation;
     unique_ptr<Replacement> replacement;
     vector<unique_ptr<StoppingCriterion>> stopping;
-    long generation;
+    long generation_n;
     Logger log;
+    double initial_fitness;
 
     Chromosome get_best() const;
 
     bool should_stop();
 
     void handle_start();
+
+    void print_summary();
+
+    void save_to_file(const string &filename);
 
 public:
     GeneticAlgorithm(unique_ptr<PopulationInitialization> &population_initialization,
@@ -40,7 +45,7 @@ public:
                         vector<unique_ptr<StoppingCriterion>> &stopping,
                      Logger::Level log_level = Logger::Level::INFO);
 
-    void start(long logging_frequency = 100);
+    void start(const string &filename, long logging_frequency = 100);
 };
 
 #endif // GENETIC_ALGORITHM_H

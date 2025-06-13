@@ -12,6 +12,7 @@ using namespace std;
 class Graph {
   dbl_mat costs;
   size_t n_nodes;
+  string file_path;
 
   void compute_costs();
 
@@ -30,6 +31,9 @@ public:
   double get_cost(int i, int j) const;
 
   Node operator[](int i) const;
+
+  string get_file_path() const;
+  
 };
 
 #endif // GRAPH_H

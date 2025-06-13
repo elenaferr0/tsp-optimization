@@ -1,6 +1,5 @@
 #include <iostream>
 #include "cpxmacro.h"
-#include "../include/tsp/graph.h"
 #include "tsp/gavish_graves_formulation.h"
 #include "tsp/miller_tucker_zemlin_formulation.h"
 

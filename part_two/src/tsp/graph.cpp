@@ -3,11 +3,11 @@
 
 using namespace std;
 
-Graph::Graph(const vector<Node> &nodes) : n_nodes(nodes.size()), path(nodes) {
+Graph::Graph(const vector<Node> &nodes) : n_nodes(nodes.size()), path(nodes), file_path("") {
   compute_costs();
 }
 
-Graph::Graph(const string &file_path) : n_nodes(0) {
+Graph::Graph(const string &file_path) : n_nodes(0), file_path(file_path) {
   fstream file(file_path);
   if (!file.is_open()) {
     throw runtime_error("Could not open file: " + file_path);
@@ -53,4 +53,8 @@ Node Graph::operator[](const int i) const {
     throw out_of_range("(operator[]) Node index out of range");
   }
   return path[i];
+}
+
+string Graph::get_file_path() const {
+  return file_path;
 }

@@ -3,3 +3,6 @@ build/**
 bin/**
 **/.venv/**
 *.sol
+out/** 
+.venv/**
+**/.DS_Store
