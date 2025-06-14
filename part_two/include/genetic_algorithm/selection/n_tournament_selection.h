@@ -3,10 +3,8 @@
 #include "selection_op.h"
 
 class NTournamentSelection final : public SelectionOp {
-  int tournament_size;
-
 public:
-  explicit NTournamentSelection(Logger::Level log_level, int tournament_size, int n_parents);
+  explicit NTournamentSelection(Logger::Level log_level, const HyperParams &params);
 
   vector<Chromosome> select(const vector<Chromosome> &population) override;
 };

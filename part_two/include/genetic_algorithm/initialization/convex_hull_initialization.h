@@ -15,10 +15,8 @@ class ConvexHullInitialization final : public PopulationInitialization {
 
     double compute_insertion_cost(const vector<Node> &tour, const Node& node_to_insert, int position) const;
 
-    mutable mt19937 gen;
-
 public:
-    ConvexHullInitialization(Logger::Level log_level, Graph graph, int population_size);
+    ConvexHullInitialization(Logger::Level log_level, const Graph& graph, const HyperParams& params);
 
     vector<Chromosome> generate_population() override;
 };

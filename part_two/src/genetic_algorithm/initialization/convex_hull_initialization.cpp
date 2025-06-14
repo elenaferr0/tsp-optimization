@@ -1,20 +1,16 @@
 #include "genetic_algorithm/initialization/convex_hull_initialization.h"
 
 #include <algorithm>
-#include <random>
 #include <set>
+#include <limits>
 
 #include "genetic_algorithm/chromosome/chromosome.h"
 #include "utils/maths.h"
 
 ConvexHullInitialization::ConvexHullInitialization(
-    const Logger::Level log_level, Graph graph, const int population_size)
-    : PopulationInitialization(log_level, std::move(graph), population_size)
+    const Logger::Level log_level, const Graph &graph, const HyperParams &params)
+    : PopulationInitialization(log_level, graph, params)
 {
-    if (population_size <= 0)
-    {
-        throw std::invalid_argument("Population size must be positive");
-    }
 }
 
 vector<Chromosome> ConvexHullInitialization::generate_population()
@@ -41,7 +37,7 @@ vector<Chromosome> ConvexHullInitialization::generate_population()
     }
 
     // Generate multiple chromosomes with different random shuffles
-    for (int i = 0; i < population_size; ++i)
+    for (int i = 0; i < params.population_size; ++i)
     {
         population.push_back(generate_chromosome(convex_hull, interior_points));
     }
@@ -65,30 +61,18 @@ Chromosome ConvexHullInitialization::generate_chromosome(
     for (const auto &node : interior_nodes_copy)
     {
         auto best_index = find_best_insertion_position(tour, node);
-        if (unif_real(0, 1) > 0.1)
+        if (unif_real(0, 1) > params.convex_hull_deviation_ratio) // With probability
         {
-            // Add number which makes the path deviate at most 10% from the best position
-            const int deviation = tour_size / 10;
-            best_index = max(0, best_index - deviation);
+            // Add number which makes the insertion deviate from the best position
+            const int max_deviation = tour_size * params.convex_hull_max_deviation;
+            const int deviation = unif_int(-max_deviation, max_deviation);
+            best_index = (best_index + deviation) % tour_size;
         }
         tour.insert(tour.begin() + best_index + 1, node);
-
-        // if (unif_real(0.0, 1.0) > 0.5) // With 50% insert randomly
-        // {
-        //     const int random_pos = rand() % (tour.size() + 1);
-        //     tour.insert(tour.begin() + random_pos, interior_node);
-        // }
-        // else
-        // {
-        //     const int best_position = find_best_insertion_position(tour, interior_node.id);
-        //     tour.insert(tour.begin() + best_position, interior_node);
-        // }
     }
 
     const Graph graph_tour(tour);
-    Chromosome chromo(graph_tour);
-    cout << "Generated chromosome with " << chromo.to_str() << endl;
-    return chromo;
+    return Chromosome(graph_tour);
 }
 
 int ConvexHullInitialization::find_best_insertion_position(const vector<Node> &current_tour, const Node& node_to_insert) const

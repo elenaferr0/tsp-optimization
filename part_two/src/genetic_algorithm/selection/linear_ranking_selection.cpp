@@ -2,18 +2,14 @@
 
 #include <utils/path.h>
 
-LinearRankingSelection::LinearRankingSelection(const Logger::Level log_level,
-                                               const int n_parents)
-    : SelectionOp(log_level, n_parents) {
-    if (n_parents <= 0) {
-        throw std::invalid_argument("n_parents must be greater than 0");
-    }
+LinearRankingSelection::LinearRankingSelection(const Logger::Level log_level, const HyperParams &params)
+    : SelectionOp(log_level, params) {
     log.set_label("LinearRankingSelection");
 }
 
 vector<Chromosome> LinearRankingSelection::select(const vector<Chromosome> &population) {
     vector<Chromosome> selected;
-    selected.reserve(n_parents);
+    selected.reserve(params.selection_n_parents);
 
     const int N = static_cast<int>(population.size());
 
@@ -30,7 +26,7 @@ vector<Chromosome> LinearRankingSelection::select(const vector<Chromosome> &popu
     }
 
     // Select individuals using roulette wheel
-    for (int i = 0; i < n_parents; ++i) {
+    for (int i = 0; i < params.selection_n_parents; ++i) {
         const double r = unif_real(0.0, 1.0);
 
         // Find the first individual whose cumulative probability exceeds r

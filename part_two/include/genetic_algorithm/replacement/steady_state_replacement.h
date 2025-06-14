@@ -7,9 +7,8 @@
 using namespace std;
 
 class SteadyStateReplacement final : public Replacement {
-  double worst_replacement_ratio;
 public:
-  explicit SteadyStateReplacement(Logger::Level log_level, double worst_replacement_ratio = 0.1);
+  explicit SteadyStateReplacement(Logger::Level log_level, const HyperParams &params);
 
   vector<Chromosome>
   replace(const vector<Chromosome> &parents,

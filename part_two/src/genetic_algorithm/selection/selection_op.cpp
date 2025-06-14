@@ -1,4 +1,7 @@
 #include "genetic_algorithm/selection/selection_op.h"
 
-SelectionOp::SelectionOp(const Logger::Level log_level, const int n_parents)
-    : log(log_level), n_parents(n_parents) {}
+#include <genetic_algorithm/hyper_params.h>
+
+SelectionOp::SelectionOp(const Logger::Level log_level, const HyperParams &params)
+    : log(log_level), params(params) {
+}

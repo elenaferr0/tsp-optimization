@@ -1,10 +1,7 @@
 #include "genetic_algorithm/replacement/elitism_replacement.h"
 #include "utils/path.h"
 
-ElitismReplacement::ElitismReplacement(Logger::Level log_level, double ratio) : Replacement(log_level), ratio(ratio) {
-  if (ratio < 0 || ratio > 1) {
-    throw std::invalid_argument("ElitismReplacement: ratio must be in [0, 1]");
-  }
+ElitismReplacement::ElitismReplacement(const Logger::Level log_level, const HyperParams& params) : Replacement(log_level, params) {
   log.set_label("ElitismReplacement");
 }
 
@@ -13,7 +10,7 @@ vector<Chromosome> ElitismReplacement::replace(const vector<Chromosome> &parents
     throw std::invalid_argument("ElitismReplacement: parents and offsprings cannot be empty");
   }
 
-  auto num_elites = static_cast<size_t>(ratio * parents.size());
+  auto num_elites = floor(params.parents_replacement_rate * static_cast<int>(parents.size()));
   if (num_elites == 0) {
     num_elites = 1; // Ensure at least one elite is selected
   }

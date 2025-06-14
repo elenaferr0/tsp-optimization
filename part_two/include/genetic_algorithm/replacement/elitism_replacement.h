@@ -7,9 +7,8 @@
 using namespace std;
 
 class ElitismReplacement final : public Replacement {
-  double ratio; // Ratio of parents to be replaced
 public:
-  explicit ElitismReplacement(Logger::Level log_level, double ratio = 0.05);
+  explicit ElitismReplacement(Logger::Level log_level, const HyperParams &params);
 
   vector<Chromosome> replace(const vector<Chromosome> &parents, const vector<Chromosome> &offsprings) override;
 };

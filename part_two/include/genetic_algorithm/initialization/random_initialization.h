@@ -7,7 +7,7 @@
 
 class RandomInitialization final : public PopulationInitialization {
 public:
-    RandomInitialization(Logger::Level log_level, Graph graph, int population_size);
+    RandomInitialization(Logger::Level log_level, const Graph& graph, const HyperParams& params);
 
     vector<Chromosome> generate_population() override;
 };

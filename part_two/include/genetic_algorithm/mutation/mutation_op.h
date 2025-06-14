@@ -2,6 +2,7 @@
 #define MUTATION_OPERATOR_H
 #include <utils/logger.h>
 #include <vector>
+#include <genetic_algorithm/hyper_params.h>
 
 #include "genetic_algorithm/chromosome/chromosome.h"
 
@@ -9,11 +10,11 @@ using namespace std;
 
 class MutationOp {
 protected:
-  double rate;
   Logger log;
+  HyperParams params;
 
 public:
-  explicit MutationOp(Logger::Level log_level, double rate = 0.01);
+  explicit MutationOp(Logger::Level log_level, const HyperParams &params);
   virtual ~MutationOp() = default;
 
   virtual vector<Chromosome>

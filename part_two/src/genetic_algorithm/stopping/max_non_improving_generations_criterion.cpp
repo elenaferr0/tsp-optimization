@@ -2,22 +2,16 @@
 
 #include "utils/maths.h"
 
-MaxNonImprovingGenerationsCriterion::MaxNonImprovingGenerationsCriterion(const Logger::Level log_level,
-                                                                         const long max_generations)
-    : StoppingCriterion(log_level),
-      max_generations(max_generations),
+MaxNonImprovingGenerationsCriterion::MaxNonImprovingGenerationsCriterion(const Logger::Level log_level, const HyperParams &params)
+    : StoppingCriterion(log_level, params),
       last_best_fitness(numeric_limits<double>::max()),
       non_improving_count(0) {
-    if (max_generations <= 0) {
-        throw std::invalid_argument("Max generations must be greater than 0");
-    }
-
     log.set_label("MaxGenerationsCriterion");
 }
 
 void MaxNonImprovingGenerationsCriterion::handle_start() {
     log.info("Starting max generations criterion with limit: " +
-             std::to_string(max_generations));
+             std::to_string(params.max_non_improving_generations));
 }
 
 bool MaxNonImprovingGenerationsCriterion::should_stop(const double best_fitness) {
@@ -25,8 +19,8 @@ bool MaxNonImprovingGenerationsCriterion::should_stop(const double best_fitness)
               ", last best fitness = " + std::to_string(last_best_fitness) +
               ", non-improving count = " + std::to_string(non_improving_count));
 
-    if (non_improving_count >= max_generations) {
-        log.info("Stopping due to non-improvement for " + std::to_string(max_generations) + " generations.");
+    if (non_improving_count >= params.max_non_improving_generations) {
+        log.info("Stopping due to non-improvement for " + std::to_string(params.max_non_improving_generations) + " generations.");
         return true;
     }
 

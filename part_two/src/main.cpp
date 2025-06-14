@@ -45,20 +45,31 @@ int main(const int argc, char *argv[])
 
     try
     {
+        auto params = HyperParams {
+            .population_size = 500,
+            .mutation_rate = 0.5,
+            .parents_replacement_rate = 0.5,
+            .selection_n_parents = 250,
+            .selection_tournament_size = 10,
+            .time_limit_seconds = 60,
+            .max_non_improving_generations = 100,
+            .convex_hull_max_deviation = 0.1,
+            .convex_hull_deviation_ratio = 0.2
+        };
+
+        params.validate_or_throw();
         auto level = Logger::Level::DEBUG;
 
-        int population_size = 500;
-
-        // unique_ptr<PopulationInitialization> chromosomes = make_unique<ConvexHullInitialization>(level, Graph::from_file(instance), population_size);
-        unique_ptr<PopulationInitialization> chromosomes = make_unique<RandomInitialization>(level, Graph::from_file(instance), population_size);
+        unique_ptr<PopulationInitialization> chromosomes = make_unique<ConvexHullInitialization>(level, Graph::from_file(instance), params);
+        // unique_ptr<PopulationInitialization> chromosomes = make_unique<RandomInitialization>(level, Graph::from_file(instance), params);
         // unique_ptr<SelectionOp> selection = make_unique<NTournamentSelection>(level, 10, population_size * 3 / 4);
-        unique_ptr<SelectionOp> selection = make_unique<LinearRankingSelection>(level, population_size / 2);
+        unique_ptr<SelectionOp> selection = make_unique<NTournamentSelection>(level, params);
         unique_ptr<CrossoverOp> crossover = make_unique<OrderCrossover>(level);
-        unique_ptr<MutationOp> mutation = make_unique<SimpleInversionMutation>(level, 0.5);
-        unique_ptr<Replacement> replacement = make_unique<SteadyStateReplacement>(level, 0.2);
+        unique_ptr<MutationOp> mutation = make_unique<SimpleInversionMutation>(level, params);
+        unique_ptr<Replacement> replacement = make_unique<SteadyStateReplacement>(level, params);
 
-        auto time_limit = make_unique<TimeLimitCriterion>(level, 10);
-        auto non_improving_gen = make_unique<MaxNonImprovingGenerationsCriterion>(level, 100);
+        auto time_limit = make_unique<TimeLimitCriterion>(level, params);
+        auto non_improving_gen = make_unique<MaxNonImprovingGenerationsCriterion>(level, params);
         vector<unique_ptr<StoppingCriterion>> stopping;
         // stopping.push_back(move(time_limit));
         stopping.push_back(std::move(non_improving_gen));
@@ -66,7 +77,7 @@ int main(const int argc, char *argv[])
         GeneticAlgorithm ga(chromosomes, selection, crossover, mutation,
                             replacement, stopping);
 
-        ga.start(instance, 5);
+        ga.start(instance, 50);
     }
     catch (std::exception &e)
     {

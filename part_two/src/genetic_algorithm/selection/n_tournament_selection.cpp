@@ -10,19 +10,19 @@
 
 using namespace std;
 
-NTournamentSelection::NTournamentSelection(const Logger::Level log_level, const int tournament_size, const int n_parents)
-    : SelectionOp(log_level, n_parents), tournament_size(tournament_size) {
+NTournamentSelection::NTournamentSelection(const Logger::Level log_level, const HyperParams &params)
+    : SelectionOp(log_level, params) {
     log.set_label("NTournamentSelection");
 }
 
 vector<Chromosome> NTournamentSelection::select(const vector<Chromosome> &population) {
     vector<Chromosome> selected;
-    selected.reserve(n_parents);
+    selected.reserve(params.selection_n_parents);
 
-    for (size_t i = 0; i < n_parents; ++i) {
+    for (size_t i = 0; i < params.selection_n_parents; ++i) {
         multiset<Chromosome> tournament; // sorted by operator< (fitness)
 
-        while (tournament.size() < tournament_size) {
+        while (tournament.size() < params.selection_tournament_size) {
             const size_t random_index = unif_int(0, population.size() - 1);
             tournament.insert(population[random_index]);
         }

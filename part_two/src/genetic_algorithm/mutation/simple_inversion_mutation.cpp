@@ -2,8 +2,8 @@
 #include "utils/maths.h"
 #include "utils/path.h"
 
-SimpleInversionMutation::SimpleInversionMutation(const Logger::Level log_level, const double rate)
-    : MutationOp(log_level, rate) {
+SimpleInversionMutation::SimpleInversionMutation(const Logger::Level log_level, const HyperParams& params)
+    : MutationOp(log_level, params) {
   log.set_label("SimpleInversionMutation");
 }
 
@@ -12,7 +12,7 @@ vector<Chromosome> SimpleInversionMutation::mutate(const vector<Chromosome> &pop
   mutated_population.reserve(population.size());
 
   for (const auto &chromosome : population) {
-    if (unif_real(0.0, 1.0) > rate) {
+    if (unif_real(0.0, 1.0) > params.mutation_rate) {
       mutated_population.push_back(chromosome);
       continue; // Skip mutation
     }

@@ -1,4 +1,4 @@
 #include "genetic_algorithm/initialization/population_initialization.h"
 
-PopulationInitialization::PopulationInitialization(Logger::Level log_level, Graph graph, int population_size)
-    : population_size(population_size), log(log_level), graph(graph) {}
+PopulationInitialization::PopulationInitialization(const Logger::Level log_level, const Graph& graph, const HyperParams& params)
+    : params(params), log(log_level), graph(graph) {}

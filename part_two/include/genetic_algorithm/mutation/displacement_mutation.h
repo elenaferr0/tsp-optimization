@@ -6,7 +6,7 @@
 
 class DisplacementMutation final : public MutationOp {
 public:
-  explicit DisplacementMutation(Logger::Level log_level, double rate);
+  explicit DisplacementMutation(Logger::Level log_level, const HyperParams& params);
 
   vector<Chromosome> mutate(const vector<Chromosome> &population) const override;
 };

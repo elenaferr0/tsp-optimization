@@ -2,9 +2,8 @@
 #include "utils/maths.h"
 #include "utils/path.h"
 
-DisplacementMutation::DisplacementMutation(const Logger::Level log_level,
-                                           const double rate)
-    : MutationOp(log_level, rate) {
+DisplacementMutation::DisplacementMutation(const Logger::Level log_level, const HyperParams& params )
+    : MutationOp(log_level, params) {
   log.set_label("DisplacementMutation");
 }
 
@@ -14,7 +13,7 @@ DisplacementMutation::mutate(const vector<Chromosome> &population) const {
   mutated_population.reserve(population.size());
 
   for (const auto &chromosome : population) {
-    if (unif_real(0.0, 1.0) > rate) {
+    if (unif_real(0.0, 1.0) > params.mutation_rate) {
       mutated_population.push_back(chromosome);
       continue; // Skip mutation
     }
@@ -25,7 +24,7 @@ DisplacementMutation::mutate(const vector<Chromosome> &population) const {
     const auto subpath_end = cuts.top();
     cuts.pop();
 
-    const int new_length = chromosome.get_n_genes() - (subpath_end - subpath_start + 1);
+    const int new_length = static_cast<int>(chromosome.get_n_genes()) - (subpath_end - subpath_start + 1);
     if (new_length - 2 <= 0) {
       // If the subpath is the entire chromosome, skip mutation
       mutated_population.push_back(chromosome);
