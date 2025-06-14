@@ -7,13 +7,13 @@
 
 class ConvexHullInitialization final : public PopulationInitialization {
     Chromosome generate_chromosome(const vector<Node> &convex_hull,
-                                   const vector<Node> &interior_points);
+                                   const vector<Node> &interior_nodes);
 
     static vector<Node> compute_convex_hull(const vector<Node> &nodes);
 
-    int find_best_insertion_position(const vector<Node> &current_tour, int node_to_insert) const;
+    int find_best_insertion_position(const vector<Node> &current_tour, const Node& node_to_insert) const;
 
-    double calculate_insertion_cost(const vector<Node> &tour, int node_to_insert, int position) const;
+    double compute_insertion_cost(const vector<Node> &tour, const Node& node_to_insert, int position) const;
 
     mutable mt19937 gen;
 

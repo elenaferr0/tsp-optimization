@@ -7,10 +7,9 @@
 using namespace std;
 
 class SteadyStateReplacement final : public Replacement {
-  size_t n_replaced_parents; // Number of parents to be replaced
+  double worst_replacement_ratio;
 public:
-  explicit SteadyStateReplacement(Logger::Level log_level,
-                                  size_t n_replaced_parents = 2);
+  explicit SteadyStateReplacement(Logger::Level log_level, double worst_replacement_ratio = 0.1);
 
   vector<Chromosome>
   replace(const vector<Chromosome> &parents,

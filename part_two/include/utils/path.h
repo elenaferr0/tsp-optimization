@@ -39,8 +39,7 @@ inline priority_queue_by_fitness sort_by_fitness_idx(const vector<Chromosome> &c
 
 // Sorts the chromosomes by fitness using the provided comparator and returns a
 // sorted vector.
-inline vector<Chromosome> sort_by_fitness(const vector<Chromosome> &chromosomes // Use operator<
-) {
+inline vector<Chromosome> sort_by_fitness_asc(const vector<Chromosome> &chromosomes) {
   vector<Chromosome> sorted_chromosomes = chromosomes;
   std::sort(sorted_chromosomes.begin(), sorted_chromosomes.end());
   return sorted_chromosomes;

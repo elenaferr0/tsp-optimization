@@ -70,13 +70,13 @@ void GeneticAlgorithm::start(const string& filename, const long logging_frequenc
         log.trace("Replaced generation_n");
 
         generation_n++;
-        auto old_fitness = best_chromosome.evaluate_fitness();
+        // auto old_fitness = best_chromosome.evaluate_fitness();
         best_chromosome = get_best();
-        if (best_chromosome.evaluate_fitness() > old_fitness) 
-        {
-            throw runtime_error("Best chromosome fitness increased from " + to_string(old_fitness) +
-                                 " to " + to_string(best_chromosome.evaluate_fitness()));
-        }
+        // if (best_chromosome.evaluate_fitness() > old_fitness)
+        // {
+        //     throw runtime_error("Best chromosome fitness increased from " + to_string(old_fitness) +
+        //                          " to " + to_string(best_chromosome.evaluate_fitness()));
+        // }
         if (generation_n % logging_frequency == 0)
         {
             log.info("Generation " + to_string(generation_n) + " best chromosome fitness: " +

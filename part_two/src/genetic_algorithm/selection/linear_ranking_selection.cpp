@@ -11,19 +11,18 @@ LinearRankingSelection::LinearRankingSelection(const Logger::Level log_level,
     log.set_label("LinearRankingSelection");
 }
 
-vector<Chromosome>
-LinearRankingSelection::select(const vector<Chromosome> &population) {
+vector<Chromosome> LinearRankingSelection::select(const vector<Chromosome> &population) {
     vector<Chromosome> selected;
     selected.reserve(n_parents);
 
     const int N = static_cast<int>(population.size());
 
-    const auto sorted_population = sort_by_fitness(population);
+    const auto sorted_population = sort_by_fitness_asc(population);
     vector<double> cumulative_probs(N);
     double cumulative_prob = 0.0;
 
     for (int i = 0; i < N; ++i) {
-        const auto sigma_i = i + 1;
+        const auto sigma_i = N - i;
         // Calculate selection probability according to linear ranking formula
         const auto p_i = 2.0 * sigma_i / (N * (N + 1));
         cumulative_prob += p_i;

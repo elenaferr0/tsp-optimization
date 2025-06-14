@@ -3,18 +3,19 @@
 #include <utils/path.h>
 
 SteadyStateReplacement::SteadyStateReplacement(const Logger::Level log_level,
-                                               const size_t n_replaced_parents)
-    : Replacement(log_level), n_replaced_parents(n_replaced_parents) {
+                                               const double worst_replacement_ratio)
+    : Replacement(log_level), worst_replacement_ratio(worst_replacement_ratio) {
 }
 
 vector<Chromosome> SteadyStateReplacement::replace(const vector<Chromosome> &parents,
                                                    const vector<Chromosome> &offsprings) {
-    const auto parents_by_fitness = sort_by_fitness(parents);
-    const auto offsprings_by_fitness = sort_by_fitness(offsprings);
+    const auto parents_by_fitness = sort_by_fitness_asc(parents);
+    const auto offsprings_by_fitness = sort_by_fitness_asc(offsprings);
 
     vector<Chromosome> new_population;
     new_population.reserve(parents.size());
-    const auto to_be_replaced = min(n_replaced_parents, offsprings.size());
+    const int n_replaced_parents = floor(worst_replacement_ratio * static_cast<int>(parents.size()));
+    const auto to_be_replaced = min(n_replaced_parents, static_cast<int>(offsprings_by_fitness.size()));
 
     for (size_t i = 0; i < parents.size(); ++i) {
         if (i < to_be_replaced) {

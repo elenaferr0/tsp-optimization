@@ -51,7 +51,7 @@ vector<Chromosome> ConvexHullInitialization::generate_population()
 
 Chromosome ConvexHullInitialization::generate_chromosome(
     const vector<Node> &convex_hull,
-    const vector<Node> &interior_points)
+    const vector<Node> &interior_nodes)
 {
     vector<Node> tour;
     for (const auto &node : convex_hull)
@@ -59,27 +59,39 @@ Chromosome ConvexHullInitialization::generate_chromosome(
         tour.push_back(node);
     }
 
-    for (const auto &interior_node : interior_points)
+    int tour_size = static_cast<int>(tour.size());
+    vector<Node> interior_nodes_copy = interior_nodes;
+    shuffle(interior_nodes_copy.begin(), interior_nodes_copy.end(), gen);
+    for (const auto &node : interior_nodes_copy)
     {
-        if (unif_real(0.0, 1.0) > 0.5) // With 50% insert randomly
+        auto best_index = find_best_insertion_position(tour, node);
+        if (unif_real(0, 1) > 0.1)
         {
-            const int random_pos = rand() % (tour.size() + 1);
-            tour.insert(tour.begin() + random_pos, interior_node);
+            // Add number which makes the path deviate at most 10% from the best position
+            const int deviation = tour_size / 10;
+            best_index = max(0, best_index - deviation);
         }
-        else
-        {
-            const int best_position = find_best_insertion_position(tour, interior_node.id);
-            tour.insert(tour.begin() + best_position, interior_node);
-        }
+        tour.insert(tour.begin() + best_index + 1, node);
+
+        // if (unif_real(0.0, 1.0) > 0.5) // With 50% insert randomly
+        // {
+        //     const int random_pos = rand() % (tour.size() + 1);
+        //     tour.insert(tour.begin() + random_pos, interior_node);
+        // }
+        // else
+        // {
+        //     const int best_position = find_best_insertion_position(tour, interior_node.id);
+        //     tour.insert(tour.begin() + best_position, interior_node);
+        // }
     }
 
     const Graph graph_tour(tour);
-    return Chromosome(graph_tour);
+    Chromosome chromo(graph_tour);
+    cout << "Generated chromosome with " << chromo.to_str() << endl;
+    return chromo;
 }
 
-int ConvexHullInitialization::find_best_insertion_position(
-    const vector<Node> &current_tour,
-    const int node_to_insert) const
+int ConvexHullInitialization::find_best_insertion_position(const vector<Node> &current_tour, const Node& node_to_insert) const
 {
     double min_cost_increase = numeric_limits<double>::max();
     int best_position = 0;
@@ -87,7 +99,7 @@ int ConvexHullInitialization::find_best_insertion_position(
     // Try inserting between each pair of consecutive cities
     for (int i = 0; i <= current_tour.size(); ++i)
     {
-        const double cost_increase = calculate_insertion_cost(current_tour, node_to_insert, i);
+        const double cost_increase = compute_insertion_cost(current_tour, node_to_insert, i);
 
         if (cost_increase < min_cost_increase)
         {
@@ -99,7 +111,7 @@ int ConvexHullInitialization::find_best_insertion_position(
     return best_position;
 }
 
-double ConvexHullInitialization::calculate_insertion_cost(const vector<Node> &tour, const int node_to_insert,
+double ConvexHullInitialization::compute_insertion_cost(const vector<Node> &tour, const Node& node_to_insert,
                                                           const int position) const
 {
     const int tour_size = tour.size();
@@ -109,7 +121,7 @@ double ConvexHullInitialization::calculate_insertion_cost(const vector<Node> &to
     if (tour_size == 1)
     {
         // Cost of going from tour[0] to node_to_insert and back
-        return 2.0 * graph.get_cost(tour[0].id, node_to_insert);
+        return 2.0 * graph.get_cost(tour[0].id, node_to_insert.id);
     }
 
     // Get the nodes before and after insertion position
@@ -118,14 +130,13 @@ double ConvexHullInitialization::calculate_insertion_cost(const vector<Node> &to
 
     // Calculate cost increase: new_edges - old_edge
     const double old_cost = graph.get_cost(prev_node.id, next_node.id);
-    const double new_cost = graph.get_cost(prev_node.id, node_to_insert) +
-                            graph.get_cost(node_to_insert, next_node.id);
+    const double new_cost = graph.get_cost(prev_node.id, node_to_insert.id) +
+                            graph.get_cost(node_to_insert.id, next_node.id);
 
     return new_cost - old_cost;
 }
 
-vector<Node> ConvexHullInitialization::compute_convex_hull(
-    const vector<Node> &nodes)
+vector<Node> ConvexHullInitialization::compute_convex_hull(const vector<Node> &nodes)
 {
     if (nodes.size() < 3)
         return nodes;
@@ -144,7 +155,10 @@ vector<Node> ConvexHullInitialization::compute_convex_hull(
             min_idx = i;
         }
     }
-    swap(points[0], points[min_idx]);
+    // swap the bottom-most point with the first point
+    const Node tmp = points[0];
+    points[0] = points[min_idx];
+    points[min_idx] = tmp;
 
     // Sort points by polar angle with respect to points[0]
     Node pivot = points[0];

@@ -20,8 +20,8 @@ vector<Chromosome> ElitismReplacement::replace(const vector<Chromosome> &parents
 
   log.trace("Selecting " + to_string(num_elites) + " elites from parents");
 
-  vector<Chromosome> sorted_parents = sort_by_fitness(parents);
-  vector<Chromosome> sorted_offsprings = sort_by_fitness(offsprings);
+  vector<Chromosome> sorted_parents = sort_by_fitness_asc(parents);
+  vector<Chromosome> sorted_offsprings = sort_by_fitness_asc(offsprings);
 
   vector<Chromosome> new_population;
   new_population.reserve(parents.size());
