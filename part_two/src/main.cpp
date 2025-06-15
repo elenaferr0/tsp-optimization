@@ -10,12 +10,13 @@
 #include "genetic_algorithm/initialization/convex_hull_initialization.h"
 #include "genetic_algorithm/selection/linear_ranking_selection.h"
 #include "genetic_algorithm/crossover/order_crossover.h"
+#include "genetic_algorithm/crossover/edge_recombination_crossover.h"
 #include "genetic_algorithm/replacement/elitism_replacement.h"
-#include "genetic_algorithm/replacement/steady_state_replacement.h"
-#include "genetic_algorithm/selection/n_tournament_selection.h"
 #include "genetic_algorithm/stopping/max_non_improving_generations_criterion.h"
 #include "genetic_algorithm/stopping/time_limit_criterion.h"
 #include "../include/genetic_algorithm/mutation/simple_inversion_mutation.h"
+#include "genetic_algorithm/mutation/displacement_mutation.h"
+#include "genetic_algorithm/replacement/steady_state_replacement.h"
 
 using namespace std;
 
@@ -45,13 +46,13 @@ int main(const int argc, char *argv[]) {
             .mutation_rate = 0.1,
             .parents_replacement_rate = 0.7,
             .selection_n_parents = 300,
-            .selection_tournament_size = 10,
-            .time_limit_seconds = 60,
+            .selection_tournament_size = 15,
+            .time_limit_seconds = 600,
             .max_non_improving_generations = 100,
-            .convex_hull_max_deviation = 0.1,
-            .convex_hull_deviation_ratio = 0.2,
-            .convex_hull_init_percentage = 0.5,
-            .random_init_percentage = 0.5,
+            .convex_hull_max_deviation = 0.0,
+            .convex_hull_deviation_ratio = 0.0,
+            .convex_hull_init_percentage = 0,
+            .random_init_percentage = 1,
         };
 
 
@@ -66,9 +67,10 @@ int main(const int argc, char *argv[]) {
 
         // unique_ptr<SelectionOp> selection = make_unique<NTournamentSelection>(level, 10, population_size * 3 / 4);
         unique_ptr<SelectionOp> selection = make_unique<LinearRankingSelection>(level, params);
-        unique_ptr<CrossoverOp> crossover = make_unique<OrderCrossover>(level);
-        unique_ptr<MutationOp> mutation = make_unique<SimpleInversionMutation>(level, params);
-        unique_ptr<Replacement> replacement = make_unique<ElitismReplacement>(level, params);
+        // unique_ptr<CrossoverOp> crossover = make_unique<OrderCrossover>(level);
+        unique_ptr<CrossoverOp> crossover = make_unique<EdgeRecombinationCrossover>(level);
+        unique_ptr<MutationOp> mutation = make_unique<DisplacementMutation>(level, params);
+        unique_ptr<Replacement> replacement = make_unique<SteadyStateReplacement>(level, params);
 
         auto time_limit = make_unique<TimeLimitCriterion>(level, params);
         auto non_improving_gen = make_unique<MaxNonImprovingGenerationsCriterion>(level, params);
@@ -79,7 +81,7 @@ int main(const int argc, char *argv[]) {
         GeneticAlgorithm ga(initializations, selection, crossover, mutation,
                             replacement, stopping);
 
-        ga.start(instance, 50);
+        ga.start(instance, 10);
     } catch (std::exception &e) {
         std::cout << "Exception: " << e.what() << std::endl;
     }
