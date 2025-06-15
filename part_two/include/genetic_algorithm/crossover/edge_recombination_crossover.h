@@ -14,7 +14,7 @@ class EdgeRecombinationCrossover final : public CrossoverOp {
 public:
   explicit EdgeRecombinationCrossover(Logger::Level log_level);
 
-  vector<Chromosome> recombine(const vector<Chromosome> &parents) override;
+  vector<Chromosome> recombine(const HyperParams& params, const vector<Chromosome> &parents) override;
 };
 
 #endif // EDGE_RECOMBINATION_CROSSOVER_H

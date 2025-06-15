@@ -10,12 +10,12 @@
 
 using namespace std;
 
-NTournamentSelection::NTournamentSelection(const Logger::Level log_level, const HyperParams &params)
-    : SelectionOp(log_level, params) {
+NTournamentSelection::NTournamentSelection(const Logger::Level log_level)
+    : SelectionOp(log_level) {
     log.set_label("NTournamentSelection");
 }
 
-vector<Chromosome> NTournamentSelection::select(const vector<Chromosome> &population) {
+vector<Chromosome> NTournamentSelection::select(const HyperParams& params, const vector<Chromosome> &population) {
     vector<Chromosome> selected;
     selected.reserve(params.selection_n_parents);
 

@@ -4,9 +4,9 @@
 
 class NTournamentSelection final : public SelectionOp {
 public:
-  explicit NTournamentSelection(Logger::Level log_level, const HyperParams &params);
+  explicit NTournamentSelection(Logger::Level log_level);
 
-  vector<Chromosome> select(const vector<Chromosome> &population) override;
+  vector<Chromosome> select(const HyperParams& params, const vector<Chromosome> &population) override;
 };
 
 #endif // N_TOURNAMENT_SELECTION_H

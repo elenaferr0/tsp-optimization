@@ -2,12 +2,12 @@
 
 #include <utils/path.h>
 
-LinearRankingSelection::LinearRankingSelection(const Logger::Level log_level, const HyperParams &params)
-    : SelectionOp(log_level, params) {
+LinearRankingSelection::LinearRankingSelection(const Logger::Level log_level)
+    : SelectionOp(log_level) {
     log.set_label("LinearRankingSelection");
 }
 
-vector<Chromosome> LinearRankingSelection::select(const vector<Chromosome> &population) {
+vector<Chromosome> LinearRankingSelection::select(const HyperParams& params, const vector<Chromosome> &population) {
     vector<Chromosome> selected;
     selected.reserve(params.selection_n_parents);
 

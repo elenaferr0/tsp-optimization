@@ -3,22 +3,17 @@
 
 #include <stdexcept>
 
+using namespace std;
+
 struct HyperParams {
-  int population_size = 100;
+  int population_size = 500;
   double mutation_rate = 0.01;
   double parents_replacement_rate = 0.8;
   int selection_n_parents = 2;
   int selection_tournament_size = 3;
   long time_limit_seconds = 60;
   long max_non_improving_generations = 100;
-  // How far (in terms of node w.r.t. the population size) the convex hull initialization can insert internal nodes
-  // instead of the best position in the subtour.
-  double convex_hull_max_deviation = 0.1;
-  // How frequently the convex hull initialization can deviate from the best position
-  double convex_hull_deviation_ratio = 0.1;
-
-  double convex_hull_init_percentage = 0.1; // Percentage of population initialized with convex hull method
-  double random_init_percentage = 0.9; // Percentage of population initialized with random method
+  pair<double, double> convex_hull_random_init_ratio = {0.1, 0.9}; // Convex hull and random initialization percentages
 
   void validate_or_throw() const {
     if (population_size <= 0) {
@@ -48,24 +43,10 @@ struct HyperParams {
       throw std::invalid_argument("Max non-improving generations must be a non-negative integer.");
     }
 
-    if (convex_hull_max_deviation < 0.0 || convex_hull_max_deviation > 1.0) {
-      throw std::invalid_argument("Convex hull max deviation must be in the range [0.0, 1.0].");
-    }
-
-    if (convex_hull_deviation_ratio < 0.0 || convex_hull_deviation_ratio > 1.0) {
-      throw std::invalid_argument("Convex hull deviation ratio must be in the range [0.0, 1.0].");
-    }
-
-    if (convex_hull_init_percentage < 0.0 || convex_hull_init_percentage > 1.0) {
-      throw std::invalid_argument("Convex hull initialization percentage must be in the range [0.0, 1.0].");
-    }
-
-    if (random_init_percentage < 0.0 || random_init_percentage > 1.0) {
-      throw std::invalid_argument("Random initialization percentage must be in the range [0.0, 1.0].");
-    }
-
-    if (convex_hull_init_percentage + random_init_percentage != 1.0) {
-      throw std::invalid_argument("The sum of convex hull and random initialization percentages must equal 1.0.");
+    if (convex_hull_random_init_ratio.first < 0.0 || convex_hull_random_init_ratio.first > 1.0 ||
+        convex_hull_random_init_ratio.second < 0.0 || convex_hull_random_init_ratio.second > 1.0 ||
+        convex_hull_random_init_ratio.first + convex_hull_random_init_ratio.second != 1.0) {
+      throw std::invalid_argument("Initialization percentages must be in the range [0.0, 1.0] and sum to 1.0.");
     }
   }
 };

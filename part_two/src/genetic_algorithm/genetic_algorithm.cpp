@@ -3,23 +3,23 @@
 #include <algorithm>
 #include <cassert>
 
-GeneticAlgorithm::GeneticAlgorithm(vector<unique_ptr<PopulationInitialization> > &population_init,
+GeneticAlgorithm::GeneticAlgorithm(const vector<shared_ptr<PopulationInitialization>> &population_init,
                                    unique_ptr<SelectionOp> &selection,
                                    unique_ptr<CrossoverOp> &crossover,
                                    unique_ptr<MutationOp> &mutation,
                                    unique_ptr<Replacement> &replacement,
-                                   vector<unique_ptr<StoppingCriterion> > &stopping,
+                                   const vector<shared_ptr<StoppingCriterion>> &stopping,
                                    const Logger::Level log_level)
-    : population_init(std::move(population_init)), selection(std::move(selection)),
+    : population_init(population_init), selection(std::move(selection)),
       crossover(std::move(crossover)), mutation(std::move(mutation)),
-      replacement(std::move(replacement)), stopping(std::move(stopping)), generation_n(0),
+      replacement(std::move(replacement)), stopping(stopping), generation_n(0),
       log(log_level, "GeneticAlgorithm"),
       initial_fitness(numeric_limits<double>::max()) {
 }
 
-bool GeneticAlgorithm::should_stop() {
+bool GeneticAlgorithm::should_stop(const HyperParams& params) const {
     for (const auto &criterion: stopping) {
-        if (criterion->should_stop()) {
+        if (criterion->should_stop(params)) {
             return true;
         }
     }
@@ -27,16 +27,16 @@ bool GeneticAlgorithm::should_stop() {
     return false;
 }
 
-void GeneticAlgorithm::handle_start() {
+void GeneticAlgorithm::handle_start(const HyperParams& params) const {
     for (const auto &criterion: stopping) {
-        criterion->handle_start();
+        criterion->handle_start(params);
     }
 }
 
-void GeneticAlgorithm::start(const string &filename, const long logging_frequency) {
-    log.info("Initializing population");
+Chromosome GeneticAlgorithm::start(const HyperParams& params, const string &filename, const long logging_frequency) {
+    log.debug("Initializing population");
     for (const auto &init: population_init) {
-        auto init_population = init->generate_population();
+        auto init_population = init->generate_population(params);
         population.insert(population.end(), init_population.begin(), init_population.end());
     }
 
@@ -46,23 +46,23 @@ void GeneticAlgorithm::start(const string &filename, const long logging_frequenc
 
     auto best_chromosome = get_best();
     initial_fitness = best_chromosome.evaluate_fitness();
-    log.info("Initial best chromosome fitness: " + to_string(initial_fitness));
+    log.debug("Initial best chromosome fitness: " + to_string(initial_fitness));
 
-    log.info("Starting genetic algorithm with population size: " + to_string(population.size()));
+    log.debug("Starting genetic algorithm with population size: " + to_string(population.size()));
 
-    handle_start();
-    while (not should_stop()) {
+    handle_start(params);
+    while (not should_stop(params)) {
         log.debug("Starting new generation_n");
-        vector<Chromosome> parents = selection->select(population);
+        vector<Chromosome> parents = selection->select(params, population);
         log.trace("Selected " + to_string(parents.size()) + " parents for crossover");
 
-        vector<Chromosome> offspring = crossover->recombine(parents);
+        vector<Chromosome> offspring = crossover->recombine(params, parents);
         log.trace("Generated " + to_string(offspring.size()) + " offspring from crossover");
 
-        vector<Chromosome> mutated = mutation->mutate(offspring);
+        vector<Chromosome> mutated = mutation->mutate(params, offspring);
         log.trace("Applied mutation, resulting in " + to_string(mutated.size()) + " mutated offspring");
 
-        population = replacement->replace(parents, offspring);
+        population = replacement->replace(params, parents, offspring);
         log.trace("Replaced generation_n");
 
         generation_n++;
@@ -74,21 +74,22 @@ void GeneticAlgorithm::start(const string &filename, const long logging_frequenc
         //                          " to " + to_string(best_chromosome.evaluate_fitness()));
         // }
         if (generation_n % logging_frequency == 0) {
-            log.info("Generation " + to_string(generation_n) + " best chromosome fitness: " +
+            log.debug("Generation " + to_string(generation_n) + " best chromosome fitness: " +
                      to_string(best_chromosome.evaluate_fitness()));
         }
     }
 
-    print_summary();
-    save_to_file("samples/" + filename);
+    // print_summary();
+    // save_to_file("samples/" + filename);
+    return best_chromosome;
 }
 
 void GeneticAlgorithm::print_summary() {
     // When GA ends, print a detailed summary
-    auto best_chromosome = get_best();
-    double final_fitness = best_chromosome.evaluate_fitness();
-    double percent_improvement = (initial_fitness - final_fitness) / initial_fitness * 100.0;
-    double absolute_improvement = initial_fitness - final_fitness;
+    const auto best_chromosome = get_best();
+    const double final_fitness = best_chromosome.evaluate_fitness();
+    const double percent_improvement = (initial_fitness - final_fitness) / initial_fitness * 100.0;
+    const double absolute_improvement = initial_fitness - final_fitness;
 
     // Create a nicely formatted summary
     stringstream summary;

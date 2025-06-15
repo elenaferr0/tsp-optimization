@@ -12,14 +12,13 @@ using namespace std;
 class Replacement {
 protected:
   Logger log;
-  HyperParams params;
 
 public:
-  explicit Replacement(Logger::Level log_level, const HyperParams& params);
+  explicit Replacement(Logger::Level log_level);
 
   virtual ~Replacement() = default;
 
-  virtual vector<Chromosome> replace(const vector<Chromosome> &parents, const vector<Chromosome> &offsprings) = 0;
+  virtual vector<Chromosome> replace(const HyperParams& params, const vector<Chromosome> &parents, const vector<Chromosome> &offsprings) = 0;
 };
 
 #endif // REPLACEMENT_H

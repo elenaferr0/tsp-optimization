@@ -8,12 +8,12 @@
 #include "utils/maths.h"
 
 ConvexHullInitialization::ConvexHullInitialization(
-    const Logger::Level log_level, const Graph &graph, const HyperParams &params)
-    : PopulationInitialization(log_level, graph, params)
+    const Logger::Level log_level, const Graph &graph)
+    : PopulationInitialization(log_level, graph)
 {
 }
 
-vector<Chromosome> ConvexHullInitialization::generate_population()
+vector<Chromosome> ConvexHullInitialization::generate_population(const HyperParams &params)
 {
     vector<Chromosome> population;
 
@@ -36,7 +36,7 @@ vector<Chromosome> ConvexHullInitialization::generate_population()
         }
     }
 
-    const int to_generate = floor(params.population_size * params.convex_hull_init_percentage);
+    const int to_generate = floor(params.population_size * params.convex_hull_random_init_ratio.first);
     for (int i = 0; i < to_generate; ++i)
     {
         population.push_back(generate_chromosome(convex_hull, interior_points));
@@ -61,13 +61,6 @@ Chromosome ConvexHullInitialization::generate_chromosome(
     for (const auto &node : interior_nodes_copy)
     {
         auto best_index = find_best_insertion_position(tour, node);
-        if (unif_real(0, 1) > params.convex_hull_deviation_ratio) // With probability
-        {
-            // Add number which makes the insertion deviate from the best position
-            const int max_deviation = tour_size * params.convex_hull_max_deviation;
-            const int deviation = unif_int(-max_deviation, max_deviation);
-            best_index = (best_index + deviation) % tour_size;
-        }
         tour.insert(tour.begin() + best_index + 1, node);
     }
 

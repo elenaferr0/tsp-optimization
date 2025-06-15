@@ -2,11 +2,11 @@
 
 #include <utils/path.h>
 
-SteadyStateReplacement::SteadyStateReplacement(const Logger::Level log_level, const HyperParams& params)
-    : Replacement(log_level, params) {
+SteadyStateReplacement::SteadyStateReplacement(const Logger::Level log_level)
+    : Replacement(log_level) {
 }
 
-vector<Chromosome> SteadyStateReplacement::replace(const vector<Chromosome> &parents,
+vector<Chromosome> SteadyStateReplacement::replace(const HyperParams& params, const vector<Chromosome> &parents,
                                                    const vector<Chromosome> &offsprings) {
     const auto parents_by_fitness = sort_by_fitness_asc(parents);
     const auto offsprings_by_fitness = sort_by_fitness_asc(offsprings);

@@ -8,9 +8,9 @@ using namespace std;
 
 class ElitismReplacement final : public Replacement {
 public:
-  explicit ElitismReplacement(Logger::Level log_level, const HyperParams &params);
+    explicit ElitismReplacement(Logger::Level log_level);
 
-  vector<Chromosome> replace(const vector<Chromosome> &parents, const vector<Chromosome> &offsprings) override;
+    vector<Chromosome> replace(const HyperParams &params, const vector<Chromosome> &parents, const vector<Chromosome> &offsprings) override;
 };
 
 #endif // ELITISM_REPLACEMENT_H

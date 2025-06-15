@@ -1,0 +1,136 @@
+#include "genetic_algorithm/grid_search.h"
+
+#include "genetic_algorithm/mutation/simple_inversion_mutation.h"
+#include "genetic_algorithm/selection/n_tournament_selection.h"
+
+
+GridSearch::GridSearch(
+    const string &instance_name,
+    const vector<double> &mutation_rates,
+    const vector<double> &parent_replacement_rates,
+    const vector<int> &selection_tournament_sizes,
+    const vector<pair<double, double> > &convex_hull_random_init_ratios
+) : log(Logger::Level::INFO, "GridSearch"),
+    instance_name(instance_name),
+    mutation_rates(mutation_rates),
+    parent_replacement_rates(parent_replacement_rates),
+    selection_tournament_sizes(selection_tournament_sizes),
+    convex_hull_random_init_ratios(convex_hull_random_init_ratios) {
+}
+
+
+pair<Chromosome, HyperParams> GridSearch::run_experiment(
+    const vector<shared_ptr<PopulationInitialization> > &initializations,
+    const unique_ptr<SelectionOp> &selection,
+    const unique_ptr<CrossoverOp> &crossover,
+    const unique_ptr<MutationOp> &mutation,
+    const unique_ptr<Replacement> &replacement,
+    const vector<shared_ptr<StoppingCriterion> > &stopping,
+    const double mutation_rate,
+    const double parent_replacement_rate,
+    const int selection_tournament_size,
+    double convex_hull_init_ratio,
+    double random_init_ratio,
+    const Logger::Level log_level
+) const {
+    const HyperParams params{
+        .mutation_rate = mutation_rate,
+        .parents_replacement_rate = parent_replacement_rate,
+        .selection_tournament_size = selection_tournament_size,
+        .convex_hull_random_init_ratio = {convex_hull_init_ratio, random_init_ratio}
+    };
+
+    params.validate_or_throw();
+
+    GeneticAlgorithm ga(
+        initializations,
+        const_cast<unique_ptr<SelectionOp> &>(selection),
+        const_cast<unique_ptr<CrossoverOp> &>(crossover),
+        const_cast<unique_ptr<MutationOp> &>(mutation),
+        const_cast<unique_ptr<Replacement> &>(replacement),
+        stopping,
+        log_level
+    );
+
+    return {ga.start(params, instance_name, 10), params};
+}
+
+void GridSearch::run() {
+    auto log_level = Logger::Level::INFO;
+    auto graph = Graph::from_file(instance_name.c_str());
+
+    vector<shared_ptr<PopulationInitialization> > initializations(2);
+    initializations[0] = make_shared<ConvexHullInitialization>(log_level, graph);
+    initializations[1] = make_shared<RandomInitialization>(log_level, graph);
+
+    vector<unique_ptr<SelectionOp> > selection(2);
+    selection[0] = make_unique<LinearRankingSelection>(log_level);
+    selection[1] = make_unique<NTournamentSelection>(log_level);
+
+    vector<unique_ptr<CrossoverOp> > crossover(2);
+    crossover[0] = make_unique<OrderCrossover>(log_level);
+    crossover[1] = make_unique<EdgeRecombinationCrossover>(log_level);
+
+    vector<unique_ptr<MutationOp> > mutation(2);
+    mutation[0] = make_unique<DisplacementMutation>(log_level);
+    mutation[1] = make_unique<SimpleInversionMutation>(log_level);
+
+    vector<unique_ptr<Replacement> > replacement(2);
+    replacement[0] = make_unique<ElitismReplacement>(log_level);
+    replacement[1] = make_unique<SteadyStateReplacement>(log_level);
+
+    vector<shared_ptr<StoppingCriterion> > stopping_criteria;
+    stopping_criteria.push_back(make_shared<MaxNonImprovingGenerationsCriterion>(log_level));
+    stopping_criteria.push_back(make_shared<TimeLimitCriterion>(log_level));
+
+    unique_ptr<pair<Chromosome, HyperParams> > best = nullptr;
+
+    for (const unique_ptr<SelectionOp> &sel: selection) {
+        for (const unique_ptr<CrossoverOp> &cross: crossover) {
+            for (const unique_ptr<MutationOp> &mut: mutation) {
+                for (const unique_ptr<Replacement> &repl: replacement) {
+                    for (const auto &mutation_rate: mutation_rates) {
+                        for (const auto &parent_replacement_rate: parent_replacement_rates) {
+                            for (const auto &selection_tournament_size: selection_tournament_sizes) {
+                                for (const auto &init: convex_hull_random_init_ratios) {
+                                    auto [chromosome, params] = run_experiment(
+                                        initializations,
+                                        sel,
+                                        cross,
+                                        mut,
+                                        repl,
+                                        stopping_criteria,
+                                        mutation_rate,
+                                        parent_replacement_rate,
+                                        selection_tournament_size,
+                                        init.first,
+                                        init.second,
+                                        log_level
+                                    );
+
+                                    log.info("Fitness: " + to_string(chromosome.evaluate_fitness()) +
+                                             " | Mutation rate: " + to_string(mutation_rate) +
+                                             ", Parent replacement rate: " + to_string(parent_replacement_rate) +
+                                             ", Selection tournament size: " + to_string(selection_tournament_size) +
+                                             ", Convex hull init ratio: " + to_string(init.first) +
+                                             ", Random init ratio: " + to_string(init.second));
+
+                                    if (best == nullptr || chromosome.evaluate_fitness() < best->first. evaluate_fitness()) {
+                                        best = make_unique<pair<Chromosome, HyperParams>>(chromosome, params);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    log.info("Best solution's fitness: " + to_string(best->first.evaluate_fitness()) +
+             " | Parameters: Mutation rate: " + to_string(best->second.mutation_rate) +
+             ", Parent replacement rate: " + to_string(best->second.parents_replacement_rate) +
+             ", Selection tournament size: " + to_string(best->second.selection_tournament_size) +
+             ", Convex hull init ratio: " + to_string(best->second.convex_hull_random_init_ratio.first) +
+             ", Random init ratio: " + to_string(best->second.convex_hull_random_init_ratio.second));
+}

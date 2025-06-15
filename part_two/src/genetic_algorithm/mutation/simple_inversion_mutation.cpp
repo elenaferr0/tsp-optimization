@@ -2,12 +2,12 @@
 #include "utils/maths.h"
 #include "utils/path.h"
 
-SimpleInversionMutation::SimpleInversionMutation(const Logger::Level log_level, const HyperParams& params)
-    : MutationOp(log_level, params) {
+SimpleInversionMutation::SimpleInversionMutation(const Logger::Level log_level)
+    : MutationOp(log_level) {
   log.set_label("SimpleInversionMutation");
 }
 
-vector<Chromosome> SimpleInversionMutation::mutate(const vector<Chromosome> &population) const {
+vector<Chromosome> SimpleInversionMutation::mutate(const HyperParams& params, const vector<Chromosome> &population) {
   vector<Chromosome> mutated_population;
   mutated_population.reserve(population.size());
 
@@ -22,6 +22,7 @@ vector<Chromosome> SimpleInversionMutation::mutate(const vector<Chromosome> &pop
     cuts.pop();
     const auto subpath_end = cuts.top();
     cuts.pop();
+    log.trace("Simple inversion mutation: start: " + to_string(subpath_start) + ", end: " + to_string(subpath_end));
 
     auto subpath = chromosome.get_subpath(subpath_start, subpath_end);
     vector<Node> mutated_genes(chromosome.get_n_genes());
@@ -40,6 +41,14 @@ vector<Chromosome> SimpleInversionMutation::mutate(const vector<Chromosome> &pop
     }
 
     mutated_population.emplace_back(Graph(mutated_genes));
+  }
+
+  if (log.get_min_level() <= Logger::Level::TRACE) {
+    string fitnesses;
+    for (const auto &chromosome : mutated_population) {
+      fitnesses += chromosome.to_str() + " ";
+    }
+    log.trace("Fitnesses: " + fitnesses);
   }
 
   return mutated_population;

@@ -11,13 +11,12 @@ using namespace std;
 class SelectionOp {
 protected:
   Logger log;
-  HyperParams params;
 
 public:
-  explicit SelectionOp(Logger::Level log_level, const HyperParams &params);
+  explicit SelectionOp(Logger::Level log_level);
   virtual ~SelectionOp() = default;
 
-  virtual vector<Chromosome> select(const vector<Chromosome> &population) = 0;
+  virtual vector<Chromosome> select(const HyperParams& params,const vector<Chromosome> &population) = 0;
 };
 
 #endif // SELECTION_OP_H

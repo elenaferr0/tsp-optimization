@@ -4,6 +4,7 @@
 #include <utils/logger.h>
 #include <vector>
 
+#include "genetic_algorithm/hyper_params.h"
 #include "genetic_algorithm/chromosome/chromosome.h"
 
 using namespace std;
@@ -16,7 +17,7 @@ public:
   explicit CrossoverOp(Logger::Level log_level);
   virtual ~CrossoverOp() = default;
 
-  virtual vector<Chromosome> recombine(const vector<Chromosome> &parents) = 0;
+  virtual vector<Chromosome> recombine(const HyperParams& params,const vector<Chromosome> &parents) = 0;
 };
 
 #endif // CROSSOVER_OPERATOR_H

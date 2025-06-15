@@ -9,7 +9,7 @@ EdgeRecombinationCrossover::EdgeRecombinationCrossover(const Logger::Level log_l
     log.set_label("EdgeRecombinationCrossover");
 }
 
-vector<Chromosome> EdgeRecombinationCrossover::recombine(const vector<Chromosome> &parents) {
+vector<Chromosome> EdgeRecombinationCrossover::recombine(const HyperParams& params, const vector<Chromosome> &parents) {
     const auto n_parents = parents.size();
     auto const n_genes = parents[0].get_n_genes();
     vector<Chromosome> result;

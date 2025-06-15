@@ -1,11 +1,11 @@
 #include "genetic_algorithm/replacement/elitism_replacement.h"
 #include "utils/path.h"
 
-ElitismReplacement::ElitismReplacement(const Logger::Level log_level, const HyperParams& params) : Replacement(log_level, params) {
+ElitismReplacement::ElitismReplacement(const Logger::Level log_level) : Replacement(log_level) {
   log.set_label("ElitismReplacement");
 }
 
-vector<Chromosome> ElitismReplacement::replace(const vector<Chromosome> &parents, const vector<Chromosome> &offsprings) {
+vector<Chromosome> ElitismReplacement::replace(const HyperParams& params, const vector<Chromosome> &parents, const vector<Chromosome> &offsprings) {
   if (parents.empty() || offsprings.empty()) {
     throw std::invalid_argument("ElitismReplacement: parents and offsprings cannot be empty");
   }

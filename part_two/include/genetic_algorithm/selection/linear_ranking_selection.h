@@ -5,9 +5,9 @@
 
 class LinearRankingSelection final : public SelectionOp {
 public:
-  explicit LinearRankingSelection(Logger::Level log_level, const HyperParams &params);
+  explicit LinearRankingSelection(Logger::Level log_level);
 
-  vector<Chromosome> select(const vector<Chromosome> &population) override;
+  vector<Chromosome> select(const HyperParams& params, const vector<Chromosome> &population) override;
 };
 
 #endif // LINEAR_RANKING_SELECTION_H

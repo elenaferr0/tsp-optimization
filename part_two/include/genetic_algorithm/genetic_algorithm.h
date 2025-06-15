@@ -16,36 +16,36 @@ using namespace std;
 
 class GeneticAlgorithm {
     vector<Chromosome> population;
-    vector<unique_ptr<PopulationInitialization>> population_init;
+    vector<shared_ptr<PopulationInitialization>> population_init;
     unique_ptr<SelectionOp> selection;
     unique_ptr<CrossoverOp> crossover;
     unique_ptr<MutationOp> mutation;
     unique_ptr<Replacement> replacement;
-    vector<unique_ptr<StoppingCriterion>> stopping;
+    vector<shared_ptr<StoppingCriterion>> stopping;
     long generation_n;
     Logger log;
     double initial_fitness;
 
     Chromosome get_best() const;
 
-    bool should_stop();
+    bool should_stop(const HyperParams &params) const;
 
-    void handle_start();
+    void handle_start(const HyperParams &params) const;
 
     void print_summary();
 
     void save_to_file(const string &filename);
 
 public:
-    GeneticAlgorithm(vector<unique_ptr<PopulationInitialization>> &population_init,
+    GeneticAlgorithm(const vector<shared_ptr<PopulationInitialization>> &population_init,
                      unique_ptr<SelectionOp> &selection,
                      unique_ptr<CrossoverOp> &crossover,
                      unique_ptr<MutationOp> &mutation,
                      unique_ptr<Replacement> &replacement,
-                        vector<unique_ptr<StoppingCriterion>> &stopping,
+                     const vector<shared_ptr<StoppingCriterion>> &stopping,
                      Logger::Level log_level = Logger::Level::INFO);
 
-    void start(const string &filename, long logging_frequency = 100);
+    Chromosome start(const HyperParams& params, const string &filename, long logging_frequency = 100);
 };
 
 #endif // GENETIC_ALGORITHM_H
