@@ -17,6 +17,9 @@ struct HyperParams {
   // How frequently the convex hull initialization can deviate from the best position
   double convex_hull_deviation_ratio = 0.1;
 
+  double convex_hull_init_percentage = 0.1; // Percentage of population initialized with convex hull method
+  double random_init_percentage = 0.9; // Percentage of population initialized with random method
+
   void validate_or_throw() const {
     if (population_size <= 0) {
       throw std::invalid_argument("Population size must be a positive integer.");
@@ -51,6 +54,18 @@ struct HyperParams {
 
     if (convex_hull_deviation_ratio < 0.0 || convex_hull_deviation_ratio > 1.0) {
       throw std::invalid_argument("Convex hull deviation ratio must be in the range [0.0, 1.0].");
+    }
+
+    if (convex_hull_init_percentage < 0.0 || convex_hull_init_percentage > 1.0) {
+      throw std::invalid_argument("Convex hull initialization percentage must be in the range [0.0, 1.0].");
+    }
+
+    if (random_init_percentage < 0.0 || random_init_percentage > 1.0) {
+      throw std::invalid_argument("Random initialization percentage must be in the range [0.0, 1.0].");
+    }
+
+    if (convex_hull_init_percentage + random_init_percentage != 1.0) {
+      throw std::invalid_argument("The sum of convex hull and random initialization percentages must equal 1.0.");
     }
   }
 };

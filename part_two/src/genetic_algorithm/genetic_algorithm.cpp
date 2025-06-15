@@ -3,26 +3,23 @@
 #include <algorithm>
 #include <cassert>
 
-GeneticAlgorithm::GeneticAlgorithm(unique_ptr<PopulationInitialization> &population_initialization,
+GeneticAlgorithm::GeneticAlgorithm(vector<unique_ptr<PopulationInitialization> > &population_init,
                                    unique_ptr<SelectionOp> &selection,
                                    unique_ptr<CrossoverOp> &crossover,
                                    unique_ptr<MutationOp> &mutation,
                                    unique_ptr<Replacement> &replacement,
-                                   vector<unique_ptr<StoppingCriterion>> &stopping,
+                                   vector<unique_ptr<StoppingCriterion> > &stopping,
                                    const Logger::Level log_level)
-    : population_initialization(std::move(population_initialization)), selection(std::move(selection)),
+    : population_init(std::move(population_init)), selection(std::move(selection)),
       crossover(std::move(crossover)), mutation(std::move(mutation)),
       replacement(std::move(replacement)), stopping(std::move(stopping)), generation_n(0),
-      log(log_level, "GeneticAlgorithm")
-{
+      log(log_level, "GeneticAlgorithm"),
+      initial_fitness(numeric_limits<double>::max()) {
 }
 
-bool GeneticAlgorithm::should_stop()
-{
-    for (const auto &criterion : stopping)
-    {
-        if (criterion->should_stop())
-        {
+bool GeneticAlgorithm::should_stop() {
+    for (const auto &criterion: stopping) {
+        if (criterion->should_stop()) {
             return true;
         }
     }
@@ -30,20 +27,20 @@ bool GeneticAlgorithm::should_stop()
     return false;
 }
 
-void GeneticAlgorithm::handle_start()
-{
-    for (const auto &criterion : stopping)
-    {
+void GeneticAlgorithm::handle_start() {
+    for (const auto &criterion: stopping) {
         criterion->handle_start();
     }
 }
 
-void GeneticAlgorithm::start(const string& filename, const long logging_frequency)
-{
+void GeneticAlgorithm::start(const string &filename, const long logging_frequency) {
     log.info("Initializing population");
-    population = population_initialization->generate_population();
-    if (population.empty())
-    {
+    for (const auto &init: population_init) {
+        auto init_population = init->generate_population();
+        population.insert(population.end(), init_population.begin(), init_population.end());
+    }
+
+    if (population.empty()) {
         throw runtime_error("Initial population cannot be empty");
     }
 
@@ -54,8 +51,7 @@ void GeneticAlgorithm::start(const string& filename, const long logging_frequenc
     log.info("Starting genetic algorithm with population size: " + to_string(population.size()));
 
     handle_start();
-    while (not should_stop())
-    {
+    while (not should_stop()) {
         log.debug("Starting new generation_n");
         vector<Chromosome> parents = selection->select(population);
         log.trace("Selected " + to_string(parents.size()) + " parents for crossover");
@@ -77,8 +73,7 @@ void GeneticAlgorithm::start(const string& filename, const long logging_frequenc
         //     throw runtime_error("Best chromosome fitness increased from " + to_string(old_fitness) +
         //                          " to " + to_string(best_chromosome.evaluate_fitness()));
         // }
-        if (generation_n % logging_frequency == 0)
-        {
+        if (generation_n % logging_frequency == 0) {
             log.info("Generation " + to_string(generation_n) + " best chromosome fitness: " +
                      to_string(best_chromosome.evaluate_fitness()));
         }
@@ -88,8 +83,7 @@ void GeneticAlgorithm::start(const string& filename, const long logging_frequenc
     save_to_file("samples/" + filename);
 }
 
-void GeneticAlgorithm::print_summary()
-{
+void GeneticAlgorithm::print_summary() {
     // When GA ends, print a detailed summary
     auto best_chromosome = get_best();
     double final_fitness = best_chromosome.evaluate_fitness();
@@ -107,7 +101,7 @@ void GeneticAlgorithm::print_summary()
     summary << "Final best fitness:      " << setw(10) << fixed << setprecision(2) << final_fitness << "\n";
     summary << "Absolute improvement:    " << setw(10) << fixed << setprecision(2) << absolute_improvement << "\n";
     summary << "Relative improvement:    " << setw(9) << fixed << setprecision(2) << percent_improvement << "%\n\n";
-    
+
     summary << "Best solution:      ";
     summary << best_chromosome.to_str() << "\n";
     summary << string(60, '=');
@@ -115,8 +109,7 @@ void GeneticAlgorithm::print_summary()
     log.info(summary.str());
 }
 
-void GeneticAlgorithm::save_to_file(const string& filename) {
-    
+void GeneticAlgorithm::save_to_file(const string &filename) {
     string path;
     if (filename.empty()) {
         path = "solution_" + to_string(generation_n) + "_sol.ga";
@@ -136,30 +129,26 @@ void GeneticAlgorithm::save_to_file(const string& filename) {
     }
 
     Chromosome best = get_best();
-    
-    for (const auto &node : best.graph.path) {
+
+    for (const auto &node: best.graph.path) {
         output_file << node.id << " " << node.x() << " " << node.y() << std::endl;
-    } 
+    }
     output_file << std::endl;
-    
+
     output_file.close();
     log.info("Solution saved to " + path);
 }
 
-Chromosome GeneticAlgorithm::get_best() const
-{
-    if (population.empty())
-    {
+Chromosome GeneticAlgorithm::get_best() const {
+    if (population.empty()) {
         throw runtime_error("Population is empty, cannot find best chromosome");
     }
     const auto best_it = min_element(population.begin(), population.end(),
-                                     [](const Chromosome &a, const Chromosome &b)
-                                     {
+                                     [](const Chromosome &a, const Chromosome &b) {
                                          return a.evaluate_fitness() < b.evaluate_fitness();
                                      });
 
-    if (best_it->evaluate_fitness() < 0)
-    {
+    if (best_it->evaluate_fitness() < 0) {
         throw runtime_error("Best chromosome fitness is negative");
     }
     return *best_it;

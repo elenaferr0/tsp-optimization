@@ -16,7 +16,7 @@ using namespace std;
 
 class GeneticAlgorithm {
     vector<Chromosome> population;
-    unique_ptr<PopulationInitialization> population_initialization;
+    vector<unique_ptr<PopulationInitialization>> population_init;
     unique_ptr<SelectionOp> selection;
     unique_ptr<CrossoverOp> crossover;
     unique_ptr<MutationOp> mutation;
@@ -37,7 +37,7 @@ class GeneticAlgorithm {
     void save_to_file(const string &filename);
 
 public:
-    GeneticAlgorithm(unique_ptr<PopulationInitialization> &population_initialization,
+    GeneticAlgorithm(vector<unique_ptr<PopulationInitialization>> &population_init,
                      unique_ptr<SelectionOp> &selection,
                      unique_ptr<CrossoverOp> &crossover,
                      unique_ptr<MutationOp> &mutation,

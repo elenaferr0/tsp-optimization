@@ -17,7 +17,8 @@ vector<Chromosome> RandomInitialization::generate_population() {
     iota(indexes.begin(), indexes.end(), 0); // Fill with incrementing indices
 
     vector<Chromosome> population;
-    for (int i = 0; i < params.population_size; ++i) {
+    const int to_generate = floor(params.random_init_percentage * params.population_size);
+    for (int i = 0; i < to_generate; ++i) {
         shuffle(indexes.begin(), indexes.end(), mt19937(random_device()()));
         vector<Node> tour;
         for (const int index: indexes) {

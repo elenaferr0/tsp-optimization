@@ -36,8 +36,8 @@ vector<Chromosome> ConvexHullInitialization::generate_population()
         }
     }
 
-    // Generate multiple chromosomes with different random shuffles
-    for (int i = 0; i < params.population_size; ++i)
+    const int to_generate = floor(params.population_size * params.convex_hull_init_percentage);
+    for (int i = 0; i < to_generate; ++i)
     {
         population.push_back(generate_chromosome(convex_hull, interior_points));
     }

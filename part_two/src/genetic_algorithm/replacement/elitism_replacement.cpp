@@ -10,7 +10,8 @@ vector<Chromosome> ElitismReplacement::replace(const vector<Chromosome> &parents
     throw std::invalid_argument("ElitismReplacement: parents and offsprings cannot be empty");
   }
 
-  auto num_elites = floor(params.parents_replacement_rate * static_cast<int>(parents.size()));
+  int replacement_n = floor(params.parents_replacement_rate * static_cast<int>(parents.size()));
+  auto num_elites = min(replacement_n, static_cast<int>(offsprings.size()));
   if (num_elites == 0) {
     num_elites = 1; // Ensure at least one elite is selected
   }
