@@ -13,6 +13,7 @@ vector<Chromosome> OrderCrossover::recombine(const HyperParams& params, const ve
     const auto n_parents = parents.size();
     auto const n_genes = parents[0].get_n_genes();
     vector<Chromosome> result;
+    result.reserve(n_parents);
 
     for (int i = 0; i < n_parents; i += 2) {
         const int parent1_idx = i;

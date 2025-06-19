@@ -9,8 +9,8 @@ struct HyperParams {
   int population_size = 500;
   double mutation_rate = 0.01;
   double parents_replacement_rate = 0.8;
-  int selection_n_parents = 2;
-  int selection_tournament_size = 3;
+  int selection_n_parents = 300;
+  int selection_tournament_size = 5;
   long time_limit_seconds = 60;
   long max_non_improving_generations = 100;
   pair<double, double> convex_hull_random_init_ratio = {0.1, 0.9}; // Convex hull and random initialization percentages

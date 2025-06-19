@@ -10,28 +10,30 @@ using namespace std;
 
 class Chromosome {
 protected:
-  Graph graph;
+    Graph graph;
 
 public:
-  explicit Chromosome(const Graph &graph);
+    explicit Chromosome(const Graph &graph);
 
-  double evaluate_fitness() const;
+    double evaluate_fitness() const;
 
-  bool operator<(const Chromosome &other) const;
+    bool operator<(const Chromosome &other) const;
 
-  size_t get_n_genes() const;
+    size_t get_n_genes() const;
 
-  vector<Node> get_subpath(int start, int end) const;
+    vector<Node> get_subpath(int start, int end) const;
 
-  void set_subpath(int start, int end, vector<Node> path);
+    void set_subpath(int start, int end, vector<Node> path);
 
-  Node get_node(int i) const;
+    Node get_node(int i) const;
 
-  friend ostream &operator<<(ostream &os, const Chromosome &chromosome);
+    friend ostream &operator<<(ostream &os, const Chromosome &chromosome);
 
-  string to_str(bool log_positions = false) const;
+    string to_str(bool log_positions = false) const;
 
-  friend class GeneticAlgorithm;
+    void save_to_file(const string &filename);
+
+    friend class GeneticAlgorithm;
 };
 
 #endif // CHROMOSOME_H

@@ -38,7 +38,7 @@ void MillerTuckerZemlinFormulation::create_variables() {
     // Add all variables at once
     CHECKED_CPX_CALL(CPXnewcols, env, lp, vars.get_n_vars(), vars.get_costs(), vars.get_lower_bounds(),
                      vars.get_upper_bounds(), vars.get_types(), vars.get_names());
-    tl.tick("Variables creation");
+    tl.tick("Variables creation (" + to_string(vars.get_n_vars()) + " variables)");
 }
 
 void MillerTuckerZemlinFormulation::create_constraints() {
@@ -105,7 +105,7 @@ void MillerTuckerZemlinFormulation::create_constraints() {
         nullptr
     );
 
-    tl.tick("Constraints creation");
+    tl.tick("Constraints creation (" + std::to_string(ct.get_n_rows()) + " rows)");
 }
 
 string MillerTuckerZemlinFormulation::formulation_code() const {

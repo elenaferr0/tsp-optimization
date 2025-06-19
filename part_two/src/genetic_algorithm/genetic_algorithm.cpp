@@ -46,7 +46,7 @@ Chromosome GeneticAlgorithm::start(const HyperParams& params, const string &file
 
     auto best_chromosome = get_best();
     initial_fitness = best_chromosome.evaluate_fitness();
-    log.debug("Initial best chromosome fitness: " + to_string(initial_fitness));
+    log.info("Initial best chromosome fitness: " + to_string(initial_fitness));
 
     log.debug("Starting genetic algorithm with population size: " + to_string(population.size()));
 
@@ -56,13 +56,13 @@ Chromosome GeneticAlgorithm::start(const HyperParams& params, const string &file
         vector<Chromosome> parents = selection->select(params, population);
         log.trace("Selected " + to_string(parents.size()) + " parents for crossover");
 
-        vector<Chromosome> offspring = crossover->recombine(params, parents);
-        log.trace("Generated " + to_string(offspring.size()) + " offspring from crossover");
+        vector<Chromosome> offsprings = crossover->recombine(params, parents);
+        log.trace("Generated " + to_string(offsprings.size()) + " offspring from crossover");
 
-        vector<Chromosome> mutated = mutation->mutate(params, offspring);
+        vector<Chromosome> mutated = mutation->mutate(params, offsprings);
         log.trace("Applied mutation, resulting in " + to_string(mutated.size()) + " mutated offspring");
 
-        population = replacement->replace(params, parents, offspring);
+        population = replacement->replace(params, parents, offsprings);
         log.trace("Replaced generation_n");
 
         generation_n++;
@@ -80,7 +80,6 @@ Chromosome GeneticAlgorithm::start(const HyperParams& params, const string &file
     }
 
     // print_summary();
-    // save_to_file("samples/" + filename);
     return best_chromosome;
 }
 
@@ -108,36 +107,6 @@ void GeneticAlgorithm::print_summary() {
     summary << string(60, '=');
     summary << "\n";
     log.info(summary.str());
-}
-
-void GeneticAlgorithm::save_to_file(const string &filename) {
-    string path;
-    if (filename.empty()) {
-        path = "solution_" + to_string(generation_n) + "_sol.ga";
-    } else {
-        path = filename.substr(0, filename.find_last_of('.')) + "_sol.ga";
-    }
-
-    if (population.empty()) {
-        log.error("Cannot save solution - population is empty");
-        return;
-    }
-
-    ofstream output_file(path);
-    if (!output_file.is_open()) {
-        log.error("Failed to open file for writing: " + path);
-        return;
-    }
-
-    Chromosome best = get_best();
-
-    for (const auto &node: best.graph.path) {
-        output_file << node.id << " " << node.x() << " " << node.y() << std::endl;
-    }
-    output_file << std::endl;
-
-    output_file.close();
-    log.info("Solution saved to " + path);
 }
 
 Chromosome GeneticAlgorithm::get_best() const {

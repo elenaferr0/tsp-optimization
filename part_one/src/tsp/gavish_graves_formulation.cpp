@@ -43,7 +43,7 @@ void GavishGravesFormulation::create_variables() {
     CHECKED_CPX_CALL(CPXnewcols, env, lp, vars.get_n_vars(), vars.get_costs(), vars.get_lower_bounds(),
                      vars.get_upper_bounds(), vars.get_types(), vars.get_names());
 
-    tl.tick("Variables creation");
+    tl.tick("Variables creation (" + std::to_string(vars.get_n_vars()) + " variables)");
 }
 
 void GavishGravesFormulation::create_constraints() {
@@ -107,7 +107,7 @@ void GavishGravesFormulation::create_constraints() {
         nullptr,
         nullptr
     );
-    tl.tick("Constraints creation");
+    tl.tick("Constraints creation (" + std::to_string(ct.get_n_rows()) + " rows)");
 }
 
 string GavishGravesFormulation::formulation_code() const {

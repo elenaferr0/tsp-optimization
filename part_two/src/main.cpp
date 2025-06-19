@@ -36,16 +36,13 @@ int main(const int argc, char *argv[]) {
     // char *instance = nullptr;
     // parse_params(argc, argv, instance);
 
-    auto instance = "random_50";
-    // auto instance = "random_10";
-
     try {
-        // const auto mutation_rates = vector<double>{0.01, 0.05, 0.1};
-        const auto mutation_rates = vector<double>{0.01};
-        // const auto parent_replacement_rates = vector<double>{0.1, 0.2, 0.3};
-        const auto parent_replacement_rates = vector<double>{0.3};
-        // const auto selection_tournament_sizes = vector<int>{5, 10, 15};
-        const auto selection_tournament_sizes = vector<int>{15};
+        const auto mutation_rates = vector<double>{0.01, 0.05, 0.1};
+        // const auto mutation_rates = vector<double>{0.01};
+        const auto parent_replacement_rates = vector<double>{0.1, 0.2, 0.3};
+        // const auto parent_replacement_rates = vector<double>{0.3};
+        const auto selection_tournament_sizes = vector<int>{5, 10, 15};
+        // const auto selection_tournament_sizes = vector<int>{15};
         const auto convex_hull_random_init_ratio = vector<pair<double, double> >{
             // {0.1, 0.9}, // 10% convex hull, 90% random
             {0.2, 0.8}, // 20% convex hull, 80% random
@@ -54,7 +51,7 @@ int main(const int argc, char *argv[]) {
         };
 
         GridSearch gs(
-            "bayg29",
+            "ulysses16",
             mutation_rates,
             parent_replacement_rates,
             selection_tournament_sizes,

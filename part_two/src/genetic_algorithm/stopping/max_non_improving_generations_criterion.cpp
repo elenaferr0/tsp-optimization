@@ -10,7 +10,7 @@ MaxNonImprovingGenerationsCriterion::MaxNonImprovingGenerationsCriterion(const L
 }
 
 void MaxNonImprovingGenerationsCriterion::handle_start(const HyperParams &params) {
-    log.info("Starting max generations criterion with limit: " +
+    log.debug("Starting max generations criterion with limit: " +
              std::to_string(params.max_non_improving_generations));
 }
 

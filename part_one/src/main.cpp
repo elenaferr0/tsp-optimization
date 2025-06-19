@@ -34,7 +34,7 @@ int main(const int argc, char *argv[]) {
         char *instance = nullptr;
         parse_params(argc, argv, timeout, instance);
 
-        GavishGravesFormulation gg(instance, timeout);
+        MillerTuckerZemlinFormulation gg(instance, timeout);
         gg.setup();
         gg.solve();
     } catch (std::exception &e) {

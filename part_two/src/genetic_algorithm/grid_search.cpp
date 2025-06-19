@@ -115,8 +115,9 @@ void GridSearch::run() {
                                              ", Convex hull init ratio: " + to_string(init.first) +
                                              ", Random init ratio: " + to_string(init.second));
 
-                                    if (best == nullptr || chromosome.evaluate_fitness() < best->first. evaluate_fitness()) {
-                                        best = make_unique<pair<Chromosome, HyperParams>>(chromosome, params);
+                                    if (best == nullptr || chromosome.evaluate_fitness() < best->first.
+                                        evaluate_fitness()) {
+                                        best = make_unique<pair<Chromosome, HyperParams> >(chromosome, params);
                                     }
                                 }
                             }
@@ -133,4 +134,7 @@ void GridSearch::run() {
              ", Selection tournament size: " + to_string(best->second.selection_tournament_size) +
              ", Convex hull init ratio: " + to_string(best->second.convex_hull_random_init_ratio.first) +
              ", Random init ratio: " + to_string(best->second.convex_hull_random_init_ratio.second));
+
+    best->first.save_to_file(instance_name);
 }
+

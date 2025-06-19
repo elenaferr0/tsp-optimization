@@ -4,9 +4,10 @@ import random
 import os
 from typing import List, Tuple, Dict, Any
 
-MIN_SPACING = 0.8  # Minimum spacing between points (mm)
-BOARD_MARGIN = 2.0  # Minimum distance from board edge (mm)
-DEFAULT_DENSITY = 1  # Default point density (0-1)
+MIN_SPACING = 1.5  # Increased minimum spacing between points (mm)
+BOARD_MARGIN = 3.0  # Increased minimum distance from board edge (mm)
+PATTERN_SEPARATION = 4.0  # Minimum distance between different patterns
+DEFAULT_DENSITY = 0.5  # Default point density (0-1)
 
 class Pattern:
     def __init__(self, pattern_type, points):
@@ -32,18 +33,32 @@ def is_valid_point(point: Tuple[float, float], existing_points: List[Tuple[float
 
     return True
 
-def generate_parallelogram_pattern(board_size: float, existing_points: List[Tuple[float, float]],
+def is_pattern_valid(pattern_points: List[Tuple[float, float]], existing_patterns: List[Pattern],
+                     board_size: float) -> bool:
+    """Check if a pattern is far enough from existing patterns."""
+    if not existing_patterns:
+        return True
+
+    for pattern_point in pattern_points:
+        for existing_pattern in existing_patterns:
+            for existing_point in existing_pattern.points:
+                if distance(pattern_point, existing_point) < PATTERN_SEPARATION:
+                    return False
+    return True
+
+def generate_parallelogram_pattern(board_size: float, existing_patterns: List[Pattern],
                                    min_spacing: float = MIN_SPACING) -> Pattern:
-    max_attempts = 100
+    max_attempts = 200
 
     for _ in range(max_attempts):
-        # Random center position
-        center_x = random.uniform(BOARD_MARGIN + 3, board_size - BOARD_MARGIN - 3)
-        center_y = random.uniform(BOARD_MARGIN + 3, board_size - BOARD_MARGIN - 3)
+        # Random center position with more margin
+        center_x = random.uniform(BOARD_MARGIN + 5, board_size - BOARD_MARGIN - 5)
+        center_y = random.uniform(BOARD_MARGIN + 5, board_size - BOARD_MARGIN - 5)
 
-        width = random.uniform(2, min(6, board_size/5))
-        height = random.uniform(2, min(6, board_size/5))
-        skew = random.uniform(0.3, 1.0) * width
+        # Increased sizes for more prominent patterns
+        width = random.uniform(3, min(10, board_size/4))
+        height = random.uniform(3, min(10, board_size/4))
+        skew = random.uniform(0.4, 1.2) * width
         rotation = random.uniform(0, 2 * math.pi)
 
         # Generate the four points of the parallelogram
@@ -65,45 +80,58 @@ def generate_parallelogram_pattern(board_size: float, existing_points: List[Tupl
             y = center_y + dx * math.sin(rotation) + dy * math.cos(rotation)
 
             point = (x, y)
-            if not is_valid_point(point, existing_points + points, board_size, min_spacing):
+            if not is_valid_point(point, points, board_size, min_spacing):
                 valid = False
                 break
 
             points.append(point)
 
-        if valid:
+        if valid and is_pattern_valid(points, existing_patterns, board_size):
             return Pattern("parallelogram", points)
 
     return Pattern("parallelogram", [])
 
-def generate_line_pattern(board_size: float, existing_points: List[Tuple[float, float]],
+def generate_line_pattern(board_size: float, existing_patterns: List[Pattern],
                    min_spacing: float = MIN_SPACING) -> Pattern:
-    num_points = random.randint(2, 4)
-    max_attempts = 100
+    num_points = random.randint(3, 5)  # Increased number of points
+    max_attempts = 200
 
     # Try to find a valid starting point
     for _ in range(max_attempts):
-        # Random position for the line
-        center_x = random.uniform(BOARD_MARGIN + 2, board_size - BOARD_MARGIN - 2)
-        center_y = random.uniform(BOARD_MARGIN + 2, board_size - BOARD_MARGIN - 2)
+        # Random position for the line with more margin
+        center_x = random.uniform(BOARD_MARGIN + 4, board_size - BOARD_MARGIN - 4)
+        center_y = random.uniform(BOARD_MARGIN + 4, board_size - BOARD_MARGIN - 4)
 
-        angle = random.choice([0, math.pi/2])
+        angle = random.choice([0, math.pi/2, math.pi/4, 3*math.pi/4])  # More angle options
 
-        # Random length (scaled by board size) and point spacing variability
-        line_length = random.uniform(2, min(8, board_size/3))
+        # Increased line length for more prominent patterns
+        line_length = random.uniform(4, min(12, board_size/2.5))
 
         # Decide if we want uniform or variable spacing
         uniform_spacing = random.choice([True, False])
 
         if uniform_spacing:
-            # Uniform spacing between points
-            spacing = line_length / (num_points - 1)
-            offsets = [i * spacing - line_length / 2 for i in range(num_points)]
+            # Uniform spacing between points with minimum distance
+            spacing = max(min_spacing * 1.2, line_length / (num_points - 1))
+            actual_length = spacing * (num_points - 1)
+            offsets = [i * spacing - actual_length / 2 for i in range(num_points)]
         else:
-            # Variable spacing between points
-            # Generate random positions along the line, then sort them
-            raw_offsets = [random.uniform(-line_length/2, line_length/2) for _ in range(num_points)]
-            offsets = sorted(raw_offsets)
+            # Variable spacing between points, ensuring minimum distance
+            positions = []
+            for i in range(num_points):
+                if i == 0:
+                    positions.append(-line_length/2)
+                elif i == num_points - 1:
+                    positions.append(line_length/2)
+                else:
+                    # Ensure minimum spacing
+                    min_pos = positions[-1] + min_spacing * 1.2
+                    max_pos = line_length/2 - (num_points - i - 1) * min_spacing * 1.2
+                    if min_pos < max_pos:
+                        positions.append(random.uniform(min_pos, max_pos))
+                    else:
+                        positions.append(min_pos)
+            offsets = positions
 
         # Generate points along the line
         points = []
@@ -114,36 +142,35 @@ def generate_line_pattern(board_size: float, existing_points: List[Tuple[float, 
             y = center_y + offset * math.sin(angle)
 
             point = (x, y)
-            if not is_valid_point(point, existing_points + points, board_size, min_spacing):
+            if not is_valid_point(point, points, board_size, min_spacing):
                 valid = False
                 break
 
             points.append(point)
 
-        if valid:
+        if valid and is_pattern_valid(points, existing_patterns, board_size):
             return Pattern("line", points)
 
     return Pattern("line", [])
 
-def generate_triangle_pattern(board_size: float, existing_points: List[Tuple[float, float]],
+def generate_triangle_pattern(board_size: float, existing_patterns: List[Pattern],
                        min_spacing: float = MIN_SPACING) -> Pattern:
-    max_attempts = 100
+    max_attempts = 200
 
     for _ in range(max_attempts):
-        center_x = random.uniform(BOARD_MARGIN + 3, board_size - BOARD_MARGIN - 3)
-        center_y = random.uniform(BOARD_MARGIN + 3, board_size - BOARD_MARGIN - 3)
+        center_x = random.uniform(BOARD_MARGIN + 5, board_size - BOARD_MARGIN - 5)
+        center_y = random.uniform(BOARD_MARGIN + 5, board_size - BOARD_MARGIN - 5)
 
-        # Random size and rotation
-        size = random.uniform(1.5, min(7, board_size/5))
+        # Increased size for more prominent triangles
+        size = random.uniform(3, min(12, board_size/3))
         rotation = random.uniform(0, 2 * math.pi)
 
         # Random triangle shape (by varying angles)
-        # Create irregular triangles by randomizing angles
         irregular = random.choice([True, False])
 
         if irregular:
-            # Create 3 random angles that sum to 2π
-            angles = [random.random() for _ in range(3)]
+            # Create 3 random angles that sum to 2π, but avoid very sharp angles
+            angles = [random.uniform(0.5, 2.0) for _ in range(3)]
             total = sum(angles)
             angles = [a * 2 * math.pi / total for a in angles]
             # Accumulate angles
@@ -160,39 +187,53 @@ def generate_triangle_pattern(board_size: float, existing_points: List[Tuple[flo
 
         for i in range(3):
             angle = rotation + cumulative_angles[i]
-            # Vary distances for irregular triangles
-            radius = size if not irregular else size * random.uniform(0.7, 1.3)
+            # Vary distances for irregular triangles, but ensure minimum spacing
+            if irregular:
+                radius = size * random.uniform(0.8, 1.2)
+            else:
+                radius = size
+
             x = center_x + radius * math.cos(angle)
             y = center_y + radius * math.sin(angle)
 
             point = (x, y)
-            if not is_valid_point(point, existing_points + points, board_size, min_spacing):
+            if not is_valid_point(point, points, board_size, min_spacing):
                 valid = False
                 break
 
             points.append(point)
 
+        # Additional check: ensure triangle points are far enough apart
         if valid:
+            for i in range(len(points)):
+                for j in range(i+1, len(points)):
+                    if distance(points[i], points[j]) < min_spacing * 1.5:
+                        valid = False
+                        break
+                if not valid:
+                    break
+
+        if valid and is_pattern_valid(points, existing_patterns, board_size):
             return Pattern("triangle", points)
 
     return Pattern("triangle", [])
 
-def generate_rectangle_pattern(board_size: float, existing_points: List[Tuple[float, float]],
+def generate_rectangle_pattern(board_size: float, existing_patterns: List[Pattern],
                        min_spacing: float = MIN_SPACING) -> Pattern:
-    max_attempts = 100
+    max_attempts = 200
 
     for _ in range(max_attempts):
-        center_x = random.uniform(BOARD_MARGIN + 3, board_size - BOARD_MARGIN - 3)
-        center_y = random.uniform(BOARD_MARGIN + 3, board_size - BOARD_MARGIN - 3)
+        center_x = random.uniform(BOARD_MARGIN + 5, board_size - BOARD_MARGIN - 5)
+        center_y = random.uniform(BOARD_MARGIN + 5, board_size - BOARD_MARGIN - 5)
 
-        # Random width, height and rotation
-        width = random.uniform(2, min(8, board_size/4))
+        # Increased width and height for more prominent rectangles
+        width = random.uniform(4, min(12, board_size/3))
 
         # Allow for both squares and rectangles with various aspect ratios
         if random.random() < 0.3:  # square-ish
             height = width * random.uniform(0.9, 1.1)
         else:  # rectangular
-            height = width * random.uniform(0.3, 2.5)
+            height = width * random.uniform(0.4, 2.0)
 
         rotation = random.uniform(0, 2 * math.pi)
 
@@ -215,20 +256,20 @@ def generate_rectangle_pattern(board_size: float, existing_points: List[Tuple[fl
             y = center_y + dx * math.sin(rotation) + dy * math.cos(rotation)
 
             point = (x, y)
-            if not is_valid_point(point, existing_points + points, board_size, min_spacing):
+            if not is_valid_point(point, points, board_size, min_spacing):
                 valid = False
                 break
 
             points.append(point)
 
-        if valid:
+        if valid and is_pattern_valid(points, existing_patterns, board_size):
             return Pattern("rectangle", points)
 
     return Pattern("rectangle", [])
 
 def generate_random_point(board_size: float, existing_points: List[Tuple[float, float]],
                     min_spacing: float = MIN_SPACING) -> Tuple[float, float]:
-    max_attempts = 100
+    max_attempts = 200
 
     for _ in range(max_attempts):
         x = random.uniform(BOARD_MARGIN, board_size - BOARD_MARGIN)
@@ -241,60 +282,57 @@ def generate_random_point(board_size: float, existing_points: List[Tuple[float, 
     return None
 
 def generate_pcb_pattern(size: int, density: float = DEFAULT_DENSITY) -> List[Tuple[float, float]]:
-    board_size = size * 1.5
+    # Increased board size to accommodate larger patterns and spacing
+    board_size = size * 2.5
 
-    num_patterns = max(1, int(size * density * 0.5))
+    # Adjust number of patterns based on size and density
+    num_patterns = max(1, int(size * density * 0.3))  # Fewer patterns for better spacing
 
-    # Limit for random individual points
-    max_random_points = size - num_patterns * 4  # Assuming average 4 points per pattern
-
-    # Generate patterns
+    # Generate patterns with better separation
     all_points = []
     patterns = []
 
-    for _ in range(random.randint(2, num_patterns)):
-        pattern = generate_line_pattern(board_size, all_points)
-        if pattern.points:
-            patterns.append(pattern)
-            all_points.extend(pattern.points)
+    # Generate different types of patterns
+    pattern_generators = [
+        generate_line_pattern,
+        generate_triangle_pattern,
+        generate_rectangle_pattern,
+        generate_parallelogram_pattern
+    ]
 
-    for _ in range(random.randint(1, num_patterns)):
-        pattern = generate_triangle_pattern(board_size, all_points)
-        if pattern.points:
-            patterns.append(pattern)
-            all_points.extend(pattern.points)
+    # Generate patterns of each type
+    for generator in pattern_generators:
+        for _ in range(random.randint(1, max(1, num_patterns // 2))):
+            pattern = generator(board_size, patterns)
+            if pattern.points:
+                patterns.append(pattern)
+                all_points.extend(pattern.points)
 
-    for _ in range(random.randint(1, num_patterns)):
-        pattern = generate_rectangle_pattern(board_size, all_points)
-        if pattern.points:
-            patterns.append(pattern)
-            all_points.extend(pattern.points)
+    # Fill with random points up to size, but with better spacing
+    attempts = 0
+    max_fill_attempts = size * 10
 
-    for _ in range(random.randint(1, num_patterns)):
-        pattern = generate_parallelogram_pattern(board_size, all_points)
-        if pattern.points:
-            patterns.append(pattern)
-            all_points.extend(pattern.points)
-
-    # Fill with random points up to size
-    while len(all_points) < size and max_random_points > 0:
-        point = generate_random_point(board_size, all_points)
+    while len(all_points) < size and attempts < max_fill_attempts:
+        point = generate_random_point(board_size, all_points, MIN_SPACING * 1.2)
         if point:
             all_points.append(point)
-            max_random_points -= 1
+        attempts += 1
 
-    # If we still need more points, try to add them with reduced spacing
-    reduced_spacing_factor = 0.7
-    current_min_spacing = MIN_SPACING
+    # If we still need more points, gradually reduce spacing requirements
+    spacing_reductions = [0.9, 0.8, 0.7, 0.6]
 
-    while len(all_points) < size:
-        current_min_spacing *= reduced_spacing_factor
-        point = generate_random_point(board_size, all_points, current_min_spacing)
-        if point:
-            all_points.append(point)
-        else:
-            # If still can't find a valid point, break to avoid infinite loop
+    for reduction in spacing_reductions:
+        if len(all_points) >= size:
             break
+
+        current_spacing = MIN_SPACING * reduction
+        attempts = 0
+
+        while len(all_points) < size and attempts < size * 5:
+            point = generate_random_point(board_size, all_points, current_spacing)
+            if point:
+                all_points.append(point)
+            attempts += 1
 
     # If we ended up with too many points, trim them
     if len(all_points) > size:
@@ -312,7 +350,7 @@ def write_graph(coordinates: List[Tuple[float, float]], output: str) -> None:
             f.write(f"{i} {x:.6f} {y:.6f}\n")
 
 def main():
-    parser = argparse.ArgumentParser(description='PCB drilling pattern generator for TSP')
+    parser = argparse.ArgumentParser(description='PCB drilling pattern generator for TSP with enhanced pattern visibility')
     parser.add_argument('-s', '--size', required=True, type=int, help='Number of drilling points')
     parser.add_argument('-d', '--density', type=float, default=DEFAULT_DENSITY,
                         help='Density of patterns (0.0-1.0), higher values create more structured patterns')
@@ -337,7 +375,7 @@ def main():
     os.makedirs(os.path.dirname(output_file), exist_ok=True)
 
     write_graph(coordinates, output_file)
-    print(f"Generated instance with {len(coordinates)} to {output_file}")
+    print(f"Generated instance with {len(coordinates)} points to {output_file}")
 
 if __name__ == "__main__":
     main()

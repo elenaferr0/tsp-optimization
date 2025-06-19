@@ -34,7 +34,6 @@ class GeneticAlgorithm {
 
     void print_summary();
 
-    void save_to_file(const string &filename);
 
 public:
     GeneticAlgorithm(const vector<shared_ptr<PopulationInitialization>> &population_init,
