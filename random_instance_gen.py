@@ -354,7 +354,7 @@ def main():
     parser.add_argument('-s', '--size', required=True, type=int, help='Number of drilling points')
     parser.add_argument('-d', '--density', type=float, default=DEFAULT_DENSITY,
                         help='Density of patterns (0.0-1.0), higher values create more structured patterns')
-    parser.add_argument('-o', '--output', help='Output file path')
+    parser.add_argument('-o', '--output-dir', required=True, help='Output directory for the generated instance')
     args = parser.parse_args()
 
     if args.density < 0 or args.density > 1:
@@ -365,11 +365,7 @@ def main():
     if len(coordinates) < args.size:
         print(f"Warning: Could only generate {len(coordinates)} points due to spacing constraints")
 
-    if args.output:
-        output_file = args.output
-    else:
-        working_dir = os.path.dirname(os.path.abspath(__file__))
-        output_file = f"{working_dir}/../samples/random_{args.size}.dat"
+    output_file = args.output_dir + 'random_' + str(args.size) + '.dat'
 
     # Ensure output directory exists
     os.makedirs(os.path.dirname(output_file), exist_ok=True)
