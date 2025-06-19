@@ -55,7 +55,6 @@ Chromosome ConvexHullInitialization::generate_chromosome(
         tour.push_back(node);
     }
 
-    int tour_size = static_cast<int>(tour.size());
     vector<Node> interior_nodes_copy = interior_nodes;
     shuffle(interior_nodes_copy.begin(), interior_nodes_copy.end(), gen);
     for (const auto &node : interior_nodes_copy)

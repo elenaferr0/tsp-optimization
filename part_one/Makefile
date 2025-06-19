@@ -1,5 +1,5 @@
 CXX := g++
-CXXFLAGS := -m64 -Wall -O2 -fPIC -Wno-format-truncation -Wno-sign-compare -std=c++14
+CXXFLAGS := -m64 -Wall -O2 -fPIC -Wno-format-truncation -Wno-sign-compare -Wno-reorder -std=c++23
 LDFLAGS := -g -Wall -O2
 LIBS := -lcplex -lm -lpthread -ldl
 
@@ -10,16 +10,15 @@ CPLEX_LIB_DIR := $(CPLEX_DIR)/lib/x86-64_linux/static_pic
 SRC_DIR := src
 INCLUDE_DIR := include
 BUILD_DIR := build
-BIN_DIR := bin
 
 SRCS := $(shell find $(SRC_DIR) -name "*.cpp")
 OBJS := $(patsubst $(SRC_DIR)/%.cpp,$(BUILD_DIR)/%.o,$(SRCS))
-DIRS := $(sort $(dir $(OBJS)) $(BIN_DIR))
+DIRS := $(sort $(dir $(OBJS)))
 
 INCLUDE_DIRS := -I$(CPLEX_INCLUDE_DIR) -I$(INCLUDE_DIR)
 LIB_DIRS := -L$(CPLEX_LIB_DIR)
 
-TARGET := $(BIN_DIR)/main
+TARGET := main
 
 .PHONY: all clean directories run
 
@@ -37,4 +36,4 @@ $(BUILD_DIR)/%.o: $(SRC_DIR)/%.cpp
 	$(CXX) $(CXXFLAGS) $(INCLUDE_DIRS) -c $< -o $@
 
 clean:
-	rm -rf $(BUILD_DIR) $(BIN_DIR)
+	rm -rf $(BUILD_DIR) main
