@@ -16,12 +16,11 @@ public:
 
 private:
   Level min_level;
-  mutex log_mutex;
   string logger_label;
 
   string level_to_string(Level level) const;
   string get_current_timestamp() const;
-  void write_log(Level level, const string &message);
+  void write_log(Level level, const string &message) const;
 
 public:
   explicit Logger(Level min_level = Level::INFO, const string &label = "");
@@ -33,13 +32,13 @@ public:
   void set_label(const string &label);
   string get_label() const;
 
-  void trace(const string &message);
-  void debug(const string &message);
-  void info(const string &message);
-  void warn(const string &message);
-  void error(const string &message);
+  void trace(const string &message) const;
+  void debug(const string &message) const;
+  void info(const string &message) const;
+  void warn(const string &message) const;
+  void error(const string &message) const;
 
-  void log(Level level, const string &message);
+  void log(Level level, const string &message) const;
 };
 
 #endif

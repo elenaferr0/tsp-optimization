@@ -3,11 +3,10 @@
 #include "utils/path.h"
 
 DisplacementMutation::DisplacementMutation(const Logger::Level log_level)
-    : MutationOp(log_level) {
-    log.set_label("DisplacementMutation");
+    : MutationOp(Logger(log_level, name())) {
 }
 
-vector<Chromosome> DisplacementMutation::mutate(const HyperParams &params, const vector<Chromosome> &population) {
+vector<Chromosome> DisplacementMutation::mutate(const HyperParams &params, const vector<Chromosome> &population) const {
     vector<Chromosome> mutated_population;
     mutated_population.reserve(population.size());
 
@@ -70,4 +69,8 @@ vector<Chromosome> DisplacementMutation::mutate(const HyperParams &params, const
         log.trace("Fitnesses: " + fitnesses);
     }
     return mutated_population;
+}
+
+string DisplacementMutation::name() const {
+    return "DisplacementMutation";
 }

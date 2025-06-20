@@ -1,4 +1,4 @@
 #include "genetic_algorithm/replacement/replacement.h"
 
-Replacement::Replacement(const Logger::Level log_level) : log(log_level) {
+Replacement::Replacement(const Logger& log) : log(log) {
 }

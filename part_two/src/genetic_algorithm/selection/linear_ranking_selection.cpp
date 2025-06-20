@@ -3,11 +3,11 @@
 #include <utils/path.h>
 
 LinearRankingSelection::LinearRankingSelection(const Logger::Level log_level)
-    : SelectionOp(log_level) {
-    log.set_label("LinearRankingSelection");
+    : SelectionOp(Logger(log_level, name())) {
 }
 
-vector<Chromosome> LinearRankingSelection::select(const HyperParams& params, const vector<Chromosome> &population) {
+vector<Chromosome>
+LinearRankingSelection::select(const HyperParams &params, const vector<Chromosome> &population) const {
     vector<Chromosome> selected;
     selected.reserve(params.selection_n_parents);
 
@@ -39,7 +39,8 @@ vector<Chromosome> LinearRankingSelection::select(const HyperParams& params, con
     }
 
     log.trace("Selected " + std::to_string(selected.size()) + " chromosomes using linear ranking selection");
-    if (log.get_min_level() <= Logger::Level::DEBUG) { // Avoid iterating if trace level is not set
+    if (log.get_min_level() <= Logger::Level::DEBUG) {
+        // Avoid iterating if trace level is not set
         // Join fitnesses in a string for logging
         std::string fitnesses;
         for (const auto &chromosome: selected) {
@@ -49,4 +50,8 @@ vector<Chromosome> LinearRankingSelection::select(const HyperParams& params, con
     }
 
     return selected;
+}
+
+string LinearRankingSelection::name() const {
+    return "LinearRankingSelection";
 }

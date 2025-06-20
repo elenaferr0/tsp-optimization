@@ -10,12 +10,12 @@ GridSearch::GridSearch(
     const vector<double> &parent_replacement_rates,
     const vector<int> &selection_tournament_sizes,
     const vector<pair<double, double> > &convex_hull_random_init_ratios
-) : log(Logger::Level::INFO, "GridSearch"),
-    instance_name(instance_name),
+) : instance_name(instance_name),
     mutation_rates(mutation_rates),
     parent_replacement_rates(parent_replacement_rates),
     selection_tournament_sizes(selection_tournament_sizes),
-    convex_hull_random_init_ratios(convex_hull_random_init_ratios) {
+    convex_hull_random_init_ratios(convex_hull_random_init_ratios),
+    log(Logger::Level::INFO, "GridSearch") {
 }
 
 
@@ -30,8 +30,7 @@ pair<Chromosome, HyperParams> GridSearch::run_experiment(
     const double parent_replacement_rate,
     const int selection_tournament_size,
     double convex_hull_init_ratio,
-    double random_init_ratio,
-    const Logger::Level log_level
+    double random_init_ratio
 ) const {
     const HyperParams params{
         .mutation_rate = mutation_rate,
@@ -44,20 +43,20 @@ pair<Chromosome, HyperParams> GridSearch::run_experiment(
 
     GeneticAlgorithm ga(
         initializations,
-        const_cast<unique_ptr<SelectionOp> &>(selection),
-        const_cast<unique_ptr<CrossoverOp> &>(crossover),
-        const_cast<unique_ptr<MutationOp> &>(mutation),
-        const_cast<unique_ptr<Replacement> &>(replacement),
+        selection.get(),
+        crossover.get(),
+        mutation.get(),
+        replacement.get(),
         stopping,
-        log_level
+        log.get_min_level()
     );
 
     return {ga.start(params, instance_name, 10), params};
 }
 
-void GridSearch::run() {
-    auto log_level = Logger::Level::INFO;
+void GridSearch::run() const {
     auto graph = Graph::from_file(instance_name.c_str());
+    auto log_level = log.get_min_level();
 
     vector<shared_ptr<PopulationInitialization> > initializations(2);
     initializations[0] = make_shared<ConvexHullInitialization>(log_level, graph);
@@ -86,13 +85,17 @@ void GridSearch::run() {
     unique_ptr<pair<Chromosome, HyperParams> > best = nullptr;
 
     for (const unique_ptr<SelectionOp> &sel: selection) {
+        string sel_name = sel->name();
         for (const unique_ptr<CrossoverOp> &cross: crossover) {
+            string cross_name = cross->name();
             for (const unique_ptr<MutationOp> &mut: mutation) {
+                string mut_name = mut->name();
                 for (const unique_ptr<Replacement> &repl: replacement) {
+                    string repl_name = repl->name();
                     for (const auto &mutation_rate: mutation_rates) {
                         for (const auto &parent_replacement_rate: parent_replacement_rates) {
                             for (const auto &selection_tournament_size: selection_tournament_sizes) {
-                                for (const auto &init: convex_hull_random_init_ratios) {
+                                for (const auto &[ch_ratio, rnd_ratio]: convex_hull_random_init_ratios) {
                                     auto [chromosome, params] = run_experiment(
                                         initializations,
                                         sel,
@@ -103,17 +106,16 @@ void GridSearch::run() {
                                         mutation_rate,
                                         parent_replacement_rate,
                                         selection_tournament_size,
-                                        init.first,
-                                        init.second,
-                                        log_level
+                                        ch_ratio,
+                                        rnd_ratio
                                     );
 
                                     log.info("Fitness: " + to_string(chromosome.evaluate_fitness()) +
                                              " | Mutation rate: " + to_string(mutation_rate) +
                                              ", Parent replacement rate: " + to_string(parent_replacement_rate) +
                                              ", Selection tournament size: " + to_string(selection_tournament_size) +
-                                             ", Convex hull init ratio: " + to_string(init.first) +
-                                             ", Random init ratio: " + to_string(init.second));
+                                             ", Convex hull init ratio: " + to_string(ch_ratio) +
+                                             ", Random init ratio: " + to_string(rnd_ratio));
 
                                     if (best == nullptr || chromosome.evaluate_fitness() < best->first.
                                         evaluate_fitness()) {
@@ -128,13 +130,16 @@ void GridSearch::run() {
         }
     }
 
+    if (best == nullptr) {
+        throw runtime_error("No valid solution found during grid search.");
+    }
+    auto [fst, snd] = best->second.convex_hull_random_init_ratio;
     log.info("Best solution's fitness: " + to_string(best->first.evaluate_fitness()) +
              " | Parameters: Mutation rate: " + to_string(best->second.mutation_rate) +
              ", Parent replacement rate: " + to_string(best->second.parents_replacement_rate) +
              ", Selection tournament size: " + to_string(best->second.selection_tournament_size) +
-             ", Convex hull init ratio: " + to_string(best->second.convex_hull_random_init_ratio.first) +
-             ", Random init ratio: " + to_string(best->second.convex_hull_random_init_ratio.second));
+             ", Convex hull init ratio: " + to_string(fst) +
+             ", Random init ratio: " + to_string(snd));
 
     best->first.save_to_file(instance_name);
 }
-

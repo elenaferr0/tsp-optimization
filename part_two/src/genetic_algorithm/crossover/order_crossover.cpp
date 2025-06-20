@@ -5,11 +5,10 @@
 #include <vector>
 
 OrderCrossover::OrderCrossover(const Logger::Level log_level)
-    : CrossoverOp(log_level) {
-    log.set_label("OrderCrossover");
+    : CrossoverOp(Logger(log_level, name())) {
 }
 
-vector<Chromosome> OrderCrossover::recombine(const HyperParams& params, const vector<Chromosome> &parents) {
+vector<Chromosome> OrderCrossover::recombine(const HyperParams &params, const vector<Chromosome> &parents) const {
     const auto n_parents = parents.size();
     auto const n_genes = parents[0].get_n_genes();
     vector<Chromosome> result;
@@ -102,4 +101,8 @@ vector<Chromosome> OrderCrossover::recombine(const HyperParams& params, const ve
     }
 
     return result;
+}
+
+string OrderCrossover::name() const {
+    return "OrderCrossover";
 }

@@ -23,7 +23,7 @@ class GridSearch {
     vector<double> parent_replacement_rates;
     vector<int> selection_tournament_sizes;
     vector<pair<double, double> > convex_hull_random_init_ratios;
-    Logger log;
+    const Logger log;
 
     pair<Chromosome, HyperParams> run_experiment(
         const vector<shared_ptr<PopulationInitialization>> &initializations,
@@ -36,8 +36,7 @@ class GridSearch {
         double parent_replacement_rate,
         int selection_tournament_size,
         double convex_hull_init_ratio,
-        double random_init_ratio,
-        Logger::Level log_level = Logger::Level::INFO
+        double random_init_ratio
     ) const;
 
 public:
@@ -49,7 +48,7 @@ public:
         const vector<pair<double, double> > &convex_hull_random_init_ratios
     );
 
-    void run();
+    void run() const;
 };
 
 #endif //GRID_SEARCH_H

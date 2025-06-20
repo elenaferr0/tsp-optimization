@@ -10,13 +10,16 @@ using namespace std;
 
 class SelectionOp {
 protected:
-  Logger log;
+    const Logger log;
 
 public:
-  explicit SelectionOp(Logger::Level log_level);
-  virtual ~SelectionOp() = default;
+    explicit SelectionOp(const Logger& log);
 
-  virtual vector<Chromosome> select(const HyperParams& params,const vector<Chromosome> &population) = 0;
+    virtual ~SelectionOp() = default;
+
+    virtual string name() const = 0;
+
+    virtual vector<Chromosome> select(const HyperParams &params, const vector<Chromosome> &population) const = 0;
 };
 
 #endif // SELECTION_OP_H

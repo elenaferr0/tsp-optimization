@@ -8,7 +8,9 @@ class DisplacementMutation final : public MutationOp {
 public:
     explicit DisplacementMutation(Logger::Level log_level);
 
-    vector<Chromosome> mutate(const HyperParams &params, const vector<Chromosome> &population) override;
+    [[nodiscard]] string name() const override;
+
+    vector<Chromosome> mutate(const HyperParams &params, const vector<Chromosome> &population) const override;
 };
 
 #endif // DISPLACEMENT_MUTATION_H

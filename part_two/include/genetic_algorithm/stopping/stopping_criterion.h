@@ -6,14 +6,17 @@
 
 class StoppingCriterion {
 protected:
-  Logger log;
+    const Logger log;
 
 public:
-  explicit StoppingCriterion(Logger::Level log_level);
-  virtual ~StoppingCriterion() = default;
-  virtual void handle_start(const HyperParams& params) = 0;
-  // Best fitness will be used by MaxNonImprovingGenerationsCriterion
-  virtual bool should_stop(const HyperParams& params, double best_chromosome_fitness = 0) = 0;
+    explicit StoppingCriterion(const Logger &log);
+
+    virtual ~StoppingCriterion() = default;
+
+    virtual void handle_start(const HyperParams &params) = 0;
+
+    // Best fitness will be used by MaxNonImprovingGenerationsCriterion
+    virtual bool should_stop(const HyperParams &params, double best_chromosome_fitness = 0) = 0;
 };
 
 #endif // STOPPING_CRITERIA_H

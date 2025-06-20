@@ -6,9 +6,11 @@
 
 class SimpleInversionMutation final : public MutationOp {
 public:
-  explicit SimpleInversionMutation(Logger::Level log_level);
+    explicit SimpleInversionMutation(Logger::Level log_level);
 
-  vector<Chromosome> mutate(const HyperParams& params, const vector<Chromosome> &population) override;
+    [[nodiscard]] string name() const override;
+
+    vector<Chromosome> mutate(const HyperParams &params, const vector<Chromosome> &population) const override;
 };
 
 #endif // SIMPLE_INVERSION_MUTATION_H

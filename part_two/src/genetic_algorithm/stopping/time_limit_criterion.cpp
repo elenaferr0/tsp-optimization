@@ -3,8 +3,7 @@
 TimeLimitCriterion::~TimeLimitCriterion() { delete start_time; }
 
 TimeLimitCriterion::TimeLimitCriterion(const Logger::Level log_level)
-    : StoppingCriterion(log_level), start_time(nullptr) {
-  log.set_label("TimeLimitCriterion");
+    : StoppingCriterion(Logger(log_level, "TimeLimitCriterion")), start_time(nullptr) {
 }
 
 void TimeLimitCriterion::handle_start(const HyperParams& params) {

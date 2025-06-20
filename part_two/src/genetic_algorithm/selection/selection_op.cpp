@@ -2,5 +2,5 @@
 
 #include <genetic_algorithm/hyper_params.h>
 
-SelectionOp::SelectionOp(const Logger::Level log_level) : log(log_level) {
+SelectionOp::SelectionOp(const Logger &log) : log(log) {
 }

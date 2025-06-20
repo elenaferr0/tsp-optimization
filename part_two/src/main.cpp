@@ -51,7 +51,7 @@ int main(const int argc, char *argv[]) {
         };
 
         GridSearch gs(
-            "ulysses16",
+            "random_10",
             mutation_rates,
             parent_replacement_rates,
             selection_tournament_sizes,

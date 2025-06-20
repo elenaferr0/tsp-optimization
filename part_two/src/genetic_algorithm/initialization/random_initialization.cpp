@@ -8,10 +8,10 @@
 #include "utils/maths.h"
 
 RandomInitialization::RandomInitialization(const Logger::Level log_level, const Graph &graph)
-    : PopulationInitialization(log_level, graph) {
+    : PopulationInitialization(Logger(log_level, "RandomInitialization"), graph) {
 }
 
-vector<Chromosome> RandomInitialization::generate_population(const HyperParams& params) {
+vector<Chromosome> RandomInitialization::generate_population(const HyperParams &params) const {
     const int chromosome_size = static_cast<int>(graph.path.size());
     vector<int> indexes(chromosome_size);
     iota(indexes.begin(), indexes.end(), 0); // Fill with incrementing indices

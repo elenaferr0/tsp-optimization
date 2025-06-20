@@ -10,11 +10,14 @@
 using namespace std;
 
 class EdgeRecombinationCrossover final : public CrossoverOp {
-  static map<int, set<int>> build_edge_map(const vector<Chromosome> &parents);
-public:
-  explicit EdgeRecombinationCrossover(Logger::Level log_level);
+    static map<int, set<int> > build_edge_map(const vector<Chromosome> &parents);
 
-  vector<Chromosome> recombine(const HyperParams& params, const vector<Chromosome> &parents) override;
+public:
+    explicit EdgeRecombinationCrossover(Logger::Level log_level);
+
+    [[nodiscard]] string name() const override;
+
+    vector<Chromosome> recombine(const HyperParams &params, const vector<Chromosome> &parents) const override;
 };
 
 #endif // EDGE_RECOMBINATION_CROSSOVER_H

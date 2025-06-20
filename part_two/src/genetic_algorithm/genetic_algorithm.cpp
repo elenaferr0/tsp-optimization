@@ -4,10 +4,10 @@
 #include <cassert>
 
 GeneticAlgorithm::GeneticAlgorithm(const vector<shared_ptr<PopulationInitialization>> &population_init,
-                                   unique_ptr<SelectionOp> &selection,
-                                   unique_ptr<CrossoverOp> &crossover,
-                                   unique_ptr<MutationOp> &mutation,
-                                   unique_ptr<Replacement> &replacement,
+                                   SelectionOp *selection,
+                                   CrossoverOp* crossover,
+                                   MutationOp* mutation,
+                                   Replacement* replacement,
                                    const vector<shared_ptr<StoppingCriterion>> &stopping,
                                    const Logger::Level log_level)
     : population_init(population_init), selection(std::move(selection)),

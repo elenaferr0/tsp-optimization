@@ -10,13 +10,16 @@ using namespace std;
 
 class MutationOp {
 protected:
-  Logger log;
+    const Logger log;
 
 public:
-  explicit MutationOp(Logger::Level log_level);
-  virtual ~MutationOp() = default;
+    explicit MutationOp(const Logger& log);
 
-  virtual vector<Chromosome> mutate(const HyperParams& params, const vector<Chromosome> &population) = 0;
+    virtual ~MutationOp() = default;
+
+    [[nodiscard]] virtual string name() const = 0;
+
+    virtual vector<Chromosome> mutate(const HyperParams &params, const vector<Chromosome> &population) const = 0;
 };
 
 #endif // MUTATION_OPERATOR_H

@@ -7,12 +7,15 @@
 
 class PopulationInitialization {
 protected:
-    Logger log;
-  Graph graph;
+    const Logger log;
+    Graph graph;
+
 public:
-  PopulationInitialization(Logger::Level log_level, const Graph& graph);
-  virtual vector<Chromosome> generate_population(const HyperParams& params) = 0;
-  virtual ~PopulationInitialization() = default;
+    PopulationInitialization(const Logger& log, const Graph &graph);
+
+    virtual vector<Chromosome> generate_population(const HyperParams &params) const = 0;
+
+    virtual ~PopulationInitialization() = default;
 };
 
 #endif // POPULATION_INITIALIZATION_H

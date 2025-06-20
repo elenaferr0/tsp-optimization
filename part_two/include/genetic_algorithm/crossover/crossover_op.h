@@ -11,13 +11,16 @@ using namespace std;
 
 class CrossoverOp {
 protected:
-  Logger log;
+    const Logger log;
 
 public:
-  explicit CrossoverOp(Logger::Level log_level);
-  virtual ~CrossoverOp() = default;
+    explicit CrossoverOp(const Logger& log);
 
-  virtual vector<Chromosome> recombine(const HyperParams& params,const vector<Chromosome> &parents) = 0;
+    virtual ~CrossoverOp() = default;
+
+    virtual string name() const = 0;
+
+    virtual vector<Chromosome> recombine(const HyperParams &params, const vector<Chromosome> &parents) const = 0;
 };
 
 #endif // CROSSOVER_OPERATOR_H

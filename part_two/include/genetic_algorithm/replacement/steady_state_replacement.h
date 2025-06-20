@@ -8,10 +8,12 @@ using namespace std;
 
 class SteadyStateReplacement final : public Replacement {
 public:
-    explicit SteadyStateReplacement(Logger::Level log_level);
+    explicit SteadyStateReplacement(const Logger::Level log_level);
+
+    string name() const override;
 
     vector<Chromosome> replace(const HyperParams &params, const vector<Chromosome> &parents,
-                               const vector<Chromosome> &offsprings) override;
+                               const vector<Chromosome> &offsprings) const override;
 };
 
 #endif // STEADY_STATE_REPLACEMENT_H

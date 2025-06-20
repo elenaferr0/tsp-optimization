@@ -11,11 +11,10 @@
 using namespace std;
 
 NTournamentSelection::NTournamentSelection(const Logger::Level log_level)
-    : SelectionOp(log_level) {
-    log.set_label("NTournamentSelection");
+    : SelectionOp(Logger(log_level, name())) {
 }
 
-vector<Chromosome> NTournamentSelection::select(const HyperParams& params, const vector<Chromosome> &population) {
+vector<Chromosome> NTournamentSelection::select(const HyperParams &params, const vector<Chromosome> &population) const {
     vector<Chromosome> selected;
     selected.reserve(params.selection_n_parents);
 
@@ -40,4 +39,8 @@ vector<Chromosome> NTournamentSelection::select(const HyperParams& params, const
     }
 
     return selected;
+}
+
+string NTournamentSelection::name() const {
+    return "NTournamentSelection";
 }

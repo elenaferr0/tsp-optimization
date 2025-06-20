@@ -16,35 +16,34 @@ using namespace std;
 
 class GeneticAlgorithm {
     vector<Chromosome> population;
-    vector<shared_ptr<PopulationInitialization>> population_init;
+    vector<shared_ptr<PopulationInitialization> > population_init;
     unique_ptr<SelectionOp> selection;
     unique_ptr<CrossoverOp> crossover;
     unique_ptr<MutationOp> mutation;
     unique_ptr<Replacement> replacement;
-    vector<shared_ptr<StoppingCriterion>> stopping;
+    vector<shared_ptr<StoppingCriterion> > stopping;
     long generation_n;
-    Logger log;
+    const Logger log;
     double initial_fitness;
 
-    Chromosome get_best() const;
+    [[nodiscard]] Chromosome get_best() const;
 
-    bool should_stop(const HyperParams &params) const;
+    [[nodiscard]] bool should_stop(const HyperParams &params) const;
 
     void handle_start(const HyperParams &params) const;
 
     void print_summary();
 
-
 public:
-    GeneticAlgorithm(const vector<shared_ptr<PopulationInitialization>> &population_init,
-                     unique_ptr<SelectionOp> &selection,
-                     unique_ptr<CrossoverOp> &crossover,
-                     unique_ptr<MutationOp> &mutation,
-                     unique_ptr<Replacement> &replacement,
-                     const vector<shared_ptr<StoppingCriterion>> &stopping,
-                     Logger::Level log_level = Logger::Level::INFO);
+    GeneticAlgorithm(const vector<shared_ptr<PopulationInitialization> > &population_init,
+                     SelectionOp *selection,
+                     CrossoverOp *crossover,
+                     MutationOp *mutation,
+                     Replacement *replacement,
+                     const vector<shared_ptr<StoppingCriterion> > &stopping,
+                     Logger::Level log_level);
 
-    Chromosome start(const HyperParams& params, const string &filename, long logging_frequency = 100);
+    Chromosome start(const HyperParams &params, const string &filename, long logging_frequency = 100);
 };
 
 #endif // GENETIC_ALGORITHM_H

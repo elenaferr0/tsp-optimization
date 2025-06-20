@@ -11,7 +11,9 @@ class OrderCrossover final : public CrossoverOp {
 public:
     explicit OrderCrossover(Logger::Level log_level);
 
-    vector<Chromosome> recombine(const HyperParams &params, const vector<Chromosome> &parents) override;
+    [[nodiscard]] string name() const override;
+
+    vector<Chromosome> recombine(const HyperParams &params, const vector<Chromosome> &parents) const override;
 };
 
 #endif // ORDER_CROSSOVER_OPERATOR_H

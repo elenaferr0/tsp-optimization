@@ -10,7 +10,10 @@ class ElitismReplacement final : public Replacement {
 public:
     explicit ElitismReplacement(Logger::Level log_level);
 
-    vector<Chromosome> replace(const HyperParams &params, const vector<Chromosome> &parents, const vector<Chromosome> &offsprings) override;
+    [[nodiscard]] string name() const override;
+
+    vector<Chromosome> replace(const HyperParams &params, const vector<Chromosome> &parents,
+                               const vector<Chromosome> &offsprings) const override;
 };
 
 #endif // ELITISM_REPLACEMENT_H
