@@ -58,7 +58,7 @@ pair<Chromosome, HyperParams> GridSearch::run_experiment(
 }
 
 void GridSearch::run() const {
-    auto graph = Graph::from_file(instance_name.c_str());
+    auto graph = Graph(instance_name.c_str());
     auto log_level = log.get_min_level();
 
     vector<shared_ptr<PopulationInitialization> > initializations(2);

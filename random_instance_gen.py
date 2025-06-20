@@ -7,7 +7,7 @@ from typing import List, Tuple, Dict, Any
 MIN_SPACING = 1.5  # Increased minimum spacing between points (mm)
 BOARD_MARGIN = 3.0  # Increased minimum distance from board edge (mm)
 PATTERN_SEPARATION = 4.0  # Minimum distance between different patterns
-DEFAULT_DENSITY = 0.5  # Default point density (0-1)
+DEFAULT_DENSITY = 0.4  # Default point density (0-1)
 
 class Pattern:
     def __init__(self, pattern_type, points):
@@ -365,7 +365,7 @@ def main():
     if len(coordinates) < args.size:
         print(f"Warning: Could only generate {len(coordinates)} points due to spacing constraints")
 
-    output_file = args.output_dir + 'random_' + str(args.size) + '.dat'
+    output_file = os.path.join(args.output_dir, f'random_{args.size}.dat')
 
     # Ensure output directory exists
     os.makedirs(os.path.dirname(output_file), exist_ok=True)

@@ -11,7 +11,6 @@
 #include "genetic_algorithm/stopping/max_non_improving_generations_criterion.h"
 #include "genetic_algorithm/stopping/time_limit_criterion.h"
 #include "genetic_algorithm/mutation/displacement_mutation.h"
-#include "genetic_algorithm/replacement/steady_state_replacement.h"
 #include "genetic_algorithm/grid_search.h"
 #include <vector>
 

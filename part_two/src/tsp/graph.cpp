@@ -3,7 +3,7 @@
 
 using namespace std;
 
-Graph::Graph(const vector<Node> &nodes) : n_nodes(nodes.size()), path(nodes), file_path("") {
+Graph::Graph(const vector<Node> &nodes) : n_nodes(nodes.size()), file_path(""), path(nodes) {
   compute_costs();
 }
 

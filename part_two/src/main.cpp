@@ -50,8 +50,8 @@ int main(const int argc, char *argv[]) {
             // {0.5, 0.5} // 50% convex hull, 50% random
         };
 
-        GridSearch gs(
-            "random_10",
+        const GridSearch gs(
+            "./samples/random_10.dat",
             mutation_rates,
             parent_replacement_rates,
             selection_tournament_sizes,

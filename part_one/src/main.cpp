@@ -1,7 +1,6 @@
 #include <iostream>
 #include "cpxmacro.h"
 #include "tsp/gavish_graves_formulation.h"
-#include "tsp/miller_tucker_zemlin_formulation.h"
 
 using namespace std;
 
@@ -34,7 +33,7 @@ int main(const int argc, char *argv[]) {
         char *instance = nullptr;
         parse_params(argc, argv, timeout, instance);
 
-        MillerTuckerZemlinFormulation gg(instance, timeout);
+        GavishGravesFormulation gg(instance, timeout);
         gg.setup();
         gg.solve();
     } catch (std::exception &e) {
