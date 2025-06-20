@@ -104,3 +104,7 @@ map<int, set<int> > EdgeRecombinationCrossover::build_edge_map(const vector<Chro
 string EdgeRecombinationCrossover::name() const {
     return "EdgeRecombinationCrossover";
 }
+
+unique_ptr<CrossoverOp> EdgeRecombinationCrossover::clone() const {
+    return make_unique<EdgeRecombinationCrossover>(*this);
+}

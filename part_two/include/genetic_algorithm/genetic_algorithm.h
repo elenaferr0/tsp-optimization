@@ -36,10 +36,10 @@ class GeneticAlgorithm {
 
 public:
     GeneticAlgorithm(const vector<shared_ptr<PopulationInitialization> > &population_init,
-                     SelectionOp *selection,
-                     CrossoverOp *crossover,
-                     MutationOp *mutation,
-                     Replacement *replacement,
+                     unique_ptr<SelectionOp> selection,
+                     unique_ptr<CrossoverOp> crossover,
+                     unique_ptr<MutationOp> mutation,
+                     unique_ptr<Replacement> replacement,
                      const vector<shared_ptr<StoppingCriterion> > &stopping,
                      Logger::Level log_level);
 

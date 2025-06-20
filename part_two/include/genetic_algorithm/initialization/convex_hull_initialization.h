@@ -19,6 +19,9 @@ public:
     ConvexHullInitialization(Logger::Level log_level, const Graph& graph);
 
     vector<Chromosome> generate_population(const HyperParams& params) const override;
+
+    unique_ptr<PopulationInitialization> clone() const override;
+
 };
 
 #endif // CONVEX_HULL_INITIALIZATION_H

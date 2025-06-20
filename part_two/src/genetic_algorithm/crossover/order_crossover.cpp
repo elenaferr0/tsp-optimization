@@ -106,3 +106,7 @@ vector<Chromosome> OrderCrossover::recombine(const HyperParams &params, const ve
 string OrderCrossover::name() const {
     return "OrderCrossover";
 }
+
+unique_ptr<CrossoverOp> OrderCrossover::clone() const {
+    return make_unique<OrderCrossover>(*this);
+}

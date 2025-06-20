@@ -19,6 +19,8 @@ public:
 
     [[nodiscard]] virtual string name() const = 0;
 
+    virtual unique_ptr<MutationOp> clone() const = 0;
+
     virtual vector<Chromosome> mutate(const HyperParams &params, const vector<Chromosome> &population) const = 0;
 };
 

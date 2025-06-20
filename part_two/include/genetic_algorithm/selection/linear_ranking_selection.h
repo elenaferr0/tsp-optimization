@@ -9,6 +9,8 @@ public:
 
     [[nodiscard]] string name() const override;
 
+    unique_ptr<SelectionOp> clone() const override;
+
     vector<Chromosome> select(const HyperParams &params, const vector<Chromosome> &population) const override;
 };
 

@@ -3,12 +3,12 @@
 #include <algorithm>
 #include <cassert>
 
-GeneticAlgorithm::GeneticAlgorithm(const vector<shared_ptr<PopulationInitialization>> &population_init,
-                                   SelectionOp *selection,
-                                   CrossoverOp* crossover,
-                                   MutationOp* mutation,
-                                   Replacement* replacement,
-                                   const vector<shared_ptr<StoppingCriterion>> &stopping,
+GeneticAlgorithm::GeneticAlgorithm(const vector<shared_ptr<PopulationInitialization> > &population_init,
+                                   unique_ptr<SelectionOp> selection,
+                                   unique_ptr<CrossoverOp> crossover,
+                                   unique_ptr<MutationOp> mutation,
+                                   unique_ptr<Replacement> replacement,
+                                   const vector<shared_ptr<StoppingCriterion> > &stopping,
                                    const Logger::Level log_level)
     : population_init(population_init), selection(std::move(selection)),
       crossover(std::move(crossover)), mutation(std::move(mutation)),
@@ -17,7 +17,7 @@ GeneticAlgorithm::GeneticAlgorithm(const vector<shared_ptr<PopulationInitializat
       initial_fitness(numeric_limits<double>::max()) {
 }
 
-bool GeneticAlgorithm::should_stop(const HyperParams& params) const {
+bool GeneticAlgorithm::should_stop(const HyperParams &params) const {
     for (const auto &criterion: stopping) {
         if (criterion->should_stop(params)) {
             return true;
@@ -27,13 +27,13 @@ bool GeneticAlgorithm::should_stop(const HyperParams& params) const {
     return false;
 }
 
-void GeneticAlgorithm::handle_start(const HyperParams& params) const {
+void GeneticAlgorithm::handle_start(const HyperParams &params) const {
     for (const auto &criterion: stopping) {
         criterion->handle_start(params);
     }
 }
 
-Chromosome GeneticAlgorithm::start(const HyperParams& params, const string &filename, const long logging_frequency) {
+Chromosome GeneticAlgorithm::start(const HyperParams &params, const string &filename, const long logging_frequency) {
     log.debug("Initializing population");
     for (const auto &init: population_init) {
         auto init_population = init->generate_population(params);
@@ -75,7 +75,7 @@ Chromosome GeneticAlgorithm::start(const HyperParams& params, const string &file
         // }
         if (generation_n % logging_frequency == 0) {
             log.debug("Generation " + to_string(generation_n) + " best chromosome fitness: " +
-                     to_string(best_chromosome.evaluate_fitness()));
+                      to_string(best_chromosome.evaluate_fitness()));
         }
     }
 

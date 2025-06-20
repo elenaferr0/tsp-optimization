@@ -41,6 +41,10 @@ vector<Chromosome> ElitismReplacement::replace(const HyperParams &params, const 
     return new_population;
 }
 
+unique_ptr<Replacement> ElitismReplacement::clone() const {
+    return make_unique<ElitismReplacement>(*this);
+}
+
 string ElitismReplacement::name() const {
     return "ElitismReplacement";
 }

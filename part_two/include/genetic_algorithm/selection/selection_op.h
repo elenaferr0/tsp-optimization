@@ -19,6 +19,8 @@ public:
 
     virtual string name() const = 0;
 
+    virtual unique_ptr<SelectionOp> clone() const = 0;
+
     virtual vector<Chromosome> select(const HyperParams &params, const vector<Chromosome> &population) const = 0;
 };
 

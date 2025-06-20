@@ -71,6 +71,10 @@ vector<Chromosome> DisplacementMutation::mutate(const HyperParams &params, const
     return mutated_population;
 }
 
+unique_ptr<MutationOp> DisplacementMutation::clone() const {
+    return make_unique<DisplacementMutation>(*this);
+}
+
 string DisplacementMutation::name() const {
     return "DisplacementMutation";
 }

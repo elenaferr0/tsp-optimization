@@ -20,6 +20,8 @@ public:
 
     virtual string name() const = 0;
 
+    virtual unique_ptr<CrossoverOp> clone() const = 0;
+
     virtual vector<Chromosome> recombine(const HyperParams &params, const vector<Chromosome> &parents) const = 0;
 };
 

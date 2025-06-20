@@ -3,6 +3,10 @@
 #include "genetic_algorithm/mutation/simple_inversion_mutation.h"
 #include "genetic_algorithm/selection/n_tournament_selection.h"
 
+struct Config {
+    const HyperParams &hyper_params;
+    const string names[4];
+};
 
 GridSearch::GridSearch(
     const string &instance_name,
@@ -17,7 +21,6 @@ GridSearch::GridSearch(
     convex_hull_random_init_ratios(convex_hull_random_init_ratios),
     log(Logger::Level::INFO, "GridSearch") {
 }
-
 
 pair<Chromosome, HyperParams> GridSearch::run_experiment(
     const vector<shared_ptr<PopulationInitialization> > &initializations,
@@ -43,10 +46,10 @@ pair<Chromosome, HyperParams> GridSearch::run_experiment(
 
     GeneticAlgorithm ga(
         initializations,
-        selection.get(),
-        crossover.get(),
-        mutation.get(),
-        replacement.get(),
+        selection.get()->clone(),
+        crossover.get()->clone(),
+        mutation.get()->clone(),
+        replacement.get()->clone(),
         stopping,
         log.get_min_level()
     );
@@ -82,7 +85,7 @@ void GridSearch::run() const {
     stopping_criteria.push_back(make_shared<MaxNonImprovingGenerationsCriterion>(log_level));
     stopping_criteria.push_back(make_shared<TimeLimitCriterion>(log_level));
 
-    unique_ptr<pair<Chromosome, HyperParams> > best = nullptr;
+    unique_ptr<pair<Chromosome, Config> > best = nullptr;
 
     for (const unique_ptr<SelectionOp> &sel: selection) {
         string sel_name = sel->name();
@@ -111,15 +114,28 @@ void GridSearch::run() const {
                                     );
 
                                     log.info("Fitness: " + to_string(chromosome.evaluate_fitness()) +
-                                             " | Mutation rate: " + to_string(mutation_rate) +
-                                             ", Parent replacement rate: " + to_string(parent_replacement_rate) +
-                                             ", Selection tournament size: " + to_string(selection_tournament_size) +
+                                             " | " + "Selection: " + sel_name +
+                                             ", Crossover: " + cross_name +
+                                             ", Mutation: " + mut_name + " [rate: " + to_string(mutation_rate) + "]" +
+                                             ", Replacement: " + repl_name + " [rate: " + to_string(
+                                                 parent_replacement_rate) + "]" +
+                                             ", Tournament size: " + to_string(selection_tournament_size) +
                                              ", Convex hull init ratio: " + to_string(ch_ratio) +
                                              ", Random init ratio: " + to_string(rnd_ratio));
 
+
                                     if (best == nullptr || chromosome.evaluate_fitness() < best->first.
                                         evaluate_fitness()) {
-                                        best = make_unique<pair<Chromosome, HyperParams> >(chromosome, params);
+                                        auto config = Config{
+                                            .hyper_params = params,
+                                            .names = {
+                                                sel_name,
+                                                cross_name,
+                                                mut_name,
+                                                repl_name
+                                            }
+                                        };
+                                        best = make_unique<pair<Chromosome, Config> >(chromosome, config);
                                     }
                                 }
                             }
@@ -133,13 +149,20 @@ void GridSearch::run() const {
     if (best == nullptr) {
         throw runtime_error("No valid solution found during grid search.");
     }
-    auto [fst, snd] = best->second.convex_hull_random_init_ratio;
-    log.info("Best solution's fitness: " + to_string(best->first.evaluate_fitness()) +
-             " | Parameters: Mutation rate: " + to_string(best->second.mutation_rate) +
-             ", Parent replacement rate: " + to_string(best->second.parents_replacement_rate) +
-             ", Selection tournament size: " + to_string(best->second.selection_tournament_size) +
-             ", Convex hull init ratio: " + to_string(fst) +
-             ", Random init ratio: " + to_string(snd));
+
+    log.info("Best found solution for instance " + instance_name + ":\n" +
+             "Fitness: " + to_string(best->first.evaluate_fitness()) + "\n" +
+             "Configuration:\n" +
+             "  Selection: " + best->second.names[0] + "\n" +
+             "  Crossover: " + best->second.names[1] + "\n" +
+             "  Mutation: " + best->second.names[2] + " [rate: " + to_string(best->second.hyper_params.mutation_rate) +
+             "]\n" +
+             "  Replacement: " + best->second.names[3] + " [rate: " + to_string(
+                 best->second.hyper_params.parents_replacement_rate) + "]\n" +
+             "  Tournament size: " + to_string(best->second.hyper_params.selection_tournament_size) + "\n" +
+             "  Convex hull init ratio: " + to_string(best->second.hyper_params.convex_hull_random_init_ratio.first) +
+             "\n" +
+             "  Random init ratio: " + to_string(best->second.hyper_params.convex_hull_random_init_ratio.second));
 
     best->first.save_to_file(instance_name);
 }

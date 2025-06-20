@@ -44,3 +44,7 @@ vector<Chromosome> NTournamentSelection::select(const HyperParams &params, const
 string NTournamentSelection::name() const {
     return "NTournamentSelection";
 }
+
+unique_ptr<SelectionOp> NTournamentSelection::clone() const {
+    return make_unique<NTournamentSelection>(*this);
+}

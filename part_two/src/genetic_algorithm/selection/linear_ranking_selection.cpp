@@ -55,3 +55,7 @@ LinearRankingSelection::select(const HyperParams &params, const vector<Chromosom
 string LinearRankingSelection::name() const {
     return "LinearRankingSelection";
 }
+
+unique_ptr<SelectionOp> LinearRankingSelection::clone() const {
+    return make_unique<LinearRankingSelection>(log.get_min_level());
+}

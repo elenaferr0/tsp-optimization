@@ -17,6 +17,8 @@ public:
 
     [[nodiscard]] string name() const override;
 
+    unique_ptr<CrossoverOp> clone() const override;
+
     vector<Chromosome> recombine(const HyperParams &params, const vector<Chromosome> &parents) const override;
 };
 

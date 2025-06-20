@@ -14,6 +14,8 @@ public:
 
     vector<Chromosome> replace(const HyperParams &params, const vector<Chromosome> &parents,
                                const vector<Chromosome> &offsprings) const override;
+
+    unique_ptr<Replacement> clone() const override;
 };
 
 #endif // ELITISM_REPLACEMENT_H

@@ -30,3 +30,7 @@ vector<Chromosome> RandomInitialization::generate_population(const HyperParams &
 
     return population;
 }
+
+unique_ptr<PopulationInitialization> RandomInitialization::clone() const {
+    return make_unique<RandomInitialization>(*this);
+}

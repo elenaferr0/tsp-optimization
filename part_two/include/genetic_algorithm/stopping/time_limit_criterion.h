@@ -17,6 +17,8 @@ public:
     void handle_start(const HyperParams &params) override;
 
     ~TimeLimitCriterion() override;
+
+    unique_ptr<StoppingCriterion> clone() const override;
 };
 
 #endif // TIME_LIMIT_CRITERIA_H

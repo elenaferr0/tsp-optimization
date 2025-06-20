@@ -13,6 +13,10 @@ void MaxNonImprovingGenerationsCriterion::handle_start(const HyperParams &params
               std::to_string(params.max_non_improving_generations));
 }
 
+unique_ptr<StoppingCriterion> MaxNonImprovingGenerationsCriterion::clone() const {
+    return make_unique<MaxNonImprovingGenerationsCriterion>(*this);
+}
+
 bool MaxNonImprovingGenerationsCriterion::should_stop(const HyperParams &params, const double best_fitness) {
     log.trace("Checking stop condition: best fitness = " + std::to_string(best_fitness) +
               ", last best fitness = " + std::to_string(last_best_fitness) +

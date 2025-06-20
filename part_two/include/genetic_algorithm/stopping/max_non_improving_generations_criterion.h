@@ -13,6 +13,8 @@ public:
     bool should_stop(const HyperParams &params, double best_fitness = 0) override;
 
     void handle_start(const HyperParams &params) override;
+
+    unique_ptr<StoppingCriterion> clone() const override;
 };
 
 #endif // MAX_GENERATIONS_CRITERION_H

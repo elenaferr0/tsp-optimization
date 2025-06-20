@@ -15,6 +15,8 @@ public:
 
     virtual void handle_start(const HyperParams &params) = 0;
 
+    virtual unique_ptr<StoppingCriterion> clone() const = 0;
+
     // Best fitness will be used by MaxNonImprovingGenerationsCriterion
     virtual bool should_stop(const HyperParams &params, double best_chromosome_fitness = 0) = 0;
 };

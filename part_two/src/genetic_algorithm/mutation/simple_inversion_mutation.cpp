@@ -53,6 +53,10 @@ vector<Chromosome> SimpleInversionMutation::mutate(const HyperParams &params, co
     return mutated_population;
 }
 
+unique_ptr<MutationOp> SimpleInversionMutation::clone() const {
+    return make_unique<SimpleInversionMutation>(*this);
+}
+
 string SimpleInversionMutation::name() const {
     return "SimpleInversionMutation";
 }

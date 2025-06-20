@@ -2,6 +2,10 @@
 
 TimeLimitCriterion::~TimeLimitCriterion() { delete start_time; }
 
+unique_ptr<StoppingCriterion> TimeLimitCriterion::clone() const {
+    return make_unique<TimeLimitCriterion>(*this);
+}
+
 TimeLimitCriterion::TimeLimitCriterion(const Logger::Level log_level)
     : StoppingCriterion(Logger(log_level, "TimeLimitCriterion")), start_time(nullptr) {
 }

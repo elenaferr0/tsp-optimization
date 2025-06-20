@@ -29,6 +29,10 @@ vector<Chromosome> SteadyStateReplacement::replace(const HyperParams &params, co
     return new_population;
 }
 
+unique_ptr<Replacement> SteadyStateReplacement::clone() const {
+    return make_unique<SteadyStateReplacement>(*this);
+}
+
 string SteadyStateReplacement::name() const {
     return "SteadyStateReplacement";
 }

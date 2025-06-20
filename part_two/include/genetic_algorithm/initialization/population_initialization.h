@@ -15,6 +15,8 @@ public:
 
     virtual vector<Chromosome> generate_population(const HyperParams &params) const = 0;
 
+    virtual unique_ptr<PopulationInitialization> clone() const = 0;
+
     virtual ~PopulationInitialization() = default;
 };
 

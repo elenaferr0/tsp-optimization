@@ -38,6 +38,10 @@ vector<Chromosome> ConvexHullInitialization::generate_population(const HyperPara
     return population;
 }
 
+unique_ptr<PopulationInitialization> ConvexHullInitialization::clone() const {
+    return make_unique<ConvexHullInitialization>(*this);
+}
+
 Chromosome ConvexHullInitialization::generate_chromosome(const vector<Node> &convex_hull,
                                                          const vector<Node> &interior_nodes) const {
     vector<Node> tour;
