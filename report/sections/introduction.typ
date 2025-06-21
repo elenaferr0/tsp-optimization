@@ -21,7 +21,7 @@ This report presents two ways which were implemented to solve the @TSP:both: an 
 ```
 
 == Problem instances
-In order to test the implemented algorithms, a set of random instances was generated. Each consists of a number of holes represented as points in a 2D plane. The distance between two holes is calculated using the Euclidean distance formula.
+In order to test the implemented algorithms, a set of random instances was generated. Each consists of a number of holes represented as points in a 2D plane. The distance is computed using the Euclidean distance formula.
 
 The goal is that of generating instances which are representative of real-world scenarios for @PCB production. To achieve this, points are generated according to one of the following patterns: 
 - line: three to five points are aligned in a straight line, with either a uniform or non-uniform random distance between them. The line can be orientated in several directions, including diagonally;
@@ -29,7 +29,7 @@ The goal is that of generating instances which are representative of real-world 
 - rectangle: four points are placed in a rectangular shape, with varying size and orientation;
 - parallelogram: four points are placed in a parallelogram shape, with varying size, orientation and skewness.
 
-Other than these, a few points are randomly created. During this generation process, a minimum distance between points and patterns is enforced, to avoid overlapping holes. A density parameter controls the spacing, with a higher density resulting in more closely packed holes. Note that these patterns are, in general, not very visible for smaller instances, but they become more apparent as the number of holes increases. #ref(<fig:random-instance-eg>) shows an example of a random instance with 100 holes, with quite evident patterns.
+Other than these, a few points are randomly created. During this generation process, a minimum distance between points and patterns is enforced, to avoid overlapping holes. A density parameter controls the sparsity, with a higher density resulting in more closely packed holes. Note that these patterns are, in general, not very visible for smaller instances, but they become more apparent as the number of holes increases. #ref(<fig:random-instance-eg>) shows an example of a random instance with 100 holes, with quite evident patterns.
 
 #figure(
   image("../imgs/random_instance_eg.png", width: 60%),
