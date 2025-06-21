@@ -25,8 +25,7 @@ public:
     int n_nodes;
     dbl_mat costs;
 
-    static Graph of_instance(const char *instance_name) {
-        const auto path = "./samples/" + string(instance_name) + ".dat";
+    static Graph of_instance(const string& path) {
         return Graph(path);
     }
 };

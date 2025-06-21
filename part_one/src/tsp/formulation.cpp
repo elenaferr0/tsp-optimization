@@ -28,7 +28,7 @@ void Formulation::print_solution() const {
 }
 
 void Formulation::export_solution() {
-    const auto path = "./samples/" + instance_formulation_code() + ".sol";
+    const auto path = instance_formulation_code() + ".sol";
     CHECKED_CPX_CALL(CPXsolwrite, env, lp, path.c_str());
 }
 
@@ -36,7 +36,7 @@ string Formulation::instance_formulation_code() const {
     return instance_name + "_" + formulation_code();
 }
 
-Formulation::Formulation(const char *instance_name, int timeout)
+Formulation::Formulation(const char *instance_name, const int timeout)
     : graph(Graph::of_instance(instance_name)),
       tl(instance_name),
       instance_name(instance_name),
