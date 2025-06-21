@@ -1,7 +1,7 @@
 #import "template.typ": ieee
 
 #show: ieee.with(
-  title: [Exact and Genetic Algorithm solutions for the Traveling Salesman Problem],
+  title: [Exact and Genetic Algorithm approaches for the Traveling Salesman Problem],
   n-columns: 1,
   authors: (
     (

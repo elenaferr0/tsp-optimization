@@ -22,7 +22,6 @@ def is_valid_point(point: Tuple[float, float], existing_points: List[Tuple[float
     """Check if a point is valid (not too close to others or board edge)."""
     x, y = point
 
-    # Check board margins
     if x < BOARD_MARGIN or y < BOARD_MARGIN or x > board_size - BOARD_MARGIN or y > board_size - BOARD_MARGIN:
         return False
 
@@ -98,16 +97,13 @@ def generate_line_pattern(board_size: float, existing_patterns: List[Pattern],
 
     # Try to find a valid starting point
     for _ in range(max_attempts):
-        # Random position for the line with more margin
         center_x = random.uniform(BOARD_MARGIN + 4, board_size - BOARD_MARGIN - 4)
         center_y = random.uniform(BOARD_MARGIN + 4, board_size - BOARD_MARGIN - 4)
 
-        angle = random.choice([0, math.pi/2, math.pi/4, 3*math.pi/4])  # More angle options
+        angle = random.choice([0, math.pi/2, math.pi/4, 3*math.pi/4])
 
-        # Increased line length for more prominent patterns
         line_length = random.uniform(4, min(12, board_size/2.5))
 
-        # Decide if we want uniform or variable spacing
         uniform_spacing = random.choice([True, False])
 
         if uniform_spacing:
@@ -173,7 +169,6 @@ def generate_triangle_pattern(board_size: float, existing_patterns: List[Pattern
             angles = [random.uniform(0.5, 2.0) for _ in range(3)]
             total = sum(angles)
             angles = [a * 2 * math.pi / total for a in angles]
-            # Accumulate angles
             cumulative_angles = [0]
             for i in range(len(angles)):
                 cumulative_angles.append(cumulative_angles[-1] + angles[i])
@@ -203,7 +198,7 @@ def generate_triangle_pattern(board_size: float, existing_patterns: List[Pattern
 
             points.append(point)
 
-        # Additional check: ensure triangle points are far enough apart
+        # ensure triangle points are far enough apart
         if valid:
             for i in range(len(points)):
                 for j in range(i+1, len(points)):
