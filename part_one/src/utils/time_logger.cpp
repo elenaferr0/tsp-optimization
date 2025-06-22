@@ -71,11 +71,12 @@ void TimeLogger::tick(const std::string &msg) const {
 }
 
 void TimeLogger::log_total_time(const string &msg) const {
-    const auto end_time = high_resolution_clock::now();
-    const duration<double> total_elapsed = end_time - *start_time;
+    const auto total_elapsed = high_resolution_clock::now() - *start_time;
+    const auto duration_in_ms = duration_cast<chrono::milliseconds>(total_elapsed);
+
     std::cout << std::fixed << std::setprecision(6)
             << "[" << label << "] "
             << msg
-            << " total elapsed time " << total_elapsed.count() << "s"
+            << " total elapsed time " << duration_in_ms.count() << "ms"
             << std::endl;
 }

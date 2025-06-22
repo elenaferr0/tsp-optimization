@@ -10,6 +10,7 @@ void Formulation::setup() {
 void Formulation::solve() {
     CHECKED_CPX_CALL(CPXmipopt, env, lp);
     tl.tick("MIP optimization");
+    tl.log_total_time("Exact solution");
     print_solution();
     export_solution();
 }

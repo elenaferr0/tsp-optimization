@@ -20,8 +20,7 @@ void parse_params(const int argc, char *argv[], int &timeout, char *&instance, s
     // Check if there are additional arguments
     if (argc > 2) {
         // Check if second argument is a formulation type
-        string arg2 = argv[2];
-        if (arg2 == "gg" || arg2 == "mtz") {
+        if (const string arg2 = argv[2]; arg2 == "gg" || arg2 == "mtz") {
             formulation = arg2;
             // If there's a third argument, it's the timeout
             if (argc > 3) {
