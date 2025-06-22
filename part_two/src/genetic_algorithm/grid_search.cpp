@@ -1,6 +1,7 @@
 #include "genetic_algorithm/grid_search.h"
 
 #include "genetic_algorithm/mutation/simple_inversion_mutation.h"
+#include "genetic_algorithm/replacement/steady_state_replacement.h"
 #include "genetic_algorithm/selection/n_tournament_selection.h"
 
 struct Config {
@@ -46,19 +47,19 @@ pair<Chromosome, HyperParams> GridSearch::run_experiment(
 
     GeneticAlgorithm ga(
         initializations,
-        selection.get()->clone(),
-        crossover.get()->clone(),
-        mutation.get()->clone(),
-        replacement.get()->clone(),
+        selection->clone(),
+        crossover->clone(),
+        mutation->clone(),
+        replacement->clone(),
         stopping,
         log.get_min_level()
     );
 
-    return {ga.start(params, instance_name, 10), params};
+    return {ga.start(params, 100), params};
 }
 
 void GridSearch::run() const {
-    auto graph = Graph(instance_name.c_str());
+    auto graph = Graph(instance_name);
     auto log_level = log.get_min_level();
 
     vector<shared_ptr<PopulationInitialization> > initializations(2);

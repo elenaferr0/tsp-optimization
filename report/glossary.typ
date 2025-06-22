@@ -2,7 +2,7 @@
 
 #let defs = (
   TSP: (
-    long: "Traveling Salesman Problem",
+    long: "Travelling Salesman Problem",
     short: "TSP",
   ),
   PCB: (

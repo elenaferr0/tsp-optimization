@@ -4,7 +4,7 @@
 #show : init-glossary.with(defs)
 
 = Introduction
-This report presents two ways which were implemented to solve the @TSP:both: an exact approach and a genetic algorithm. More specifically, this project positions itself in the context of @PCB:pl production, where the goal is to find the shortest path for a drill to take when boring holes in a board.
+This report presents two approaches which were implemented to solve the @TSP:both: an exact method and a genetic algorithm. More specifically, this project positions itself in the context of @PCB:pl production, where the goal is to find the shortest path for a drill to take when boring holes in a board.
 
 == Project structure
 #text("TODO: structure, code, scripts", red, size: 18pt)
@@ -19,6 +19,7 @@ This report presents two ways which were implemented to solve the @TSP:both: an 
 │   └── src
 └─── random_instance_gen.py
 ```
+#text("TODO: how to run it", red, size: 18pt)
 
 == Problem instances
 In order to test the implemented algorithms, a set of random instances was generated. Each consists of a number of holes represented as points in a 2D plane. The distance is computed using the Euclidean distance formula.

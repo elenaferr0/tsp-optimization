@@ -3,6 +3,8 @@
 #include <algorithm>
 #include <cassert>
 
+using namespace chrono;
+
 GeneticAlgorithm::GeneticAlgorithm(const vector<shared_ptr<PopulationInitialization> > &population_init,
                                    unique_ptr<SelectionOp> selection,
                                    unique_ptr<CrossoverOp> crossover,
@@ -33,8 +35,9 @@ void GeneticAlgorithm::handle_start(const HyperParams &params) const {
     }
 }
 
-Chromosome GeneticAlgorithm::start(const HyperParams &params, const string &filename, const long logging_frequency) {
+Chromosome GeneticAlgorithm::start(const HyperParams &params, const long logging_frequency) {
     log.debug("Initializing population");
+    const high_resolution_clock::time_point start_time = high_resolution_clock::now();
     for (const auto &init: population_init) {
         auto init_population = init->generate_population(params);
         population.insert(population.end(), init_population.begin(), init_population.end());
@@ -46,7 +49,7 @@ Chromosome GeneticAlgorithm::start(const HyperParams &params, const string &file
 
     auto best_chromosome = get_best();
     initial_fitness = best_chromosome.evaluate_fitness();
-    log.info("Initial best chromosome fitness: " + to_string(initial_fitness));
+    log.debug("Initial best chromosome fitness: " + to_string(initial_fitness));
 
     log.debug("Starting genetic algorithm with population size: " + to_string(population.size()));
 
@@ -79,34 +82,12 @@ Chromosome GeneticAlgorithm::start(const HyperParams &params, const string &file
         }
     }
 
-    // print_summary();
+    log.info("Final fitness of best chromosome: " + to_string(best_chromosome.evaluate_fitness()));
+
+    const auto end_time = high_resolution_clock::now();
+    const auto duration = chrono::duration_cast<milliseconds>(end_time - start_time).count();
+    log.info("Genetic algorithm completed in " + to_string(duration) + " ms");
     return best_chromosome;
-}
-
-void GeneticAlgorithm::print_summary() {
-    // When GA ends, print a detailed summary
-    const auto best_chromosome = get_best();
-    const double final_fitness = best_chromosome.evaluate_fitness();
-    const double percent_improvement = (initial_fitness - final_fitness) / initial_fitness * 100.0;
-    const double absolute_improvement = initial_fitness - final_fitness;
-
-    // Create a nicely formatted summary
-    stringstream summary;
-    summary << "\n" << string(60, '=') << "\n";
-    summary << "GENETIC ALGORITHM RESULTS\n";
-    summary << string(60, '=') << "\n";
-    summary << "Total generations:       " << setw(10) << generation_n << "\n";
-    summary << "Final population size:   " << setw(10) << population.size() << "\n\n";
-    summary << "Initial best fitness:    " << setw(10) << fixed << setprecision(2) << initial_fitness << "\n";
-    summary << "Final best fitness:      " << setw(10) << fixed << setprecision(2) << final_fitness << "\n";
-    summary << "Absolute improvement:    " << setw(10) << fixed << setprecision(2) << absolute_improvement << "\n";
-    summary << "Relative improvement:    " << setw(9) << fixed << setprecision(2) << percent_improvement << "%\n\n";
-
-    summary << "Best solution:      ";
-    summary << best_chromosome.to_str() << "\n";
-    summary << string(60, '=');
-    summary << "\n";
-    log.info(summary.str());
 }
 
 Chromosome GeneticAlgorithm::get_best() const {

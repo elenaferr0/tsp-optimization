@@ -32,8 +32,6 @@ class GeneticAlgorithm {
 
     void handle_start(const HyperParams &params) const;
 
-    void print_summary();
-
 public:
     GeneticAlgorithm(const vector<shared_ptr<PopulationInitialization> > &population_init,
                      unique_ptr<SelectionOp> selection,
@@ -43,7 +41,7 @@ public:
                      const vector<shared_ptr<StoppingCriterion> > &stopping,
                      Logger::Level log_level);
 
-    Chromosome start(const HyperParams &params, const string &filename, long logging_frequency = 100);
+    Chromosome start(const HyperParams &params, long logging_frequency = 100);
 };
 
 #endif // GENETIC_ALGORITHM_H
