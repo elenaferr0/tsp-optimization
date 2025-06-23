@@ -124,7 +124,7 @@
 
   let plot = plot(data: log-data(gap_by_nodes), axes: (x_axis, y_axis))
 
-  let graph_plot = graph_plot(plot, (100%, 25%), rounding: 10%, caption: "Optimality gap for Genetic Algorithm", stroke: red)
+  let graph_plot = graph_plot(plot, (100%, 25%), rounding: 10%, caption: "Optimality gap for Genetic Algorithm", stroke: blue)
 
   stack(
     dir: rtl,
@@ -133,7 +133,7 @@
       inset: 10pt, 
       stroke: black,
       [
-        #text(sym.square.filled, red) #text("Gap (%)")
+        #text(sym.square.filled, blue) #text("Gap (%)")
         #linebreak()
       ]
     ),
