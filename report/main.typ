@@ -7,7 +7,7 @@
     (
       name: "Elena Ferro",
       department: [ID 2166466],
-      organization: [University of Padua],
+      organization: [Computer Science, University of Padua],
       location: [Methods and Models for Combinatorial Optimization],
       email: [`elena.ferro.7@studenti.unipd.it`]
     ),
