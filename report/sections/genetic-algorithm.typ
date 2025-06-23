@@ -5,6 +5,8 @@
 
 = Genetic algorithm approach
 #text("TODO introduction", size: 14pt, red)
+// Mention that it's implemented in C++
+
 // The Genetic Algorithm uses several operators to evolve the population of solutions: selection, crossover, mutation and replacement. 
 == Implementation details
 #text("TODO chromosome", size: 14pt, red)

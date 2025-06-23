@@ -26,7 +26,7 @@ Below is the structure of the project:
   └─── random_instance_gen.py
 ```
 
-=== File formats
+=== File formats <sec:file-formats>
 #text("TODO: dat and solution files", red, size: 18pt)
 
 === Running part one
