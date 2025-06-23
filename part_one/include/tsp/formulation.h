@@ -45,9 +45,9 @@ public:
 
     virtual ~Formulation();
 
-    virtual void setup();
+    void setup();
 
-    virtual void solve();
+    void solve();
 };
 
 #endif //FORMULATION_H
