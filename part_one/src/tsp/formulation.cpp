@@ -34,7 +34,8 @@ void Formulation::export_solution() {
 }
 
 string Formulation::instance_formulation_code() const {
-    return instance_name + "_" + formulation_code();
+    // remove .dat from instance name
+    return instance_name.substr(0, instance_name.find_last_of('.')) + "_" + formulation_code();
 }
 
 Formulation::Formulation(const char *instance_name, const int timeout)
