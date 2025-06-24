@@ -28,6 +28,17 @@ Below is the structure of the project:
 
 === File formats <sec:file-formats>
 #text("TODO: dat and solution files", red, size: 18pt)
+The input instances are stored in `.dat` files, which contain as first line the number of holes, followed by the coordinates of each hole in the format `id x y`, where `id` is the incremental identifier of the hole, `x` is the x-coordinate and `y` is the y-coordinate. For example, a file with two holes would look like this:
+```
+2
+0 1 2
+1 3 4
+```
+
+This file format is employed also for the solution files produced by the Genetic Algorithm, for simplicity reasons. In that case, the produced file is named as `<instance>_sol.dat`, where `<instance>` is the name of the input instance file.
+
+For what concerns the solution files produced by the exact algorithm instead, they are stored CPLEX's standard `.sol` format. 
+To avoid cluttering the solution file with unnecessary variables, only the non-zero ones are exported. This is achieved by setting the `CPX_PARAM_WRITELEVEL` parameter to `CPX_WRITELEVEL_NOZEROVARS` in the CPLEX environment.
 
 === Running part one
 The following commands assume the user is initially positioned in the root directory of the project. The first part can be run with the following commands:
