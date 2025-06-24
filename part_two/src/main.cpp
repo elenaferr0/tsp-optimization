@@ -93,7 +93,8 @@ void solve(const char *instance_name, const Logger::Level log_level = Logger::Le
         log_level
     );
 
-    ga.start(params);
+    auto best = ga.start(params);
+    best.save_to_file(instance_name);
 }
 
 int main(const int argc, char *argv[]) {

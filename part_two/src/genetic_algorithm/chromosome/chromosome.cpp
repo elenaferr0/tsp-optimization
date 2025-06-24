@@ -2,7 +2,10 @@
 
 #include <memory>
 #include <sstream>
+#include <iostream>
 #include <stdexcept>
+
+using namespace std;
 
 Chromosome::Chromosome(const Graph &graph) : graph(graph) {
     if (graph.path.size() == 0) {
@@ -77,12 +80,16 @@ ostream &operator<<(ostream &os, const Chromosome &chromosome) {
 }
 
 void Chromosome::save_to_file(const string &filename) {
-    const string path = filename.substr(0, filename.find_last_of('.')) + "_sol.ga";
+    const string path = filename.substr(0, filename.find_last_of('.')) + "_sol.dat";
+    std::cout << "Saving solution to file: " << path << endl;
 
     ofstream output_file(path);
     if (!output_file.is_open()) {
         throw runtime_error("Could not open file " + path);
     }
+
+    // Add the number of nodes as first line
+    output_file << graph.path.size() << std::endl;
 
     for (const auto &node: graph.path) {
         output_file << node.id << " " << node.x() << " " << node.y() << std::endl;
