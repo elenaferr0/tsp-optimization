@@ -19,28 +19,26 @@ The number of chromosomes in the initial population is determined by the `popula
 - Random Initialization: generates a random permutation of cities for each chromosome, ensuring that all cities are included in the tour. This method provides a diverse starting point for the algorithm;
 - Convex Hull Initialization: involves generating a convex hull, forming an initial partial route using the cities on the boundary of the hull. The remaining interior cities are then inserted into this partial tour one by one. Each of them is inserted at the position that results in the minimum incremental cost, calculated by finding the smallest increase in distance when placing the city between two existing cities in the partial tour.
 
-Through empirical testing, it has been observed that employing the Convex Hull Initialization approach exclusively yielded an initial population suffering from poor diversity. This was primarily due to the fact that this technique tends to produce similar chromosomes, as it starts to create tours based on the convex hull, which is the same for all chromosomes.  To mitigate this issue, the Random Initialization technique is used to introduce diversity into the population. The final population is then formed by combining both initialization methods, ensuring a diverse set of chromosomes that can effectively explore the solution space. The ratio of combination between the two is regulated through the `convex_hull_random_init_ratio` parameter.
+Empirically, it has been observed that by exclusively employing the Convex Hull Initialization approach, an initial population suffering from poor diversity was yielded. This was primarily due to the fact that this technique tends to produce similar chromosomes, as it starts to create tours based on the convex hull, which is the same for all chromosomes. #footnote[Shuffling internal cities should, in theory, provide sufficient diversification as it implies cities might be taken under consideration in different order each time.] To mitigate this issue, the Random Initialization technique is used to introduce diversity into the population. The final population is then formed by combining both initialization methods, ensuring a diverse set of chromosomes that can effectively explore the solution space. The ratio of combination between the two is regulated through the `convex_hull_random_init_ratio` parameter.
 
-=== Genetic Operators
-This section describes the implemented operators used in the Genetic Algorithm.
-==== Selection
+=== Selection
 The goal of the selection operator is to choose individuals from the current population to create a new generation. The selection process is based on the fitness of each individual, which is determined by the total distance of the tour represented by the chromosome. This phase should aim at identifying the fittest individuals, however, to avoid premature convergence, it is also important to maintain diversity between the solutions. The following selection schemes have been implemented:
 - Linear Ranking Selection: sorts individuals by increasing fitness and assign a rank $sigma_i$ to each individual $i$ in the population. The probability of selection is then given by $p_i = (2 sigma_i)/(N (N+1))$, where $N$ is the population size;
 - n-Tournament Selection: randomly selects $n$ individuals from the population and chooses the one with the best fitness. The process is repeated until the desired number of individuals is selected. The value of $n$ can be tuned to balance exploration and exploitation.
 
-==== Crossover
+=== Crossover
 The aim of the crossover operator is to combine two parent chromosomes to create offspring that inherit characteristics from both parents. The following crossover methods have been implemented:
 - Order Crossover (OX): selects a random subsection from one parent and copies it directly to the offspring. The remaining cities are then filled in the order they appear in the other parent, preserving the relative order of cities outside the copied section;
 
 - Edge Recombination Crossover (ERX): focuses on preserving edges rather than simply city positions. It constructs an offspring by prioritizing edges present in either parent. It works by building a list of neighboring cities for each city from both parents and then iteratively selecting the next city based on which has the fewest available unvisited neighbors @larranaga-genetic-algorithms-TSP-1999.
 
-==== Mutation
+=== Mutation
 Mutation is intended to introduce variability into the population by altering the chromosomes of individuals. This helps to maintain genetic diversity and prevent premature convergence. The following mutation methods have been implemented:
 - Simple Inversion Mutation: selects a random subsection of the chromosome and reverses the order of the cities within that segment. This operation changes the order of a contiguous block of cities while keeping their relative positions outside the inverted segment intact @larranaga-genetic-algorithms-TSP-1999;
 
 - Displacement Mutation: involves selecting a random subtour from the chromosome and then reinserting it at a different, randomly chosen position. The cities outside the displaced subtour remain in their original relative order, and the displaced segment is inserted without altering its internal order.
 
-==== Replacement
+=== Replacement
 In the replacement phase, the new generation of individuals is created by replacing some or all of the individuals in the current population with the offspring generated by the crossover and mutation operators. The following replacement strategies have been implemented:
 
 - Steady State Replacement: replaces the worst-performing individuals in the population with the newly created offspring. This approach ensures that the best individuals are retained while allowing for the introduction of new genetic material;
