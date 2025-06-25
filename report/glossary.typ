@@ -11,6 +11,19 @@
     plural: "PCBs",
     longplural: "Printed Circuit Boards",
   ),
+  GG: (
+    long: "Gavish and Graves",
+    short: "GG",
+  ),
+  MTZ: (
+    long: "Miller, Tucker, and Zemlin",
+    short: "MTZ",
+  ),
+  GA: (
+    long: "Genetic Algorithm",
+    short: "GA",
+    plural: "Genetic Algorithms",
+  ),
 )
 
 #show: init-glossary.with(defs)

@@ -3,23 +3,58 @@
 
 #show : init-glossary.with(defs)
 
-= Genetic algorithm approach
-#text("TODO introduction", size: 14pt, red)
-// Mention that it's implemented in C++
-
+= @GA:long approach
+A C++ implementation of a @GA:long is proposed as an alternative approach to solving the @TSP. The goal is to provide a faster way to find good solutions for large instances, which are too expensive to solve using exact methods. The @GA is a metaheuristic that mimics the process of natural selection, where the fittest individuals from a population of solutions are selected to create new generations.
 // The Genetic Algorithm uses several operators to evolve the population of solutions: selection, crossover, mutation and replacement. 
+
 == Implementation details
-#text("TODO chromosome", size: 14pt, red)
-// Chromosome
+
+=== Chromosomes
+The implemented @GA represents solutions as a vector of nodes, where each of them corresponds to a city in the @TSP. A `Graph` class based on the one described in #ref(<sec:graph>) holds the coordinates of the cities and their Euclidean distances. To ease the process of evaluating the fitness, overriding a part of the path and saving the solution to file, a `Chromosome` class has been implemented as a wrapper around the `Graph` class.
+
+#text("TODO logger", size: 14pt, red)
 // Parameters
 // Logger
 
-=== Population initialization
+=== Algorithm overview
+To render the @GA implementation more flexible and customizable, it has been designed to allow different operators to be plugged in for selection, crossover, mutation and replacement. The `GeneticAlgorithm` class orchestrates the execution of the algorithm, initializing the population and applying the operators in each generation.
+
+The `start` method of the `GeneticAlgorithm` class constitutes the algorithm's entry point. It takes an hyperparameter configuration `HyperParam` as input, and will take care of initializing the population, applying the selection, crossover, mutation and replacement operators. Finally, it returns the best solution found once the stopping criteria are met.
+
+==== A note on population initialization and stopping criteria
+Given the necessity to run the algorithm using different techniques for population initialization and stopping criteria at the same time, the `GeneticAlgorithm` class has been designed to allow these to be provided as vectors, instead of single class instances. More specifically:
+- the population initialization can be performed using multiple techniques, better described in #ref(<sec:population-init>), and the final population is formed by combining the results of these techniques;
+- the stopping criteria can be defined as a set of different conditions, such as a time limit or a maximum number of generations without improvement. The algorithm will stop when any of these conditions is met.
+
+==== Parameters
+Below is a list of the parameters that can be tuned in the @GA implementation, along with their default values and descriptions.
+
+#let params = (
+  population_size: (default: 100, description: "The number of chromosomes in the population."),
+  mutation_rate: (default: 0.01, description: "The probability of mutating a chromosome."),
+  parents_replacement_rate: (default: 0.8, description: "The proportion of parents that are replaced in the next generation."),
+  selection_n_parents: (default: 300, description: "The number of parents selected for crossover in each generation."),
+  selection_tournament_size: (default: 5, description: "The size of the tournament for the n-Tournament Selection method."),
+  time_limit_seconds: (default: 60, description: "The maximum time allowed for the algorithm to run, in seconds."),
+  max_non_improving_generations: (default: 100, description: "The maximum number of generations without improvement before stopping the algorithm."),
+  convex_hull_random_init_ratio: (default: $(0.1, 0.9)$, description: "The ratio of convex hull initialization to random initialization in the population initialization phase. The first value is the proportion of chromosomes initialized using the convex hull method, while the second value is the proportion initialized randomly."),
+)
+
+#table(
+  columns: 3,
+  table.header("Parameter", "Default", "Description"),
+  ..params.pairs().map(((param_name, ((default, description)))) => 
+    (raw(param_name), [#default], [#description])
+  ).flatten(),
+)
+
+
+=== Population initialization <sec:population-init>
 The number of chromosomes in the initial population is determined by the `population_size` parameter and remains constant throughout the algorithm. Two techniques are used in conjunction to initialize the population:
 - Random Initialization: generates a random permutation of cities for each chromosome, ensuring that all cities are included in the tour. This method provides a diverse starting point for the algorithm;
-- Convex Hull Initialization: involves generating a convex hull, forming an initial partial route using the cities on the boundary of the hull. The remaining interior cities are then inserted into this partial tour one by one. Each of them is inserted at the position that results in the minimum incremental cost, calculated by finding the smallest increase in distance when placing the city between two existing cities in the partial tour.
+- Convex Hull Initialization: involves generating a convex hull, forming an initial partial route using the cities on the boundary of the hull. The remaining interior cities are then inserted into this partial tour one by one. Each of them is inserted at the position that results in the minimum incremental cost, calculated by finding the smallest increase in distance when placing the city between two existing cities in the partial tour @convex-hull-2023.
 
-Empirically, it has been observed that by exclusively employing the Convex Hull Initialization approach, an initial population suffering from poor diversity was yielded. This was primarily due to the fact that this technique tends to produce similar chromosomes, as it starts to create tours based on the convex hull, which is the same for all chromosomes. #footnote[Shuffling internal cities should, in theory, provide sufficient diversification as it implies cities might be taken under consideration in different order each time.] To mitigate this issue, the Random Initialization technique is used to introduce diversity into the population. The final population is then formed by combining both initialization methods, ensuring a diverse set of chromosomes that can effectively explore the solution space. The ratio of combination between the two is regulated through the `convex_hull_random_init_ratio` parameter.
+It has been observed by empirical tests that employing the Convex Hull Initialization method alone can lead to poor diversity in the initial population. This was primarily due to the fact that it starts to create tours based on the convex hull, which is the same for all chromosomes. The randomization introduced by inserting the internal cities in different positions is not sufficient to ensure a diverse population. To mitigate this issue, the Random Initialization technique has been integrated.  The final population is then formed by combining both initialization methods, ensuring a diverse set of chromosomes that can effectively explore the solution space. The ratio of combination between the two is regulated through the `convex_hull_random_init_ratio` parameter.
 
 === Selection
 The goal of the selection operator is to choose individuals from the current population to create a new generation. The selection process is based on the fitness of each individual, which is determined by the total distance of the tour represented by the chromosome. This phase should aim at identifying the fittest individuals, however, to avoid premature convergence, it is also important to maintain diversity between the solutions. The following selection schemes have been implemented:
@@ -44,28 +79,6 @@ In the replacement phase, the new generation of individuals is created by replac
 - Steady State Replacement: replaces the worst-performing individuals in the population with the newly created offspring. This approach ensures that the best individuals are retained while allowing for the introduction of new genetic material;
 
 - Elitism Replacement: keeps few of the best individuals from the current population and replaces the rest with offspring.
-
-== Parameters
-Below is a list of the parameters that can be tuned in the Genetic Algorithm implementation, along with their default values and descriptions.
-
-#let params = (
-  population_size: (default: 100, description: "The number of chromosomes in the population."),
-  mutation_rate: (default: 0.01, description: "The probability of mutating a chromosome."),
-  parents_replacement_rate: (default: 0.8, description: "The proportion of parents that are replaced in the next generation."),
-  selection_n_parents: (default: 300, description: "The number of parents selected for crossover in each generation."),
-  selection_tournament_size: (default: 5, description: "The size of the tournament for the n-Tournament Selection method."),
-  time_limit_seconds: (default: 60, description: "The maximum time allowed for the algorithm to run, in seconds."),
-  max_non_improving_generations: (default: 100, description: "The maximum number of generations without improvement before stopping the algorithm."),
-  convex_hull_random_init_ratio: (default: $(0.1, 0.9)$, description: "The ratio of convex hull initialization to random initialization in the population initialization phase. The first value is the proportion of chromosomes initialized using the convex hull method, while the second value is the proportion initialized randomly."),
-)
-
-#table(
-  columns: 3,
-  table.header("Parameter", "Default", "Description"),
-  ..params.pairs().map(((param_name, ((default, description)))) => 
-    (raw(param_name), [#default], [#description])
-  ).flatten(),
-)
 
 === Parameter tuning
 To ease the parameter tuning process, a `GridSearch` class heavily inspired by the one from Python's `scikit-learn` library has been implemented #footnote[https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.GridSearchCV.html]. Given a problem instance, it allows a systematic search over a specified set of parameter, evaluating the performance of the algorithm for each combination. The performance is measured using a fitness function, which, in this case, is the total distance of the tour represented by the chromosome.

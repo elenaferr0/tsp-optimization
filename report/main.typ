@@ -1,7 +1,11 @@
 #import "template.typ": ieee
+#import "./glossary.typ": defs
+#import "@preview/glossy:0.8.0": init-glossary
+
+#show : init-glossary.with(defs)
 
 #show: ieee.with(
-  title: [Exact and Genetic Algorithm approaches for the Travelling Salesman Problem],
+  title: [Exact and @GA:long approaches for the @TSP:long],
   n-columns: 1,
   authors: (
     (
@@ -28,5 +32,5 @@
 #include "sections/introduction.typ"
 #include "sections/exact.typ"
 #include "sections/genetic-algorithm.typ"
-#include "sections/computational-results.typ"
+// #include "sections/computational-results.typ"
 #include "sections/conclusion.typ"
