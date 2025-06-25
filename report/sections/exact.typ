@@ -32,8 +32,7 @@ The two formulations differ in how they store these indices:
 - in the @MTZ implementation instead, a single integer matrix is used to hold the indices for the variables $x_(i j)$, and a vector memorizes indices for the order variables $u_i$.
 
 ==== Optimizations
-For optimal performance and memory efficiency, both formulations create all variables at once, rather than one by one. This approach minimizes the overhead associated with multiple calls to the CPLEX API, which can be costly in terms of performance. To do so, the formulations leverage the custom implemented `Constraints` and `Variables` support classes, which are iteratively filled with the necessary data, which is then fed to CPLEX in a single call.
-
+For optimal performance and memory efficiency, both formulations create all variables at once, rather than one by one. This approach minimizes the overhead associated with multiple calls to the CPLEX API, which can be costly in terms of performance. To do so, the formulations leverage the custom implemented `Constraints` and `Variables` support classes, that are iteratively filled with the necessary data and then fed to CPLEX in a single call.
 
 Furthermore, only the minimum number of variables and constraints necessary to solve the problem are created. Assuming $N$ to be the number of nodes in the problem, below is a summary of the number of variables and constraints created by each formulation.
 
