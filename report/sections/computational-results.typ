@@ -1,10 +1,12 @@
 #import "../utils.typ": *
-#import "@elenaferr0/plotst:0.2.0": plot, overlay, graph_plot, axis
-
+#import "@elenaferr0/plotst:0.2.0": axis, graph_plot, overlay, plot
 
 = Computational results
-// Computational results,  (tables and comments)
-// how long/far from optimal, how long it took in two cases
+In this section, a performance comparison between the exact and @GA approaches is carried out.
+
+From the results summarized in #ref(<tab:results>), it emerges that the @GA is able to provide a sufficiently accurate solution for problems of reduced size - below 10 nodes - although with a much longer computational time than the exact method. This might be accounted for by the fact that the exponential growth of the search space for the @TSP is not yet significant for such small instances, allowing the exact method to find the optimal solution in a reasonable time.
+
+For larger instances on the other hand, the @GA provides a solution much quicker, but with an excessively large optimality gap, which can be as high as 372% for the largest instance considered (100 nodes).
 
 #let results = (
   (
@@ -49,94 +51,130 @@
   ),
 )
 
-#let results_with_gap = results.map(((problem_name, nodes, exact_solution, genetic_solution, exact_time, genetic_time)) => {
+#let results_with_gap = results.map((
+  (problem_name, nodes, exact_solution, genetic_solution, exact_time, genetic_time),
+) => {
   let gap = (genetic_solution - exact_solution) / exact_solution * 100
-  (problem_name: problem_name, nodes: nodes, exact_solution: exact_solution, genetic_solution: genetic_solution, exact_time: exact_time, genetic_time: genetic_time, gap: gap)
+  (
+    problem_name: problem_name,
+    nodes: nodes,
+    exact_solution: exact_solution,
+    genetic_solution: genetic_solution,
+    exact_time: exact_time,
+    genetic_time: genetic_time,
+    gap: gap,
+  )
 })
 
-#table(
-  columns: 6,
-  align: (left, right, right, right, right, right),
-  table.header(
-    "Problem name",
-    "Exact solution",
-    "Genetic solution",
-    "Exact time (ms)",
-    "Genetic time (ms)",
-    "Gap (%)",
+#figure(
+  table(
+    columns: 6,
+    align: (left, right, right, right, right, right),
+    table.header(
+      "Problem name", "Exact solution", "Genetic solution", "Exact time (ms)", "Genetic time (ms)", "Gap (%)"
+    ),
+    ..results_with_gap
+      .map(((problem_name, exact_solution, genetic_solution, exact_time, genetic_time, gap)) => {
+        (
+          raw(problem_name),
+          [#format(exact_solution, 4)],
+          [#format(genetic_solution, 4)],
+          [#exact_time\ms],
+          [#genetic_time\ms],
+          [#format(gap, 2)%],
+        )
+      })
+      .flatten(),
   ),
-  ..results_with_gap
-    .map(((problem_name, exact_solution, genetic_solution, exact_time, genetic_time, gap)) => {
-      (
-        raw(problem_name),
-        [#format(exact_solution, 4)],
-        [#format(genetic_solution, 4)],
-        [#exact_time\ms],
-        [#genetic_time\ms],
-        [#format(gap, 2)%],
-      )
-    })
-    .flatten(),
-)
+  caption: "Results summary for the exact and genetic algorithm approaches to the TSP",
+) <tab:results>
 
+#ref(<plt:exact>) highlights that up to 50 nodes, the exact method produces a solution in a shorter time than the @GA, while for larger instances. From the limited extent of this chart, it seems that the time taken by the exact method grows much faster than that of the @GA, with the increase in the number of nodes. This is quite sensible given the nature of the @TSP.
 
 #{
   let exact = results_with_gap.map(((nodes, exact_time)) => (nodes, exact_time))
   let genetic = results_with_gap.map(((nodes, genetic_time)) => (nodes, genetic_time))
 
   let x_max = calc.max(..exact.map(((nodes, exact_time)) => nodes))
-  let y_max = calc.max(
-    ..exact.map(((nodes, exact_time)) => exact_time),
-    ..genetic.map(((nodes, genetic_time)) => genetic_time)
-  )
+  let y_max = calc.max(..exact.map(((nodes, exact_time)) => exact_time), ..genetic.map(((nodes, genetic_time)) => {
+    genetic_time
+  }))
 
-  let x_axis = axis(min: 0, max: x_max, step: 10, location: "bottom", helper_lines: false, title: "Number of Nodes", marking_length: 2pt)
+  let x_axis = axis(
+    min: 0,
+    max: x_max,
+    step: 10,
+    location: "bottom",
+    helper_lines: false,
+    title: "Number of Nodes",
+    marking_length: 2pt,
+  )
   let y_axis = log-axis(exact, location: "left", helper_lines: false, title: "Time (ms) - log scale")
 
   let exact_plot = plot(data: log-data(exact), axes: (x_axis, y_axis))
   let genetic_plot = plot(data: log-data(genetic), axes: (x_axis, y_axis))
 
-  let exact_graph_plot = graph_plot(exact_plot, (100%, 25%), rounding: 10%, caption: "Exact vs Genetic Algorithm solution time", stroke: red)
+  let exact_graph_plot = graph_plot(
+    exact_plot,
+    (100%, 25%),
+    rounding: 10%,
+    caption: "Exact vs Genetic Algorithm solution time",
+    stroke: red,
+  )
   let genetic_graph_plot = graph_plot(genetic_plot, (100%, 25%), rounding: 30%, stroke: blue)
 
   stack(
     dir: rtl,
     spacing: -450pt,
-    box(
-      inset: 10pt, 
-      stroke: black,
-      [
-        #text(sym.square.filled, red) #text("Exact time")
-        #linebreak()
-        #text(sym.square.filled, blue) #text("Genetic Algorithm time")
-      ]
+    box(inset: 10pt, stroke: black, [
+      #text(sym.square.filled, red) #text("Exact time")
+      #linebreak()
+      #text(sym.square.filled, blue) #text("Genetic Algorithm time")
+    ]),
+    overlay(
+      (exact_graph_plot, genetic_graph_plot),
+      (100%, 25%),
+      label_str: "plt:exact",
     ),
-    overlay((exact_graph_plot, genetic_graph_plot), (100%, 25%))
   )
 }
+
+#ref(<plt:a>) instead shows the growth of the optimality gap for the @GA with respect to the number of nodes. The increase in steeper in the first 20 nodes, then it tends to stabilize and become more linear. This is likely due to the fact that the @GA is able to find a good solution for small instances, but as the number of nodes increases, the search space becomes too large and the algorithm struggles to maintain a low gap.
+
+Both the discussed plots are in logarithmic scale, to allow a better visualization of the results, given the large differences in time and gap values.
 
 #{
   let gap_by_nodes = results_with_gap.map(((nodes, gap)) => (nodes, gap))
   let x_max = calc.max(..gap_by_nodes.map(((nodes, gap)) => nodes))
 
-  let x_axis = axis(min: 0, max: x_max, step: 10, location: "bottom", helper_lines: false, title: "Number of Nodes", marking_length: 2pt)
+  let x_axis = axis(
+    min: 0,
+    max: x_max,
+    step: 10,
+    location: "bottom",
+    helper_lines: false,
+    title: "Number of Nodes",
+    marking_length: 2pt,
+  )
   let y_axis = log-axis(gap_by_nodes, location: "left", helper_lines: false, title: "Gap (%) - log scale")
 
   let plot = plot(data: log-data(gap_by_nodes), axes: (x_axis, y_axis))
 
-  let graph_plot = graph_plot(plot, (100%, 25%), rounding: 10%, caption: "Optimality gap for Genetic Algorithm", stroke: blue)
+  let graph_plot = graph_plot(
+    plot,
+    (100%, 25%),
+    rounding: 10%,
+    caption: "Optimality gap for Genetic Algorithm",
+    stroke: blue,
+  )
 
-  stack(
+  block(breakable: false, stack(
     dir: rtl,
     spacing: -450pt,
-    box(
-      inset: 10pt, 
-      stroke: black,
-      [
-        #text(sym.square.filled, blue) #text("Gap (%)")
-        #linebreak()
-      ]
-    ),
-    graph_plot
-  )
+    box(inset: 10pt, stroke: black, [
+      #text(sym.square.filled, blue) #text("Gap (%)")
+      #linebreak()
+    ]),
+    [#graph_plot <plt:a>],
+  ))
 }
