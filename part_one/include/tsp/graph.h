@@ -23,7 +23,7 @@ class Graph {
 
 public:
     int n_nodes;
-    dbl_mat costs;
+    DblMat costs;
 
     static Graph of_instance(const string& path) {
         return Graph(path);

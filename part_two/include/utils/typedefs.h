@@ -7,7 +7,7 @@
 
 using namespace std;
 
-typedef vector<vector<double>> dbl_mat;
+typedef vector<vector<double>> DblMat;
 template <typename T>
 using priority_queue_asc = priority_queue<T, vector<T>, greater<T>>;
 

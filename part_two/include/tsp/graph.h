@@ -10,7 +10,7 @@
 using namespace std;
 
 class Graph {
-    dbl_mat costs;
+    DblMat costs;
     size_t n_nodes;
     string file_path;
 
