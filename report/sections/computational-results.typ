@@ -6,7 +6,7 @@ In this section, a performance comparison between the exact and @GA approaches i
 
 From the results summarized in #ref(<tab:results>), it emerges that the @GA is able to provide a sufficiently accurate solution for problems of reduced size - below 10 nodes - although with a much longer computational time than the exact method. This might be accounted for by the fact that the exponential growth of the search space for the @TSP is not yet significant for such small instances, allowing the exact method to find the optimal solution in a reasonable time.
 
-For larger instances on the other hand, the @GA provides a solution much quicker, but with an excessively large optimality gap, which can be as high as 372% for the largest instance considered (100 nodes).
+For larger instances on the other hand, the @GA is able to produce a solution much quicker, but with an excessively large optimality gap, which can be as high as 372% for the largest instance considered (100 nodes).
 
 #let results = (
   (
