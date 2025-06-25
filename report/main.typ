@@ -32,5 +32,5 @@
 #include "sections/introduction.typ"
 #include "sections/exact.typ"
 #include "sections/genetic-algorithm.typ"
-// #include "sections/computational-results.typ"
+#include "sections/computational-results.typ"
 #include "sections/conclusion.typ"

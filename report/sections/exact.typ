@@ -1,12 +1,12 @@
 #import "../glossary.typ": defs
 #import "@preview/glossy:0.8.0": init-glossary
 
-#show : init-glossary.with(defs)
+#show: init-glossary.with(defs)
 
 = Exact approach
-With regard to the exact approach, two compact formulations were implemented: 
-- the one proposed by @GG @gavish-graves-1978, which uses a network flow-based approach to eliminate subtours #footnote[In the context of the TSP, a subtour is a closed route that only visits a subset of the cities, not all of them, and is not connected to the rest of the route. These are invalid solutions and need to be eliminated to find the optimal tour.]\;
-- the one introduced by @MTZ @miller-tucker-zemlin-1960, which uses additional variables representing the order or position of each city in the tour; the elimination is achieved by ensuring that these variables maintain a sequential order, thus preventing subtours.
+With regard to the exact approach, two compact formulations were implemented:
+- the one proposed by @GG:both @gavish-graves-1978, which uses a network flow-based approach to eliminate subtours #footnote[In the context of the TSP, a subtour is a closed route that only visits a subset of the cities, not all of them, and is not connected to the rest of the route. These are invalid solutions and need to be eliminated to find the optimal tour.]\;
+- the one introduced by @MTZ:both @miller-tucker-zemlin-1960, which uses additional variables representing the order or position of each city in the tour; the elimination is achieved by ensuring that these variables maintain a sequential order, thus preventing subtours.
 
 The problems built according to these two formulations are then fed to the IBM CPLEX 22.11 solver through its C++ API.
 
@@ -69,13 +69,94 @@ In total, the @MTZ formulation creates $n + n + (n-1)^2 - (n-1) + 2(n-1) = n (n 
 
 ===== Comparison
 To understand which implementation is more efficient in terms of memory, the number of variables and constraints created by each formulation can be compared.
-- For what concerns variables, @GG produces $2 n^2 - 3 n + 1$, while @MTZ: $n^2 - 1$. Therefore, given that 
-  $ 2 n ^2 - 3 n + 1 < n^2 - 1 => 1 < n < 2 $
+- For what concerns variables, @GG produces $2 n^2 - 3 n + 1$, while @MTZ: $n^2 - 1$. Therefore, given that
+  $ 2 n^2 - 3 n + 1 < n^2 - 1 => 1 < n < 2 $
   the @MTZ formulation is, in practice, producing less variables than @GG with equal size of the problem.
 
 - For what concerns constraints, @GG produces $n^2 + 2 n - 1$, while @MTZ: $n (n - 1)$. Therefore, given that
   $ n^2 + 2 n - 1 < n (n - 1) => n < 1/3 $
   the @MTZ formulation is producing less constraints than @GG with equal size of the problem.
 
-== Results
-#text("TODO results benchmarks", size: 14pt, red)
+== Benchmark results
+To evaluate the performance of the exact approach, a set of randomly generated instances of different sizes were solved with increasing time limits. The goal was to determine the largest instance that could be solved within each time limit.
+Note that to ensure a reliable comparison, more than one instance per size should be taken under consideration. However, due to the time constraints of this project, only one problem per size was used.
+
+In order to simplify the process of reproducing this benchmark, a `benchmark.sh` script has been implemented, and is provided inside the `part_one` folder. It's sufficient to run it without arguments as follows:
+```bash
+sh benchmark.sh
+```
+
+The following instances were considered:
+#let instances = (
+  "random5",
+  "random10",
+  "random20",
+  "random50",
+  "random100",
+  "random200",
+)
+
+#figure(block(breakable: false, grid(
+  row-gutter: 12pt,
+  columns: (1fr, 1fr, 1fr),
+  ..instances.map(i => raw(i))
+)))
+
+The following time limits in seconds were taken under consideration: 1, 2, 5, 10, 20, 30, 60, 120 and 240.
+
+#let instance_by_solving_limit = (
+  (size: 5, limit: 1),
+  (size: 10, limit: 1),
+  (size: 20, limit: 1),
+  (size: 50, limit: 5),
+  (size: 100, limit: 120),
+  (size: 200, limit: -1),
+)
+
+#let largest_solvable_by_limit = (
+  (limit: 1, size: 20),
+  (limit: 2, size: 20),
+  (limit: 5, size: 50),
+  (limit: 10, size: 50),
+  (limit: 20, size: 50),
+  (limit: 30, size: 50),
+  (limit: 60, size: 50),
+  (limit: 120, size: 100),
+  (limit: 240, size: 100),
+)
+
+#ref(<tab:instance-solving-limits>) shows the time limit within which each instance was solved; the largest problem, `random200`, was not solved within the time limit of 240 seconds.
+
+#ref(<tab:largest-solvable-by-timelimit>) instead, shows the largest instance which was solved within each time limit. For example, the largest instance that could be solved within 60 seconds was `random50`, while the largest instance that could be solved within 120 seconds was `random100`. From this table it is quite evident that, as expected, the performance of the exact approach degrades exponentially as the size of the problem increases: solving a 20 nodes problem indeed only took 2 seconds, however for a 50 cities one the elapsed time is 60 seconds, that is, 30 times larger.
+
+#grid(
+  columns: (50%, 50%),
+  [
+    #figure(
+      table(
+        columns: 2,
+        table.header([Instance], [Time Limit (s)]),
+        ..instance_by_solving_limit.map(i => (
+          [#raw("random_" + str(i.size))],
+          [#if (i.limit == -1) { "N/A" } else { i.limit }],
+        )).flatten(),
+      ),
+      caption: "Instances by solving limit",
+    ) <tab:instance-solving-limits>,
+  ],
+  [
+    #figure(
+      table(
+        columns: 2,
+        table.header([Time Limit (s)], [Largest solvable instance]),
+        ..largest_solvable_by_limit
+          .map(i => (
+            [#raw(str(i.limit))],
+            [#raw("random_" + str(i.size))],
+          ))
+          .flatten(),
+      ),
+      caption: "Largest solvable instance by timelimit",
+    ) <tab:largest-solvable-by-timelimit>
+  ],
+)

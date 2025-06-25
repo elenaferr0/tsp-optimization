@@ -1,11 +1,11 @@
 #import "../glossary.typ": defs
 #import "@preview/glossy:0.8.0": init-glossary
 
-#show : init-glossary.with(defs)
+#show: init-glossary.with(defs)
 
 = @GA:long approach
 A C++ implementation of a @GA:long is proposed as an alternative approach to solving the @TSP. The goal is to provide a faster way to find good solutions for large instances, which are too expensive to solve using exact methods. The @GA is a metaheuristic that mimics the process of natural selection, where the fittest individuals from a population of solutions are selected to create new generations.
-// The Genetic Algorithm uses several operators to evolve the population of solutions: selection, crossover, mutation and replacement. 
+// The Genetic Algorithm uses several operators to evolve the population of solutions: selection, crossover, mutation and replacement.
 
 == Implementation details
 
@@ -27,26 +27,42 @@ Given the necessity to run the algorithm using different techniques for populati
 - the stopping criteria can be defined as a set of different conditions, such as a time limit or a maximum number of generations without improvement. The algorithm will stop when any of these conditions is met.
 
 ==== Parameters
-Below is a list of the parameters that can be tuned in the @GA implementation, along with their default values and descriptions.
+#ref(<tab:params>) contains the list of the parameters that can be tuned in the @GA implementation, along with their default values and descriptions.
 
 #let params = (
   population_size: (default: 100, description: "The number of chromosomes in the population."),
   mutation_rate: (default: 0.01, description: "The probability of mutating a chromosome."),
-  parents_replacement_rate: (default: 0.8, description: "The proportion of parents that are replaced in the next generation."),
+  parents_replacement_rate: (
+    default: 0.8,
+    description: "The proportion of parents that are replaced in the next generation.",
+  ),
   selection_n_parents: (default: 300, description: "The number of parents selected for crossover in each generation."),
-  selection_tournament_size: (default: 5, description: "The size of the tournament for the n-Tournament Selection method."),
+  selection_tournament_size: (
+    default: 5,
+    description: "The size of the tournament for the n-Tournament Selection method.",
+  ),
   time_limit_seconds: (default: 60, description: "The maximum time allowed for the algorithm to run, in seconds."),
-  max_non_improving_generations: (default: 100, description: "The maximum number of generations without improvement before stopping the algorithm."),
-  convex_hull_random_init_ratio: (default: $(0.1, 0.9)$, description: "The ratio of convex hull initialization to random initialization in the population initialization phase. The first value is the proportion of chromosomes initialized using the convex hull method, while the second value is the proportion initialized randomly."),
+  max_non_improving_generations: (
+    default: 100,
+    description: "The maximum number of generations without improvement before stopping the algorithm.",
+  ),
+  convex_hull_random_init_ratio: (
+    default: $(0.1, 0.9)$,
+    description: "The ratio of convex hull initialization to random initialization in the population initialization phase. The first value is the proportion of chromosomes initialized using the convex hull method, while the second value is the proportion initialized randomly.",
+  ),
 )
 
-#table(
-  columns: 3,
-  table.header("Parameter", "Default", "Description"),
-  ..params.pairs().map(((param_name, ((default, description)))) => 
-    (raw(param_name), [#default], [#description])
-  ).flatten(),
-)
+#figure(
+  table(
+    columns: 3,
+    table.header("Parameter", "Default", "Description"),
+    ..params
+      .pairs()
+      .map(((param_name, (default, description))) => (raw(param_name), [#default], [#description]))
+      .flatten(),
+  ),
+  caption: "Parameters of the Genetic Algorithm implementation",
+) <tab:params>
 
 
 === Population initialization <sec:population-init>
