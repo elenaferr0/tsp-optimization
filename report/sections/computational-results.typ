@@ -4,9 +4,11 @@
 = Computational results
 In this section, a performance comparison between the exact and @GA approaches is carried out.
 
+Since the implemented @GA has stochastic components, its results can vary between runs. Therefore, the algorithm was run five times for each instance and parameter combination, and the average results were considered for the comparison, so to obtain a more reliable estimation of the performance.
+
 From the results summarized in #ref(<tab:results>), it emerges that the @GA is able to provide a sufficiently accurate solution for problems of reduced size - below 10 nodes - although with a much longer computational time than the exact method. This might be accounted for by the fact that the exponential growth of the search space for the @TSP is not yet significant for such small instances, allowing the exact method to find the optimal solution in a reasonable time.
 
-For larger instances on the other hand, the @GA is able to produce a solution much quicker, but with an excessively large optimality gap, which can be as high as 372% for the largest instance considered (100 nodes).
+For larger instances on the other hand, the @GA is able to produce a solution much quicker, but with an excessively large optimality gap, which can be as high as 351% for the largest considered instance (100 nodes).
 
 #let results = (
   (
@@ -21,7 +23,7 @@ For larger instances on the other hand, the @GA is able to produce a solution mu
     problem_name: "random_10",
     nodes: 10,
     exact_solution: 40.217334,
-    genetic_solution: 40.887331,
+    genetic_solution: 40.245537,
     exact_time: 97,
     genetic_time: 367,
   ),
@@ -29,7 +31,7 @@ For larger instances on the other hand, the @GA is able to produce a solution mu
     problem_name: "random_20",
     nodes: 20,
     exact_solution: 140.953759,
-    genetic_solution: 214.234813,
+    genetic_solution: 212.932003,
     exact_time: 222,
     genetic_time: 901,
   ),
@@ -37,7 +39,7 @@ For larger instances on the other hand, the @GA is able to produce a solution mu
     problem_name: "random_50",
     nodes: 50,
     exact_solution: 599.882932,
-    genetic_solution: 1847.670084,
+    genetic_solution: 1678.920023,
     exact_time: 4597,
     genetic_time: 3822,
   ),
@@ -45,7 +47,7 @@ For larger instances on the other hand, the @GA is able to produce a solution mu
     problem_name: "random_100",
     nodes: 100,
     exact_solution: 1288.580487,
-    genetic_solution: 6090.911625,
+    genetic_solution: 5817.054886,
     exact_time: 112441,
     genetic_time: 9172,
   ),
@@ -117,13 +119,13 @@ For larger instances on the other hand, the @GA is able to produce a solution mu
   let exact_graph_plot = graph_plot(
     exact_plot,
     (100%, 25%),
-    rounding: 10%,
+    rounding: 5%,
     caption: "Exact vs Genetic Algorithm solution time",
     stroke: red,
   )
   let genetic_graph_plot = graph_plot(genetic_plot, (100%, 25%), rounding: 30%, stroke: blue)
 
-  stack(
+  block(breakable: false, stack(
     dir: rtl,
     spacing: -450pt,
     box(inset: 10pt, stroke: black, [
@@ -136,15 +138,16 @@ For larger instances on the other hand, the @GA is able to produce a solution mu
       (100%, 25%),
       label_str: "plt:exact",
     ),
-  )
+  ))
 }
 
-#ref(<plt:a>) instead shows the growth of the optimality gap for the @GA with respect to the number of nodes. The increase in steeper in the first 20 nodes, then it tends to stabilize and become more linear. This is likely due to the fact that the @GA is able to find a good solution for small instances, but as the number of nodes increases, the search space becomes too large and the algorithm struggles to maintain a low gap.
+#ref(<plt:optimality-gap>) instead shows the growth of the optimality gap for the @GA with respect to the number of nodes. The increase in steeper in the first 20 nodes, then it tends to stabilize and become more linear. This is likely due to the fact that the @GA is able to find a good solution for small instances, but as the number of nodes increases, the search space becomes too large and the algorithm struggles to maintain a low gap.
 
 Both the discussed plots are in logarithmic scale, to allow a better visualization of the results, given the large differences in time and gap values.
 
 #{
   let gap_by_nodes = results_with_gap.map(((nodes, gap)) => (nodes, gap))
+
   let x_max = calc.max(..gap_by_nodes.map(((nodes, gap)) => nodes))
 
   let x_axis = axis(
@@ -163,7 +166,7 @@ Both the discussed plots are in logarithmic scale, to allow a better visualizati
   let graph_plot = graph_plot(
     plot,
     (100%, 25%),
-    rounding: 10%,
+    rounding: 5%,
     caption: "Optimality gap for Genetic Algorithm",
     stroke: blue,
   )
@@ -175,6 +178,6 @@ Both the discussed plots are in logarithmic scale, to allow a better visualizati
       #text(sym.square.filled, blue) #text("Gap (%)")
       #linebreak()
     ]),
-    [#graph_plot <plt:a>],
+    [#graph_plot <plt:optimality-gap>],
   ))
 }

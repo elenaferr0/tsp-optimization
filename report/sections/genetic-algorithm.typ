@@ -38,7 +38,7 @@ Given the necessity to run the algorithm using different techniques for populati
   selection_n_parents: (default: 300, description: "The number of parents selected for crossover in each generation."),
   selection_tournament_size: (
     default: 5,
-    description: "The size of the tournament for the n-Tournament Selection method.",
+    description: "The size of the tournament for the n-Tournament Selection method. This is only relevant if the Selection method is set to N-Tournament Selection.",
   ),
   time_limit_seconds: (default: 60, description: "The maximum time allowed for the algorithm to run, in seconds."),
   max_non_improving_generations: (
@@ -97,6 +97,14 @@ In the replacement phase, the new generation of individuals is created by replac
 
 === Parameter tuning
 To ease the parameter tuning process, a `GridSearch` class heavily inspired by the one from Python's `scikit-learn` library has been implemented #footnote[https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.GridSearchCV.html]. Given a problem instance, it allows a systematic search over a specified set of parameter, evaluating the performance of the algorithm for each combination. The performance is measured using a fitness function, which, in this case, is the total distance of the tour represented by the chromosome.
-Since the implemented @GA has stochastic components, it is important to run the algorithm multiple times for each parameter combination and instance size. The results are then averaged to obtain a more reliable estimation of the performance.
 
-#text("TODO: parameter tuning results", size: 14pt, red)
+// #text("TODO: parameter tuning results", size: 14pt, red)
+
+By running the `GridSearch` class with different configurations for the randomly generated instances, it is possible to identify the best set of parameters for the @GA implementation. The chosen configuration consistently performed the best across all instances, with the exception of `random_10`, where `Edge Recombination Crossover` outperformed `Order Crossover`.
+
+ The results of this tuning process are summarized below:
+- Selection: `LinearRankingSelection`;
+- Crossover: `OrderCrossover`;
+- Mutation: `DisplacementMutation` with rate $0.1$;
+- Replacement: `ElitismReplacement` with rate $0.3$;
+- Convex Hull to Random Initialization Ratio: $(0.2, 0.8)$.

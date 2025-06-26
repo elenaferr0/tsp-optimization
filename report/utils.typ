@@ -23,5 +23,5 @@
 }
 
 #let log-data(data, base: 10) = {
-  return data.map((d) => (d.at(0), if (d.at(1) == 0) { 0 } else { calc.log(d.at(1), base: base) }))
+  return data.map((d) => (d.at(0), if (d.at(1) == 0) { 0 } else { calc.log(d.at(1) + 1, base: base) }))
 }
