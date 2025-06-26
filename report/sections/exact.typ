@@ -139,7 +139,7 @@ The following time limits in seconds were taken under consideration: 1, 2, 5, 10
         )).flatten(),
       ),
       caption: "Instances by solving limit",
-    ) <tab:instance-solving-limits>,
+    ) <tab:instance-solving-limits>
   ],
   [
     #figure(

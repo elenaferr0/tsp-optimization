@@ -4,8 +4,7 @@
 #show: init-glossary.with(defs)
 
 = @GA:long approach
-A C++ implementation of a @GA:long is proposed as an alternative approach to solving the @TSP. The goal is to provide a faster way to find good solutions for large instances, which are too expensive to solve using exact methods. The @GA is a metaheuristic that mimics the process of natural selection, where the fittest individuals from a population of solutions are selected to create new generations.
-// The Genetic Algorithm uses several operators to evolve the population of solutions: selection, crossover, mutation and replacement.
+A C++ implementation of a @GA:long is proposed as an alternative approach to solve the @TSP. The goal is to provide a faster way to find good solutions for large instances, which are too expensive to solve using exact methods. The @GA is a metaheuristic that mimics the process of natural selection, where the fittest individuals from a population of solutions are selected to create new generations.
 
 == Implementation details
 
