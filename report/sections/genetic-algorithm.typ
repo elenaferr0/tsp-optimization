@@ -11,7 +11,7 @@ A C++ implementation of a @GA:long is proposed as an alternative approach to sol
 === Chromosomes
 The implemented @GA represents solutions as a vector of nodes, where each of them corresponds to a city in the @TSP. A `Graph` class based on the one described in #ref(<sec:graph>) holds the coordinates of the cities and their Euclidean distances. To ease the process of evaluating the fitness, overriding a part of the path and saving the solution to file, a `Chromosome` class has been implemented as a wrapper around the `Graph` class.
 
-#text("TODO logger", size: 14pt, red)
+// #text("TODO logger", size: 14pt, red)
 // Parameters
 // Logger
 
@@ -63,6 +63,7 @@ Given the necessity to run the algorithm using different techniques for populati
   caption: "Parameters of the Genetic Algorithm implementation",
 ) <tab:params>
 
+Note that `population_size`, `parents_replacement_rate`, `selection_n_parents`, `time_limit_seconds` and `max_non_improving_generations` are not actually changed during the parameter tuning process, but are set to the default values. They have been included in the list as they are relevant to the algorithm's performance and can be manually adjusted if needed.
 
 === Population initialization <sec:population-init>
 The number of chromosomes in the initial population is determined by the `population_size` parameter and remains constant throughout the algorithm. Two techniques are used in conjunction to initialize the population:
