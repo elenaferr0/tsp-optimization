@@ -46,9 +46,9 @@ For constraints instead, it creates:
 + flow conservation: $(n - 1)$ constraints, applied for all nodes except node 0 (depot)\;
 + outgoing degree: $n$ constraints, one per node ensuring exactly one outgoing edge\;
 + incoming degree: $n$ constraints, one per node ensuring exactly one incoming edge\;
-+ flow-edge coupling: $n(n - 1)$ constraints, created for all pairs $(i, j)$ where both $x_(i j)$ and $y_(i j)$ variables exist.
++ flow-edge coupling: $n(n - 1) - (n - 1) = (n - 1)^2$ constraints, created for all pairs $(i, j)$ where both $x_(i j)$ and $y_(i j)$ variables exist.
 
-So in total, $(n - 1) + n + n + n(n - 1) = n^2 + 2 n - 1$ constraints are created.
+So in total, $(n - 1) + n + n + (n - 1)^2 = n (n + 1)$ constraints are created.
 
 ===== @MTZ:long formulation
 The @MTZ formulation creates the following variables:
@@ -60,21 +60,19 @@ In total, the @MTZ formulation creates $n (n - 1) + (n - 1) = n^2 - 1$ variables
 For what concerns the constraints, it creates:
 + outgoing degree: $n$ constraints, one per node ensuring exactly one outgoing edge\;
 + incoming degree: $n$ constraints, one per node ensuring exactly one incoming edge\;
-+ subtour elimination: $(n - 1)^2 - (n - 1)$ constraints, created for all pairs $(i, j)$ where $i != j$ and both $i, j != 0$\;
++ subtour elimination: $(n - 1)^2 - (n - 1) = (n - 1)(n - 2)$ constraints, created for all pairs $(i, j)$ where $i != j$ and both $i, j != 0$\;
 + lower bound for order variables: $(n - 1)$ constraints, setting $u_i >= 1$ for each node $i != 0$\;
 + upper bound for order variables: $(n - 1)$ constraints, setting $u_i <= n - 1$ for each node $i != 0$.
 
-In total, the @MTZ formulation creates $n + n + (n-1)^2 - (n-1) + 2(n-1) = n (n - 1)$ constraints.
+In total, the @MTZ formulation creates $n + n + (n - 1) (n - 2) + (n - 1) + (n - 1) = n(n + 1)$ constraints.
 
 ===== Comparison
 To understand which implementation is more efficient in terms of memory, the number of variables and constraints created by each formulation can be compared.
-- For what concerns variables, @GG produces $2 n^2 - 3 n + 1$, while @MTZ: $n^2 - 1$. Therefore, given that
+- with regard to variables, @GG produces $2 n^2 - 3 n + 1$, while @MTZ: $n^2 - 1$. Therefore, given that
   $ 2 n^2 - 3 n + 1 < n^2 - 1 => 1 < n < 2 $
   the @MTZ formulation is, in practice, producing less variables than @GG with equal size of the problem.
 
-- For what concerns constraints, @GG produces $n^2 + 2 n - 1$, while @MTZ: $n (n - 1)$. Therefore, given that
-  $ n^2 + 2 n - 1 < n (n - 1) => n < 1/3 $
-  the @MTZ formulation is producing less constraints than @GG with equal size of the problem.
+- for what concerns constraints instead, they both create $n(n + 1)$ and therefore they are equivalent in this regard.
 
 == Benchmark results
 To evaluate the performance of the exact approach, a set of randomly generated instances of different sizes were solved with increasing time limits. The goal was to determine the largest instance that could be solved within each time limit.
