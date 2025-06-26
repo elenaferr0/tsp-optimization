@@ -97,7 +97,6 @@ In the replacement phase, the new generation of individuals is created by replac
 
 === Parameter tuning
 To ease the parameter tuning process, a `GridSearch` class heavily inspired by the one from Python's `scikit-learn` library has been implemented #footnote[https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.GridSearchCV.html]. Given a problem instance, it allows a systematic search over a specified set of parameter, evaluating the performance of the algorithm for each combination. The performance is measured using a fitness function, which, in this case, is the total distance of the tour represented by the chromosome.
-
-This process is repeated for instances of different sizes, so to obtain a more general understanding of the algorithm's performance. Clearly, to obtain meaningful results several runs should be performed on different instance sizes, since the algorithm has stochastic components. The results are then averaged over the different executions, and the best parameters are selected based on the average performance.
+Since the implemented @GA has stochastic components, it is important to run the algorithm multiple times for each parameter combination and instance size. The results are then averaged to obtain a more reliable estimation of the performance.
 
 #text("TODO: parameter tuning results", size: 14pt, red)
