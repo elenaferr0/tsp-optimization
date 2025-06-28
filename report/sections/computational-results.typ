@@ -4,7 +4,10 @@
 = Computational results
 In this section, a performance comparison between the exact and @GA approaches is carried out.
 
-Since the implemented @GA has stochastic components, its results can vary between runs. Therefore, the algorithm was run five times for each instance and parameter combination, and the average results were considered for the comparison, so to obtain a more reliable estimation of the performance.
+Since the implemented @GA has stochastic components, its results can vary between runs. The algorithm was executed five times for each instance and parameter combination, and the average results were used for comparison to obtain a more reliable performance estimate. In order to run this comparison, the `benchmark.sh` script can be used, found in the `part_two` folder of the project. It takes care of running the @GA with the best parameters found in the previous section, and saving the results in the `results` folder. The script can be executed with the following command:
+```bash
+sh benchmark.sh
+```
 
 From the results summarized in #ref(<tab:results>), it emerges that the @GA is able to provide a sufficiently accurate solution for problems of reduced size - below 10 nodes - although with a much longer computational time than the exact method. This might be accounted for by the fact that the exponential growth of the search space for the @TSP is not yet significant for such small instances, allowing the exact method to find the optimal solution in a reasonable time.
 
@@ -141,7 +144,7 @@ For larger instances on the other hand, the @GA is able to produce a solution mu
   ))
 }
 
-#ref(<plt:optimality-gap>) instead shows the growth of the optimality gap for the @GA with respect to the number of nodes. The increase in steeper in the first 20 nodes, then it tends to stabilize and become more linear. This is likely due to the fact that the @GA is able to find a good solution for small instances, but as the number of nodes increases, the search space becomes too large and the algorithm struggles to maintain a low gap.
+#ref(<plt:optimality-gap>) instead shows the growth of the optimality gap for the @GA with respect to the number of nodes. The increase is steeper for the first 20 nodes, after which it tends to stabilize and become more linear. This is likely due to the fact that the @GA is able to find a good solution for small instances, but as the number of nodes increases, the search space becomes too large and the algorithm struggles to maintain a low gap.
 
 Both the discussed plots are in logarithmic scale, to allow a better visualization of the results, given the large differences in time and gap values.
 
@@ -182,7 +185,7 @@ Both the discussed plots are in logarithmic scale, to allow a better visualizati
   ))
 }
 
-#ref(<img:random-10-exact>) and #ref(<img:random-10-ga>) show the tours produced by the exact method and the @GA for a random instance of 10 nodes. It can be observed that the @GA solution not only isn't optimal, but also contains a subtour starting and ending at node 3.
+#ref(<img:random-10-exact>) and #ref(<img:random-10-ga>) show the tours produced by the exact method and the @GA for a random instance of 10 nodes. It can be observed that the @GA solution not only isn't optimal, but also contains a subtour starting and ending at node 3. This is a limitation of the implemented @GA approach.
 
 #grid(
   columns: 2,

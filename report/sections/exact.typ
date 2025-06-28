@@ -5,7 +5,7 @@
 
 = Exact approach
 With regard to the exact approach, two compact formulations were implemented:
-- the one proposed by @GG:both @gavish-graves-1978, which uses a network flow-based approach to eliminate subtours #footnote[In the context of the TSP, a subtour is a closed route that only visits a subset of the cities, not all of them, and is not connected to the rest of the route. These are invalid solutions and need to be eliminated to find the optimal tour.]\;
+- the one proposed by @GG:both @gavish-graves-1978, which uses a network flow-based approach to eliminate subtours #footnote[In the context of the TSP, a subtour is a closed route that visits a subset of the cities but not all of them, forming a disconnected cycle within the graph. Such cycles must be eliminated to find the optimal complete tour.]\;
 - the one introduced by @MTZ:both @miller-tucker-zemlin-1960, which uses additional variables representing the order or position of each city in the tour; the elimination is achieved by ensuring that these variables maintain a sequential order, thus preventing subtours.
 
 The problems built according to these two formulations are then fed to the IBM CPLEX 22.11 solver through its C++ API.
@@ -20,7 +20,7 @@ A `Graph` class is used to represent the problem instances, containing a vector 
 The `Formulation` class is an abstract base class that defines the interface for the two specific formulations: `GavishGraves` and `MillerTuckerZemlin`. Each formulation implements the methods necessary to create the variables and constraints required to solve the @TSP. Furthermore, it contains common logic to setup CPLEX, solve the problem and export the solution.
 
 === Time logger
-To ease the process of measuring the time taken by the solver to create the model and solve it, a `TimeLogger` class is provided. Once it has been instantiated and started, calling the `tick` method with a message will log the elapsed time since the last tick or the instantiation of the logger. At the end of the process, the `log_total_time` can be called to display the total time taken by the process.
+To ease the process of measuring the time taken by the solver to create the model and solve it, a `TimeLogger` class is provided. Once it has been instantiated and started, calling the `tick` method with a message as argument will log the elapsed time since the last tick or the instantiation of the logger. At the end of the process, the `log_total_time` can be called to display the total time taken by the process.
 
 === Variables and constraints creation
 Particular attention was given to the creation of variables and constraints. This section provides an overview of how the variables and constraints are created, including considerations for performance and memory usage.
@@ -84,8 +84,9 @@ In order to simplify the process of reproducing this benchmark, a `benchmark.sh`
 ```bash
 sh benchmark.sh
 ```
+The results will be stored in the `results` folder as text files.
 
-The following instances were considered:
+Below is a summary of the instances used in the benchmark, which are all randomly generated problems with a number of nodes ranging from 5 to 200. The instances are named according to the number of nodes they contain, for example `random5` for a problem with 5 nodes.
 #let instances = (
   "random5",
   "random10",

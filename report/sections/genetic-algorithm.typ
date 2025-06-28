@@ -21,7 +21,7 @@ To render the @GA implementation more flexible and customizable, it has been des
 The `start` method of the `GeneticAlgorithm` class constitutes the algorithm's entry point. It takes an hyperparameter configuration `HyperParam` as input, and will take care of initializing the population, applying the selection, crossover, mutation and replacement operators. Finally, it returns the best solution found once the stopping criteria are met.
 
 ==== A note on population initialization and stopping criteria
-Given the necessity to run the algorithm using different techniques for population initialization and stopping criteria at the same time, the `GeneticAlgorithm` class has been designed to allow these to be provided as vectors, instead of single class instances. More specifically:
+To allow for the simultaneous use of multiple population initialization techniques and stopping criteria, the `GeneticAlgorithm` class is designed to accept these as vectors rather than single instances. More specifically:
 - the population initialization can be performed using multiple techniques, better described in #ref(<sec:population-init>), and the final population is formed by combining the results of these techniques;
 - the stopping criteria can be defined as a set of different conditions, such as a time limit or a maximum number of generations without improvement. The algorithm will stop when any of these conditions is met.
 
@@ -38,7 +38,7 @@ Given the necessity to run the algorithm using different techniques for populati
   selection_n_parents: (default: 300, description: "The number of parents selected for crossover in each generation."),
   selection_tournament_size: (
     default: 5,
-    description: "The size of the tournament for the n-Tournament Selection method. This is only relevant if the Selection method is set to N-Tournament Selection.",
+    description: "The size of the tournament for the N-Tournament Selection method. This is only relevant if the Selection method is set to N-Tournament Selection.",
   ),
   time_limit_seconds: (default: 60, description: "The maximum time allowed for the algorithm to run, in seconds."),
   max_non_improving_generations: (
@@ -66,16 +66,16 @@ Given the necessity to run the algorithm using different techniques for populati
 Note that `population_size`, `parents_replacement_rate`, `selection_n_parents`, `time_limit_seconds` and `max_non_improving_generations` are not actually changed during the parameter tuning process, but are set to the default values. They have been included in the list as they are relevant to the algorithm's performance and can be manually adjusted if needed.
 
 === Population initialization <sec:population-init>
-The number of chromosomes in the initial population is determined by the `population_size` parameter and remains constant throughout the algorithm. Two techniques are used in conjunction to initialize the population:
+The number of chromosomes in the initial population is determined by the `population_size` parameter and remains constant throughout the algorithm's execution. Two techniques are used in conjunction to initialize the population:
 - Random Initialization: generates a random permutation of cities for each chromosome, ensuring that all cities are included in the tour. This method provides a diverse starting point for the algorithm;
 - Convex Hull Initialization: involves generating a convex hull, forming an initial partial route using the cities on the boundary of the hull. The remaining interior cities are then inserted into this partial tour one by one. Each of them is inserted at the position that results in the minimum incremental cost, calculated by finding the smallest increase in distance when placing the city between two existing cities in the partial tour @convex-hull-2023.
 
-It has been observed by empirical tests that employing the Convex Hull Initialization method alone can lead to poor diversity in the initial population. This was primarily due to the fact that it starts to create tours based on the convex hull, which is the same for all chromosomes. The randomization introduced by inserting the internal cities in different positions is not sufficient to ensure a diverse population. To mitigate this issue, the Random Initialization technique has been integrated.  The final population is then formed by combining both initialization methods, ensuring a diverse set of chromosomes that can effectively explore the solution space. The ratio of combination between the two is regulated through the `convex_hull_random_init_ratio` parameter.
+Empirical tests have shown that using the Convex Hull Initialization method alone can result in poor diversity within the initial population. This is primarily because all tours are initially constructed based on the same convex hull. The randomization introduced by inserting the internal cities in different positions is not sufficient to ensure a diverse population. To mitigate this issue, the Random Initialization technique has been integrated.  The final population is then formed by combining both initialization methods, ensuring a diverse set of chromosomes that can effectively explore the solution space. The ratio of combination between the two is regulated through the `convex_hull_random_init_ratio` parameter.
 
 === Selection
 The goal of the selection operator is to choose individuals from the current population to create a new generation. The selection process is based on the fitness of each individual, which is determined by the total distance of the tour represented by the chromosome. This phase should aim at identifying the fittest individuals, however, to avoid premature convergence, it is also important to maintain diversity between the solutions. The following selection schemes have been implemented:
 - Linear Ranking Selection: sorts individuals by increasing fitness and assign a rank $sigma_i$ to each individual $i$ in the population. The probability of selection is then given by $p_i = (2 sigma_i)/(N (N+1))$, where $N$ is the population size;
-- n-Tournament Selection: randomly selects $n$ individuals from the population and chooses the one with the best fitness. The process is repeated until the desired number of individuals is selected. The value of $n$ can be tuned to balance exploration and exploitation.
+- N-Tournament Selection: randomly selects $n$ individuals from the population and chooses the one with the best fitness. The process is repeated until the desired number of individuals is selected. The value of $n$ can be tuned to balance exploration and exploitation.
 
 === Crossover
 The aim of the crossover operator is to combine two parent chromosomes to create offspring that inherit characteristics from both parents. The following crossover methods have been implemented:
@@ -104,8 +104,8 @@ To ease the parameter tuning process, a `GridSearch` class heavily inspired by t
 By running the `GridSearch` class with different configurations for the randomly generated instances, it is possible to identify the best set of parameters for the @GA implementation. The chosen configuration consistently performed the best across all instances, with the exception of `random_10`, where `Edge Recombination Crossover` outperformed `Order Crossover`.
 
  The results of this tuning process are summarized below:
-- Selection: `LinearRankingSelection`;
-- Crossover: `OrderCrossover`;
-- Mutation: `DisplacementMutation` with rate $0.1$;
-- Replacement: `ElitismReplacement` with rate $0.3$;
+- Linear Ranking Selection;
+- Order Crossover;
+- Displacement Mutation with rate $0.1$;
+- Elitism Replacement with rate $0.3$;
 - Convex Hull to Random Initialization Ratio: $(0.2, 0.8)$.

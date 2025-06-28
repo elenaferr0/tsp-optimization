@@ -4,12 +4,15 @@
 #show : init-glossary.with(defs)
 
 = Introduction
-This report presents two approaches which were implemented to solve the @TSP:both: an exact method and a @GA. More specifically, this project positions itself in the context of @PCB:pl production, where the goal is to find the shortest path for a drill to take when boring holes in a board.
+This report details the implementation of two approaches for solving the @TSP:both: an exact method and a @GA:both.
+
+
+This report presents two approaches which were implemented to solve the @TSP:both: an exact method and a @GA. Specifically, this project addresses the Traveling Salesman Problem in the context of @PCB:pl production, where the objective is to determine the shortest path for a drill to bore a set of holes in a board
 
 == Project structure and usage
-The project contains two folders corresponding to the two implemented approaches. Both parts contain an `include` directory for header files, a `samples` directory for input instances, and a `src` directory for the source code. The root directory also contains `random_instance_gen.py`, a script for generating random instances of the problem. Given that solutions are generated differently for the two approaches, each part has its own `plot.py` script to visualize the results.
+The project contains two folders corresponding to the two implemented approaches. Both parts contain an `include` directory for header files, a `samples` directory for input instances, and a `src` directory for the source code. The root directory also contains `random_instance_gen.py`, a script for generating random instances of the problem. As the two approaches generate solutions in different formats, each part of the project includes its own `plot.py` script for result visualization.
 
-For the sake of simplicity, these scripts have been written in Python, in order to leverage its plotting libraries and simplify the generation of instances.
+For simplicity, these scripts are written in Python, to leverage its plotting libraries and streamline instance generation.
 
 Below is the structure of the project:
 ```
@@ -27,17 +30,19 @@ Below is the structure of the project:
 ```
 
 === File formats <sec:file-formats>
-The input instances are stored in `.dat` files, which contain as first line the number of holes, followed by the coordinates of each hole in the format `id x y`, where `id` is the incremental identifier of the hole, `x` is the x-coordinate and `y` is the y-coordinate. For example, a file with two holes would look like this:
+Input instances are stored in `.dat` files. The first line of the file contains the total number of holes, followed by the coordinates of each point. Each hole's data is formatted as `id x y`, where id is its incremental identifier, and `x` and `y` are its coordinates.
+
+For example, a file with two holes would look like this:
 ```
 2
 0 1 2
 1 3 4
 ```
 
-This file format is employed also for the solution files produced by the @GA, for simplicity reasons. In that case, the produced file is named as `<instance>_sol.dat`, where `<instance>` is the name of the input instance file.
+For simplicity, this same file format is also used for the solutions produced by the @GA. In that case, the produced file is named as `<instance>_sol.dat`, where `<instance>` is the name of the input instance file.
 
 For what concerns the solution files produced by the exact algorithm instead, they are stored CPLEX's standard `.sol` format. 
-To avoid cluttering the solution file with unnecessary variables, only the non-zero ones are exported. This is achieved by setting the `CPX_PARAM_WRITELEVEL` parameter to `CPX_WRITELEVEL_NOZEROVARS` in the CPLEX environment.
+To prevent the solution file from being cluttered with unnecessary data, only non-zero variables are exported. This is achieved by setting the `CPX_PARAM_WRITELEVEL` parameter to `CPX_WRITELEVEL_NOZEROVARS` in the CPLEX environment.
 
 === Running part one
 The following commands assume the user is initially positioned in the root directory of the project. The first part can be run with the following commands:
@@ -48,7 +53,7 @@ make
 ./main <instance> [formulation] [timeout]
 ```
 
-Where `<instance>` is the path to the input instance, `formulation` is an optional parameter that can be either `gg` for @GG' formulation or `mtz` for @MTZ's formulation. `timeout` is an optional parameter that limits the maximum time in seconds to run the algorithm. If no timeout is specified, the algorithm will run until completion.
+Here, <instance> is the path to the input instance, and `formulation` is an optional parameter that specifies either `gg` for @GG' formulation or `mtz` for @MTZ's formulation. If no formulation is specified, the default is `gg`. The `timeout` parameter is optional too and limits the maximum time in seconds to run the algorithm. If no timeout is specified, the algorithm will run until completion.
 
 After running the algorithm, a `.sol` solution file will be generated in the same directory as the input instance, named as `<instance>_<formulation>.sol`. This file contains the solution to the problem, which can be visualized using the provided `plot.py` script.
 
@@ -64,7 +69,7 @@ To visualize the solution, the `plot.py` script can be used. It takes the follow
 plot.py [-h] -d DAT [-s SOL] [-o OUTPUT]
 ```
 Where `-d DAT` is the path to the input instance file, `-s SOL` is the path to the solution file (optional), and `-o OUTPUT` is the output file for the plot (optional). If no output file is specified, the plot will be displayed on screen.
-To visualize the solution generated in the previous step, one would run:
+To visualize the solution from the previous step, run:
 ```bash
 py plot.py -d ./samples/random_10.dat -s ./samples/random_10_gg.sol
 ```
@@ -76,26 +81,26 @@ py plot.py -d ./samples/random_10.dat
 ```
 
 === Running part two
-Analogous procedure can be followed for the second part of the project. The commands to run the second part are as follows:
+A similar procedure can be followed for the second part of the project. The commands to run the second part are as follows:
 ```bash
 cd part_two
 make
 ./main <instance>
 ```
 
-Note that the second part will already run the @GA with the tuned parameters, so no additional arguments are needed. The solution will be saved in the same directory as the input instance, named as `<instance>_sol.dat`.
+Note that the second part runs the @GA with pre-tuned parameters, so no additional arguments are required. The solution will be saved in the same directory as the input instance, named as `<instance>_sol.dat`.
 
 ==== Plot visualization
-The reason why another script is used for the second part is that the @GA produces a solution in a different format than the exact algorithm. Its usage however, is identical:
+TA separate script is used for the second part because the @GA's solution format differs from that of the exact algorithm. Its usage however, is identical:
 ```bash
 py plot.py -d ./samples/random_10.dat -s ./samples/random_10_sol.dat
 ```
 This will produce an image showing the holes in the instance and the path taken by the drill to bore them, as well as the total distance traveled. The image will be saved in the same directory as the input instance, named as `<instance>_tour.png`.
 
 == Problem instances
-In order to test the implemented algorithms, a set of random instances was generated. Each consists of a number of holes represented as points in a 2D plane. The distance is computed using the Euclidean distance formula.
+In order to test the implemented algorithms, a set of random instances was generated. Each consists of a number of holes represented as points in a 2D plane. Distances are calculated using the Euclidean distance formula.
 
-The goal is that of generating instances which are representative of real-world scenarios for @PCB production. To achieve this, points are generated according to one of the following patterns: 
+The goal is to generate instances that are representative of real-world @PCB production scenarios. To achieve this, points are generated according to one of the following patterns: 
 - line: three to five points are aligned in a straight line, with either a uniform or non-uniform random distance between them. The line can be orientated in several directions, including diagonally;
 - triangle: three points are randomly placed in a triangular shape, with varying size and orientation. These can also be irregular triangles;
 - rectangle: four points are placed in a rectangular shape, with varying size and orientation;
