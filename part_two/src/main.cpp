@@ -100,8 +100,8 @@ int main(const int argc, char *argv[]) {
     try {
         char *instance = nullptr;
         parse_params(argc, argv, instance);
-        run_grid_search(instance);
-        // solve(instance);
+        // run_grid_search(instance);
+        solve(instance);
     } catch (std::exception &e) {
         std::cout << "Exception: " << e.what() << std::endl;
     }
