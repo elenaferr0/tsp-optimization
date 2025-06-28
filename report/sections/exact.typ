@@ -74,6 +74,8 @@ To understand which implementation is more efficient in terms of memory, the num
 
 - for what concerns constraints instead, they both create $n(n + 1)$ and therefore they are equivalent in this regard.
 
+To summarize, both formulation create a polynomial number of variables and constraints, more specifically $O(n^2)$.
+
 == Benchmark results
 To evaluate the performance of the exact approach, a set of randomly generated instances of different sizes were solved with increasing time limits. The goal was to determine the largest instance that could be solved within each time limit.
 Note that to ensure a reliable comparison, more than one instance per size should be taken under consideration. However, due to the time constraints of this project, only one problem per size was used.
