@@ -181,3 +181,18 @@ Both the discussed plots are in logarithmic scale, to allow a better visualizati
     [#graph_plot <plt:optimality-gap>],
   ))
 }
+
+#ref(<img:random-10-exact>) and #ref(<img:random-10-ga>) show the tours produced by the exact method and the @GA for a random instance of 10 nodes. It can be observed that the @GA solution not only isn't optimal, but also contains a subtour starting and ending at node 3.
+
+#grid(
+  columns: 2,
+  [#figure(
+    image("../imgs/random_10_tour_exact.png"),
+    caption: "Exact solution for the random 10 nodes TSP instance"
+  ) <img:random-10-exact>],
+  [
+    #figure(
+      image("../imgs/random_10_tour_ga.png"),
+      caption: "Genetic Algorithm solution for the random 10 nodes TSP instance") <img:random-10-ga>
+  ],
+)
