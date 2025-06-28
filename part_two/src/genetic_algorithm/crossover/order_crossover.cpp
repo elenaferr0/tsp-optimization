@@ -14,10 +14,13 @@ vector<Chromosome> OrderCrossover::recombine(const HyperParams &params, const ve
     vector<Chromosome> result;
     result.reserve(n_parents);
 
+    vector<Chromosome> shuffled_parents = parents;
+    shuffle(shuffled_parents.begin(), shuffled_parents.end(), std::mt19937{std::random_device{}()});
+
     for (int i = 0; i < n_parents; i += 2) {
         const int parent1_idx = i;
         const int parent2_idx = (i + 1 < n_parents) ? i + 1 : 0;
-        vector<Chromosome> current_pair = {parents[parent1_idx], parents[parent2_idx]};
+        vector current_pair = {shuffled_parents[parent1_idx], shuffled_parents[parent2_idx]};
 
         auto cuts = random_cut_points(n_genes);
         const int cut1 = cuts.top();

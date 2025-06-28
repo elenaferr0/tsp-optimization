@@ -65,7 +65,7 @@ Chromosome GeneticAlgorithm::start(const HyperParams &params, const long logging
         vector<Chromosome> mutated = mutation->mutate(params, offsprings);
         log.trace("Applied mutation, resulting in " + to_string(mutated.size()) + " mutated offspring");
 
-        population = replacement->replace(params, parents, offsprings);
+        population = replacement->replace(params, parents, mutated);
         log.trace("Replaced generation_n");
 
         generation_n++;
@@ -80,7 +80,8 @@ Chromosome GeneticAlgorithm::start(const HyperParams &params, const long logging
 
     const auto end_time = high_resolution_clock::now();
     const auto duration = chrono::duration_cast<milliseconds>(end_time - start_time).count();
-    log.info("Genetic algorithm completed in " + to_string(duration) + " ms");
+    log.info("Genetic algorithm completed in " + to_string(duration) + " ms with " +
+             to_string(generation_n) + " generations");
     return best_chromosome;
 }
 

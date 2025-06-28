@@ -57,7 +57,6 @@ void solve(const char *instance_name, const Logger::Level log_level = Logger::Le
           Crossover: OrderCrossover
           Mutation: DisplacementMutation [rate: 0.100000]
           Replacement: ElitismReplacement [rate: 0.300000]
-          Tournament size: 15
           Convex hull init ratio: 0.200000
           Random init ratio: 0.800000
      */
@@ -101,8 +100,8 @@ int main(const int argc, char *argv[]) {
     try {
         char *instance = nullptr;
         parse_params(argc, argv, instance);
-        // run_grid_search(instance);
-        solve(instance);
+        run_grid_search(instance);
+        // solve(instance);
     } catch (std::exception &e) {
         std::cout << "Exception: " << e.what() << std::endl;
     }

@@ -14,11 +14,14 @@ vector<Chromosome> EdgeRecombinationCrossover::recombine(const HyperParams &para
     auto const n_genes = parents[0].get_n_genes();
     vector<Chromosome> result;
 
+    vector<Chromosome> shuffled_parents = parents;
+    shuffle(shuffled_parents.begin(), shuffled_parents.end(), std::mt19937{std::random_device{}()});
+
     for (int i = 0; i < n_parents; i += 2) {
         const int parent1_idx = i;
         const int parent2_idx = (i + 1 < n_parents) ? i + 1 : 0;
-        const Chromosome &parent1 = parents[parent1_idx];
-        const Chromosome &parent2 = parents[parent2_idx];
+        const Chromosome &parent1 = shuffled_parents[parent1_idx];
+        const Chromosome &parent2 = shuffled_parents[parent2_idx];
 
         // Build edge map
         map<int, set<int> > edge_map = build_edge_map({parent1, parent2});
