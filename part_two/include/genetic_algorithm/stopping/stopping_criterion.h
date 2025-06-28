@@ -1,8 +1,11 @@
 #ifndef STOPPING_CRITERIA_H
 #define STOPPING_CRITERIA_H
 #include <genetic_algorithm/hyper_params.h>
+#include <memory>
 
 #include "utils/logger.h"
+
+using namespace std;
 
 class StoppingCriterion {
 protected:

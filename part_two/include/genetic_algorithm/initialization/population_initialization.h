@@ -1,9 +1,12 @@
 #ifndef POPULATION_INITIALIZATION_H
 #define POPULATION_INITIALIZATION_H
 
+#include <memory>
 #include "genetic_algorithm/chromosome/chromosome.h"
 #include "genetic_algorithm/hyper_params.h"
 #include "utils/logger.h"
+
+using namespace std;
 
 class PopulationInitialization {
 protected:

@@ -3,6 +3,7 @@
 
 #include <genetic_algorithm/hyper_params.h>
 #include <utils/logger.h>
+#include <memory>
 
 #include "genetic_algorithm/chromosome/chromosome.h"
 
