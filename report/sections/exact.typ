@@ -6,7 +6,7 @@
 = Exact approach
 With regard to the exact approach, two compact formulations were implemented:
 - the one proposed by @GG:both @gavish-graves-1978, which uses a network flow-based approach to eliminate subtours #footnote[In the context of the TSP, a subtour is a closed route that visits a subset of the cities but not all of them, forming a disconnected cycle within the graph. Such cycles must be eliminated to find the optimal complete tour.]\;
-- the one introduced by @MTZ:both @miller-tucker-zemlin-1960, which uses additional variables representing the order or position of each city in the tour; the elimination is achieved by ensuring that these variables maintain a sequential order, thus preventing subtours.
+- the one introduced by @MTZ:both @miller-tucker-zemlin-1960, which uses additional variables representing the order or position of each city in the tour; the subtour elimination is achieved by ensuring that these variables maintain a sequential order.
 
 The problems built according to these two formulations are then fed to the IBM CPLEX 22.11 solver through its C++ API.
 
@@ -26,7 +26,7 @@ $ <eq:mtz-formulation>
 This section provides an overview of some details regarding the exact approach, including certain aspects of the practical implementation.
 
 === Graph representation <sec:graph>
-A `Graph` class is used to represent the problem instances, containing a vector of `Node` objects, each representing a hole in the board. The solution representation used throughout this project is indeed the path representation.
+A `Graph` class is used to represent the problem instances, containing a vector of `Node` objects, each representing a hole in the board. The solution encoding used throughout this project is indeed the path representation.
 This class provides a convenient way to read input instances from files and store both the coordinates of points and their Euclidean distance.
 
 === Formulations
@@ -39,15 +39,15 @@ To ease the process of measuring the time taken by the solver to create the mode
 Particular attention was given to the creation of variables and constraints. This section provides an overview of how the variables and constraints are created, including considerations for performance and memory usage.
 
 ==== Maps
-Internally, CPLEX considers variables to be all stored in a single vectorial structure; it is therefore not straightforward to associate the variable's position in the vector with the corresponding indexes in the problem, after the variable has been created. To address this, both formulations use matrices to store, for each pair of coordinates (i, j), the variable's index in the vector. This allows for easy access to the variables when creating constraints or retrieving solutions.
+Internally, CPLEX considers variables to be all stored in a single vectorial structure; it is therefore not straightforward to associate the variable's position in the vector with the corresponding indexes in the problem, after the variable has been created. To address this, both formulations use matrices to store, for each coordinate (i, j), the variable's index in the vector. This allows for easy access to the variables when creating constraints or retrieving solutions.
 The two formulations differ in how they store these indices:
 - for the @GG formulation, two integer matrices are used, holding indices for variables $x_(i j)$ and $y_(i j)$\;
-- in the @MTZ implementation instead, a single integer matrix is used to hold the indices for the variables $x_(i j)$, and a vector memorizes indices for the order variables $u_i$.
+- in the @MTZ implementation instead, a single matrix is used to hold the indices for the variables $x_(i j)$, and a vector memorizes indices for the order variables $u_i$.
 
 ==== Optimizations
 For optimal performance and memory efficiency, both formulations create all variables at once, rather than one by one. This approach minimizes the overhead associated with multiple calls to the CPLEX API, which can be costly in terms of performance. To do so, the formulations leverage the custom implemented `Constraints` and `Variables` support classes, that are iteratively filled with the necessary data and then fed to CPLEX in a single call.
 
-Furthermore, only the minimum number of variables and constraints necessary to solve the problem are created. Assuming $N$ to be the number of nodes in the problem, below is a summary of the number of variables and constraints created by each formulation.
+Furthermore, only the minimum number of variables and constraints necessary to solve the problem are created. Assuming $n$ to be the number of nodes in the problem, below is a summary of the number of variables and constraints created by each formulation.
 
 ===== @GG:long formulation
 The @GG formulation creates the following variables:
@@ -83,7 +83,7 @@ In total, the @MTZ formulation creates $n + n + (n - 1) (n - 2) + (n - 1) + (n -
 To understand which implementation is more efficient in terms of memory, the number of variables and constraints created by each formulation can be compared.
 - with regard to variables, @GG produces $2 n^2 - 3 n + 1$, while @MTZ: $n^2 - 1$. Therefore, given that
   $ 2 n^2 - 3 n + 1 < n^2 - 1 => 1 < n < 2 $
-  the @MTZ formulation is, in practice, producing less variables than @GG with equal size of the problem.
+  the @MTZ formulation is, in practice, always producing less variables than @GG with equal size of the problem.
 
 - for what concerns constraints instead, they both create $n(n + 1)$ and therefore they are equivalent in this regard.
 
@@ -99,7 +99,7 @@ sh benchmark.sh
 ```
 The results will be stored in the `results` folder as text files.
 
-Below is a summary of the instances used in the benchmark, which are all randomly generated problems with a number of nodes ranging from 5 to 200. The instances are named according to the number of nodes they contain, for example `random5` for a problem with 5 nodes.
+#ref(<fig:instances>) contains a summary of the instances used in the benchmark, which are all randomly generated problems with a number of nodes ranging from 5 to 200. The instances are named according to the number of nodes they contain, for example `random5` for a problem with 5 nodes.
 #let instances = (
   "random5",
   "random10",
@@ -113,7 +113,7 @@ Below is a summary of the instances used in the benchmark, which are all randoml
   row-gutter: 12pt,
   columns: (1fr, 1fr, 1fr),
   ..instances.map(i => raw(i))
-)))
+)), caption: "Instances used in the benchmark") <fig:instances>
 
 The following time limits in seconds were taken under consideration: 1, 2, 5, 10, 20, 30, 60, 120 and 240.
 

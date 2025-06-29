@@ -4,13 +4,10 @@
 #show : init-glossary.with(defs)
 
 = Introduction
-This report details the implementation of two approaches for solving the @TSP:both: an exact method and a @GA:both.
-
-
-This report presents two approaches which were implemented to solve the @TSP:both: an exact method and a @GA. Specifically, this project addresses the Traveling Salesman Problem in the context of @PCB:pl production, where the objective is to determine the shortest path for a drill to bore a set of holes in a board
+This report presents two approaches which were implemented to solve the @TSP: an exact method and a @GA. Specifically, this project addresses the @TSP in the context of @PCB:pl production, where the objective is to determine the shortest path for a drill to bore a set of holes in a board
 
 == Project structure and usage
-The project contains two folders corresponding to the two implemented approaches. Both parts contain an `include` directory for header files, a `samples` directory for input instances, and a `src` directory for the source code. The root directory also contains `random_instance_gen.py`, a script for generating random instances of the problem. As the two approaches generate solutions in different formats, each part of the project includes its own `plot.py` script for result visualization.
+The project contains two folders corresponding to the two implemented approaches. Both parts contain an `include` directory for header files, a `samples` directory for input instances, and a `src` directory for the source code. The root directory also contains `random_instance_gen.py`, a script to generate random @TSP instances. As the two approaches generate solutions in different formats, each part of the project includes its own `plot.py` script for result visualization.
 
 For simplicity, these scripts are written in Python, to leverage its plotting libraries and streamline instance generation.
 
@@ -41,7 +38,7 @@ For example, a file with two holes would look like this:
 
 For simplicity, this same file format is also used for the solutions produced by the @GA. In that case, the produced file is named as `<instance>_sol.dat`, where `<instance>` is the name of the input instance file.
 
-For what concerns the solution files produced by the exact algorithm instead, they are stored CPLEX's standard `.sol` format. 
+For what concerns the solution files produced by the exact algorithm instead, they are stored using CPLEX's standard `.sol` format. 
 To prevent the solution file from being cluttered with unnecessary data, only non-zero variables are exported. This is achieved by setting the `CPX_PARAM_WRITELEVEL` parameter to `CPX_WRITELEVEL_NOZEROVARS` in the CPLEX environment.
 
 === Running part one
@@ -53,11 +50,12 @@ make
 ./main <instance> [formulation] [timeout]
 ```
 
-Here, <instance> is the path to the input instance, and `formulation` is an optional parameter that specifies either `gg` for @GG' formulation or `mtz` for @MTZ's formulation. If no formulation is specified, the default is `gg`. The `timeout` parameter is optional too and limits the maximum time in seconds to run the algorithm. If no timeout is specified, the algorithm will run until completion.
+Here, `<instance>` is the path to the input instance, and `formulation` is an optional parameter that specifies either `gg` for @GG formulation or `mtz` for the @MTZ one. If no formulation is specified, the default is `gg`. The `timeout` parameter is optional too and limits the maximum time in seconds to run the algorithm. If no timeout is specified, the algorithm will run until completion.
+In order to set the timeout, the `CPX_PARAM_TILIM` parameter is set in the CPLEX environment.
 
 After running the algorithm, a `.sol` solution file will be generated in the same directory as the input instance, named as `<instance>_<formulation>.sol`. This file contains the solution to the problem, which can be visualized using the provided `plot.py` script.
 
-Example of usage with a @GG' formulation on an instance named `random_10.dat` with a timeout of 60 seconds:
+Example of usage of a @GG formulated instance named `random_10.dat` with a timeout of 60 seconds:
 ```bash
 ./main samples/random_10.dat gg 60
 ```
@@ -75,7 +73,7 @@ py plot.py -d ./samples/random_10.dat -s ./samples/random_10_gg.sol
 ```
 This will produce an image showing the holes in the instance and the path taken by the drill to bore them, as well as the total distance traveled. The image will be saved in the same directory as the input instance, named as `<instance>_tour.png`.
 
-The plot script can also be used to visualize the input instance without a solution file, in which case it will only show the holes in the instance. To achieve this, it's sufficient to run:
+The plot script can also be used to visualize the input instance without a solution file. To achieve this, it's sufficient to run:
 ```bash
 py plot.py -d ./samples/random_10.dat
 ```
@@ -91,11 +89,11 @@ make
 Note that the second part runs the @GA with pre-tuned parameters, so no additional arguments are required. The solution will be saved in the same directory as the input instance, named as `<instance>_sol.dat`.
 
 ==== Plot visualization
-TA separate script is used for the second part because the @GA's solution format differs from that of the exact algorithm. Its usage however, is identical:
+A separate script is used for the second part, since the @GA's solution format differs from that of the exact algorithm. Its usage however, is identical:
 ```bash
 py plot.py -d ./samples/random_10.dat -s ./samples/random_10_sol.dat
 ```
-This will produce an image showing the holes in the instance and the path taken by the drill to bore them, as well as the total distance traveled. The image will be saved in the same directory as the input instance, named as `<instance>_tour.png`.
+This will produce an image showing the holes in the instance and the path taken by the drill to bore them. The image will be saved in the same directory as the input instance, named as `<instance>_tour.png`.
 
 == Problem instances
 In order to test the implemented algorithms, a set of random instances was generated. Each consists of a number of holes represented as points in a 2D plane. Distances are calculated using the Euclidean distance formula.
@@ -106,7 +104,7 @@ The goal is to generate instances that are representative of real-world @PCB pro
 - rectangle: four points are placed in a rectangular shape, with varying size and orientation;
 - parallelogram: four points are placed in a parallelogram shape, with varying size, orientation and skewness.
 
-Other than these, a few points are randomly created. During this generation process, a minimum distance between points and patterns is enforced, to avoid overlapping holes. A density parameter controls the sparsity, with a higher density resulting in more closely packed holes. Note that these patterns are, in general, not very visible for smaller instances, but they become more apparent as the number of holes increases. #ref(<fig:random-instance-eg>) shows an example of a random instance with 100 holes, with quite evident patterns.
+Other than these, a few points are randomly created. During this generation process, a minimum distance between points and patterns is enforced, to avoid overlapping holes. In a real-world scenario indeed, a minimum distance between points is probably required to ensure that the drill can operate correctly without damaging the board or the holes. A density parameter controls the sparsity, with a higher density resulting in more closely packed holes. Note that these patterns are, in general, not very visible for smaller instances, but they become more apparent as the number of holes increases. #ref(<fig:random-instance-eg>) shows an example of a random instance with 100 holes, with quite evident patterns.
 
 #figure(
   image("../imgs/random_instance_eg.png", width: 65%),

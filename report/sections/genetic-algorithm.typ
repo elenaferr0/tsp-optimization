@@ -7,9 +7,10 @@
 A C++ implementation of a @GA:long is proposed as an alternative approach to solve the @TSP. The goal is to provide a faster way to find good solutions for large instances, which are too expensive to solve using exact methods. The @GA is a metaheuristic that mimics the process of natural selection, where the fittest individuals from a population of solutions are selected to create new generations.
 
 == Implementation details
+This section provides an overview of the implementation details of the @GA, including the representation of chromosomes, the algorithm's structure, and the various operators used in the selection, crossover, mutation, and replacement phases. It also discusses the parameter tuning process and the population initialization techniques used to create a diverse initial population.
 
 === Chromosomes
-The implemented @GA represents solutions as a vector of nodes, where each of them corresponds to a city in the @TSP. A `Graph` class based on the one described in #ref(<sec:graph>) holds the coordinates of the cities and their Euclidean distances. To ease the process of evaluating the fitness, overriding a part of the path and saving the solution to file, a `Chromosome` class has been implemented as a wrapper around the `Graph` class.
+The implemented @GA represents solutions as a vector of nodes, where each of them corresponds to a city in the @TSP. A `Graph` class derived from the one described in #ref(<sec:graph>) holds the coordinates of the cities and their Euclidean distances. To ease the process of evaluating the fitness, overriding a part of the path and saving the solution to file, a `Chromosome` class has been implemented as a wrapper around the `Graph` class.
 
 // #text("TODO logger", size: 14pt, red)
 // Parameters
@@ -18,11 +19,11 @@ The implemented @GA represents solutions as a vector of nodes, where each of the
 === Algorithm overview
 To render the @GA implementation more flexible and customizable, it has been designed to allow different operators to be plugged in for selection, crossover, mutation and replacement. The `GeneticAlgorithm` class orchestrates the execution of the algorithm, initializing the population and applying the operators in each generation.
 
-The `start` method of the `GeneticAlgorithm` class constitutes the algorithm's entry point. It takes an hyperparameter configuration `HyperParam` as input, and will take care of initializing the population, applying the selection, crossover, mutation and replacement operators. Finally, it returns the best solution found once the stopping criteria are met.
+The `start` method of the `GeneticAlgorithm` class constitutes the algorithm's entry point. It takes an hyperparameter configuration `HyperParam` as input, and will take care of initializing the population and applying all operators. Finally, it returns the best solution found once the stopping criteria are met.
 
 ==== A note on population initialization and stopping criteria
 To allow for the simultaneous use of multiple population initialization techniques and stopping criteria, the `GeneticAlgorithm` class is designed to accept these as vectors rather than single instances. More specifically:
-- the population initialization can be performed using multiple techniques, better described in #ref(<sec:population-init>), and the final population is formed by combining the results of these techniques;
+- the population initialization can be performed using multiple techniques, better described in #ref(<sec:population-init>), and the final population is formed by combining the results of these;
 - the stopping criteria can be defined as a set of different conditions, such as a time limit or a maximum number of generations without improvement. The algorithm will stop when any of these conditions is met.
 
 ==== Parameters
@@ -54,6 +55,7 @@ To allow for the simultaneous use of multiple population initialization techniqu
 #figure(
   table(
     columns: 3,
+    align: (left, center, left),
     table.header("Parameter", "Default", "Description"),
     ..params
       .pairs()
@@ -68,20 +70,20 @@ Note that `population_size`, `parents_replacement_rate`, `selection_n_parents`, 
 === Population initialization <sec:population-init>
 The number of chromosomes in the initial population is determined by the `population_size` parameter and remains constant throughout the algorithm's execution. Two techniques are used in conjunction to initialize the population:
 - Random Initialization: generates a random permutation of cities for each chromosome, ensuring that all cities are included in the tour. This method provides a diverse starting point for the algorithm;
-- Convex Hull Initialization: involves generating a convex hull, forming an initial partial route using the cities on the boundary of the hull. The remaining interior cities are then inserted into this partial tour one by one. Each of them is inserted at the position that results in the minimum incremental cost, calculated by finding the smallest increase in distance when placing the city between two existing cities in the partial tour @convex-hull-2023.
+- Greedy Convex Hull Initialization: involves generating the convex hull, which is used to initialize the tour using cities on the boundary. The remaining interior cities are then inserted into this partial tour one by one. Each of them is placed in the position that results in the minimum incremental cost, calculated by finding the smallest increase in distance when placing the city between two existing cities in the partial tour @convex-hull-2023.
 
-Empirical tests have shown that using the Convex Hull Initialization method alone can result in poor diversity within the initial population. This is primarily because all tours are initially constructed based on the same convex hull. The randomization introduced by inserting the internal cities in different positions is not sufficient to ensure a diverse population. To mitigate this issue, the Random Initialization technique has been integrated.  The final population is then formed by combining both initialization methods, ensuring a diverse set of chromosomes that can effectively explore the solution space. The ratio of combination between the two is regulated through the `convex_hull_random_init_ratio` parameter.
+Empirical tests have shown that using the Greedy Convex Hull Initialization method alone can result in poor diversity within the initial population. This is primarily due to the fact that all tours are initially constructed based on the same convex hull. The randomization introduced by inserting the internal cities in different positions is not sufficient to ensure a diverse population. To mitigate this issue, the Random Initialization technique has been integrated. The final population is then formed by combining both initialization methods, ensuring a diverse set of chromosomes that can effectively explore the solution space. The ratio of combination between the two is regulated through the `convex_hull_random_init_ratio` parameter.
 
 === Selection
-The goal of the selection operator is to choose individuals from the current population to create a new generation. The selection process is based on the fitness of each individual, which is determined by the total distance of the tour represented by the chromosome. This phase should aim at identifying the fittest individuals, however, to avoid premature convergence, it is also important to maintain diversity between the solutions. The following selection schemes have been implemented:
+The goal of the selection operator is to choose individuals from the current population to create a new generation, based on the fitness of each individual. This phase should aim at identifying the fittest individuals; however, to avoid premature convergence, it is also important to maintain diversity between the solutions. The following selection schemes have been implemented:
 - Linear Ranking Selection: sorts individuals by increasing fitness and assign a rank $sigma_i$ to each individual $i$ in the population. The probability of selection is then given by $p_i = (2 sigma_i)/(N (N+1))$, where $N$ is the population size;
-- N-Tournament Selection: randomly selects $n$ individuals from the population and chooses the one with the best fitness. The process is repeated until the desired number of individuals is selected. The value of $n$ can be tuned to balance exploration and exploitation.
+- N-Tournament Selection: randomly selects $n$ individuals from the population and chooses the one with the best fitness. The process is repeated until the desired number of individuals is selected. The value of $n$ can be tuned to control the selection pressure, with larger values leading to a stronger focus on the fittest individuals. The size of the tournament is controlled by the `selection_tournament_size` parameter.
 
 === Crossover
 The aim of the crossover operator is to combine two parent chromosomes to create offspring that inherit characteristics from both parents. The following crossover methods have been implemented:
 - Order Crossover (OX): selects a random subsection from one parent and copies it directly to the offspring. The remaining cities are then filled in the order they appear in the other parent, preserving the relative order of cities outside the copied section;
 
-- Edge Recombination Crossover (ERX): focuses on preserving edges rather than simply city positions. It constructs an offspring by prioritizing edges present in either parent. It works by building a list of neighboring cities for each city from both parents and then iteratively selecting the next city based on which has the fewest available unvisited neighbors @larranaga-genetic-algorithms-TSP-1999.
+- Edge Recombination Crossover (ERX): focuses on preserving edges rather than simply city positions. It constructs an offspring by prioritizing edges present in either parent. It works by building a list of connected cities for each city from both parents and then iteratively selecting the next city based on which has the fewest available unvisited neighbors @larranaga-genetic-algorithms-TSP-1999.
 
 === Mutation
 Mutation is intended to introduce variability into the population by altering the chromosomes of individuals. This helps to maintain genetic diversity and prevent premature convergence. The following mutation methods have been implemented:
@@ -94,12 +96,10 @@ In the replacement phase, the new generation of individuals is created by replac
 
 - Steady State Replacement: replaces the worst-performing individuals in the population with the newly created offspring. This approach ensures that the best individuals are retained while allowing for the introduction of new genetic material;
 
-- Elitism Replacement: keeps few of the best individuals from the current population and replaces the rest with offspring.
+- Elitism Replacement: keeps few of the best individuals from the current population and replaces the rest with offsprings.
 
 === Parameter tuning
-To ease the parameter tuning process, a `GridSearch` class heavily inspired by the one from Python's `scikit-learn` library has been implemented #footnote[https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.GridSearchCV.html]. Given a problem instance, it allows a systematic search over a specified set of parameter, evaluating the performance of the algorithm for each combination. The performance is measured using a fitness function, which, in this case, is the total distance of the tour represented by the chromosome.
-
-// #text("TODO: parameter tuning results", size: 14pt, red)
+To ease the parameter tuning process, a `GridSearch` class heavily inspired by the one from Python's `scikit-learn` library has been implemented #footnote[https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.GridSearchCV.html]. Given a problem instance, it allows a systematic search over a specified set of parameter, evaluating the performance of the algorithm for each combination. This is measured using a fitness function, which, in this case, is the total distance of the tour represented by the chromosome.
 
 By running the `GridSearch` class with different configurations for the randomly generated instances, it is possible to identify the best set of parameters for the @GA implementation. The chosen configuration consistently performed the best across all instances, with the exception of `random_10`, where `Edge Recombination Crossover` outperformed `Order Crossover`.
 
