@@ -27,7 +27,8 @@
 #show link: underline
 #set table(inset: (y: 8pt))
 #show table.cell.where(y: 0): strong
-#show figure: set block(breakable: true)
+#show figure: set block(breakable: false)
+// #show figure.where(kind: image): set block(breakable: true)
 
 #include "sections/introduction.typ"
 #include "sections/exact.typ"

@@ -26,7 +26,8 @@ $ <eq:mtz-formulation>
 This section provides an overview of some details regarding the exact approach, including certain aspects of the practical implementation.
 
 === Graph representation <sec:graph>
-A `Graph` class is used to represent the problem instances, containing a vector of `Node` objects, each representing a hole in the board. This class provides a convenient way to read input instances from files and store both the coordinates of points and their Euclidean distance.
+A `Graph` class is used to represent the problem instances, containing a vector of `Node` objects, each representing a hole in the board. The solution representation used throughout this project is indeed the path representation.
+This class provides a convenient way to read input instances from files and store both the coordinates of points and their Euclidean distance.
 
 === Formulations
 The `Formulation` class is an abstract base class that defines the interface for the two specific formulations: `GavishGraves` and `MillerTuckerZemlin`. Each formulation implements the methods necessary to create the variables and constraints required to solve the @TSP. Furthermore, it contains common logic to setup CPLEX, solve the problem and export the solution.
