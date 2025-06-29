@@ -10,6 +10,18 @@ With regard to the exact approach, two compact formulations were implemented:
 
 The problems built according to these two formulations are then fed to the IBM CPLEX 22.11 solver through its C++ API.
 
+== @MTZ formulation
+The @MTZ formulation is based on the mathematical model described in #ref(<eq:mtz-formulation>).
+
+$
+ min & sum_(i = 1)^n sum_(j != i, j = 1)^n c_(i j) x_(i j) quad quad &\
+ & x_(i j) in {0, 1} & forall i, i = 1, dots, n \
+ & sum_(i != j, i = 1)^n x_(i j) = 1 & forall j = 1, dots, n \
+ & sum_(j != i, j = 1)^n x_(i j) = 1 & forall i = 1, dots, n \
+ & u_i - u_j + n x_(i j) <= n - 1 quad & 2 <= i != j <= n\
+ & 2 <= u_i <= n - 1 quad & 2 <= i <= n
+$ <eq:mtz-formulation>
+
 == Implementation details
 This section provides an overview of some details regarding the exact approach, including certain aspects of the practical implementation.
 
