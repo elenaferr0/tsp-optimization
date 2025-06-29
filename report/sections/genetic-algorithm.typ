@@ -98,6 +98,11 @@ In the replacement phase, the new generation of individuals is created by replac
 
 - Elitism Replacement: keeps few of the best individuals from the current population and replaces the rest with offsprings.
 
+=== Stopping criteria
+Two stopping criteria have been implemented to determine when the algorithm should terminate:
+- Max Non Improving Generations, that stops the algorithm after a pre-defined number of iterations during which the best fitness didn't improve;
+- Time Limit: stops the algorithm after a given time span.
+
 === Parameter tuning
 To ease the parameter tuning process, a `GridSearch` class heavily inspired by the one from Python's `scikit-learn` library has been implemented #footnote[https://scikit-learn.org/stable/modules/generated/sklearn.model_selection.GridSearchCV.html]. Given a problem instance, it allows a systematic search over a specified set of parameter, evaluating the performance of the algorithm for each combination. This is measured using a fitness function, which, in this case, is the total distance of the tour represented by the chromosome.
 
@@ -108,4 +113,4 @@ By running the `GridSearch` class with different configurations for the randomly
 - Order Crossover;
 - Displacement Mutation with rate $0.1$;
 - Elitism Replacement with rate $0.3$;
-- Convex Hull to Random Initialization Ratio: $(0.2, 0.8)$.
+- Convex Hull to Random Initialization ratio: $(0.2, 0.8)$.
